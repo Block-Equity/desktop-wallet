@@ -1,14 +1,25 @@
 .container {
-  position: absolute;
-  top: 30%;
-  left: 10px;
-  text-align: center;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  margin-top: 10rem;
 }
 
 .container h2 {
-  font-size: 5rem;
+  font-size: 3rem;
+  font-weight: 100;
+  margin-top: 1rem;
 }
 
-.container a {
-  font-size: 1.4rem;
+.container h3 {
+  font-size: 1rem;
+  font-weight: 100;
+  font-style: italic;
+  color: #BBBFCB;
+  margin-top: 11rem;
 }

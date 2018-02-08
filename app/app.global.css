@@ -9,18 +9,16 @@ body {
   position: relative;
   color: white;
   height: 100vh;
-  background-color: #232c39;
-  background-image: linear-gradient(45deg, rgba(0, 216, 255, 0.5) 10%, rgba(0, 1, 127, 0.7));
-  font-family: Arial, Helvetica, Helvetica Neue, serif;
+  background-color: #EAEFF2;
+  font: caption;
   overflow-y: hidden;
 }
 
 h2 {
   margin: 0;
   font-size: 2.25rem;
-  font-weight: bold;
-  letter-spacing: -0.025em;
-  color: #fff;
+  font-weight: 300;
+  color: #5E6066;
 }
 
 p {
