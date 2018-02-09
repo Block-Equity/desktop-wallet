@@ -1,0 +1,26 @@
+.mainPageContainer {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    height: 100%;
+}
+
+.mainPageNavContainer {
+    flex: 1 0 200px;
+    width: 90px;
+    margin-left: 1.5rem;
+    position: fixed;
+    background: #1D2836;
+}
+
+.mainPageNavSpacer {
+    display: inline-block; 
+    height: 2.5rem;
+}
+
+.mainPageContentContainer {
+    flex: 1 1 auto;
+    margin-left: 240px;
+    overflow: auto;
+}
