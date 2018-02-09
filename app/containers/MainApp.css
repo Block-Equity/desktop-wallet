@@ -7,11 +7,22 @@
 }
 
 .mainPageNavContainer {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
     flex: 1 0 200px;
-    width: 90px;
-    margin-left: 1.5rem;
+    width: 70px;
+    height: 100%;
+    padding-top: 1rem;
     position: fixed;
     background: #1D2836;
+}
+
+.mainPageNavContainerSpacer {
+    margin-top: 1.5rem;
 }
 
 .mainPageNavSpacer {
