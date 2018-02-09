@@ -9,7 +9,7 @@ class MainViewPage extends Component {
     return (
       <div className={styles.mainPageContainer}>
         <div className={styles.mainPageContainer}>
-          <img src={walletIcon} alt="" width="75" height="75" />
+          <img src={walletIcon} alt="" width="35" height="35" />
         </div>
         <div className={styles.mainPageContainer} />
       </div>
