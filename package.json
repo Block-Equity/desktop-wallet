@@ -202,7 +202,8 @@
     "react-router-redux": "^5.0.0-alpha.6",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
-    "source-map-support": "^0.5.3"
+    "source-map-support": "^0.5.3",
+    "stellar-sdk": "^0.8.0"
   },
   "devEngines": {
     "node": ">=7.x",
