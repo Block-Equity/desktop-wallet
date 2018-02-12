@@ -2,7 +2,8 @@
 
 import StellarSdk, {Config} from 'stellar-sdk';
 import axios from 'axios';
-import Store from 'electron-store';
+import Store from '../store/store';
+import LocalStore from '../store/store';
 
 //Horizon API Setup
 Config.setAllowHttp(true);
@@ -11,19 +12,19 @@ const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org';
 const BASE_URL = BASE_URL_TEST_NET;
 const server = new StellarSdk.Server(BASE_URL);
 
-//Persistent Setup
-const store = new Store();
-const USER_PUBLIC_KEYS = 'userAccountKeys';
-var userAccountKeys = [];
+//Local Store Initialization
+const STORE_FILE_USER_PREFERENCES = 'horizon-user-preferences';
+const store = new LocalStore({
+  configName: STORE_FILE_USER_PREFERENCES,
+  defaults: {
+    accounts: []
+  }
+});
 
 export function createSeed(success) {
-    
-
     const pair = StellarSdk.Keypair.random();
     let secretKey = pair.secret();
     let publicKey = pair.publicKey();
-    userAccountKeys.push(publicKey);
-    store.set(USER_PUBLIC_KEYS, userAccountKeys);
     console.log(`Secret: ${secretKey}  || Public: ${publicKey}`);
     success(publicKey);
 }
