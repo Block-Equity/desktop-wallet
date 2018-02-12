@@ -5,29 +5,33 @@ import axios from 'axios';
 
 const BASE_URL_TEST_NET = 'http://ec2-18-219-131-250.us-east-2.compute.amazonaws.com/';
 const server = new StellarSdk.Server(BASE_URL_TEST_NET);
-var publicKey;
 
-export function createSeed() {
+export function createSeed(success) {
     const pair = StellarSdk.Keypair.random();
-    pair.secret();
-    publicKey = pair.publicKey();
+    let secretKey = pair.secret();
+    let publicKey = pair.publicKey();
+    console.log(`Secret: ${secretKey}  || Public: ${publicKey}`);
+    success(publicKey);
 }
 
-export function createTestAccount() {
+export function createTestAccount(publicKey, success, failure) {
   const request = axios.get(`${BASE_URL_TEST_NET}/friendbot?addr=${publicKey}`)
     .then(response => {
       console.log('Success: ' + response);
+      success(response);
     })
     .catch(error => {
-
+      failure('Network call failed');
     });
 }
 
-export function getAccountDetail() {
-    server.loadAccount(publicKey).then(function(account) {
+export function getAccountDetail(publicKey, success) {
+    server.loadAccount(publicKey)
+    .then(account => {
         console.log('Balances for account: ' + publicKey);
         account.balances.forEach(function(balance) {
           console.log('Type:', balance.asset_type, ', Balance:', balance.balance);
+          success(balance);
         });
-      });
+    });
 }
