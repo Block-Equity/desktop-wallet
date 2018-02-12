@@ -3,11 +3,12 @@
 import StellarSdk, {Config} from 'stellar-sdk';
 import axios from 'axios';
 
+Config.setAllowHttp(true);
+
 const BASE_URL_TEST_NET = 'http://ec2-18-219-131-250.us-east-2.compute.amazonaws.com/';
 const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org';
-const BASE_URL = BASE_URL_TEST_NET;
+const BASE_URL = BASE_URL_HORIZON_TEST_NET;
 const server = new StellarSdk.Server(BASE_URL);
-Config.setAllowHttp(true);
 
 export function createSeed(success) {
     const pair = StellarSdk.Keypair.random();
