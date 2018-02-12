@@ -7,9 +7,12 @@ const store = new Store();
 const USER_PUBLIC_KEYS = 'userAccountKeys';
 
 export function setAccountKey(publicKey) {
-    if (!isUndefined(store.get(USER_PUBLIC_KEYS))) {
+    var account = store.get(USER_PUBLIC_KEYS);
+    if (store.has(USER_PUBLIC_KEYS)) {
+        //Subsequent time
         
     } else {
+        //First time
         var keys = [];
         keys.push(publicKey);
         store.set(USER_PUBLIC_KEYS, keys);
