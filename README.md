@@ -1,15 +1,10 @@
-# electron-react-boilerplate
-
-### A Boilerplate for Scalable Cross-Platform Desktop Apps
-
-<br/>
+# Block Equity Desktop Wallet Application
 
 [![Build Status][travis-image]][travis-url]
 
 ## Install
 
 * **Note: requires a node version >= 7 and an npm version >= 4.**
-* **If you have installation or compilation issues with this project, please see [our debugging guide](https://github.com/chentsulin/electron-react-boilerplate/issues/400)**
 
 First, clone the repo via git:
 
