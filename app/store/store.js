@@ -11,9 +11,11 @@ class Store {
   constructor(opts) {
     const userDataPath = (electron.app || electron.remote.app).getPath('userData');
     this.path = path.join(userDataPath, opts.configName + '.json');
-    if (fs.existsSync(path)) {
-      // Do something
-      this.data = parseDataFile(this.path, opts.defaults);
+    if (!fs.existsSync(path)) {
+      //this.data = parseDataFile(this.path, opts.defaults);
+      //Create File
+      //writeFile also creates file. 
+      createFile(this.path, opts.defaults);
     }
   }
   
@@ -32,6 +34,14 @@ class Store {
         }
     });
   }
+}
+
+function createFile(filePath, content) {
+  fs.writeFile(filePath, content, (err, data) => {
+    if (err) throw err;
+    return JSON.parse(data);
+    console.log(`File ${filePath} was successfully saved`);
+  });
 }
 
 function parseDataFile(filePath, defaults) {
