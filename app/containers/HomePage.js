@@ -16,13 +16,18 @@ class HomePage extends Component<Props> {
   props: Props;
 
   componentDidMount() {
+    //Don't like this structure - think of less convuluding way
     store = new LocalStore({
       configName: STORE_FILE_USER_PREFERENCES,
       defaults: {
         accounts: []
       }
+    }, ({exists, data}) => {
+      if (exists) {
+        console.log(`Accounts: ${data.defaults.accounts}`);
+        this.props.setUserAccount(data.defaults.accounts);
+      }
     });
-    //TODO: Store to redux
   }
 
   render() {
