@@ -22,12 +22,12 @@ class HomePage extends Component<Props> {
       defaults: {
         accounts: []
       }
-    }, ({exists, data}) => {
-      if (exists) {
-        console.log(`Accounts: ${data.defaults.accounts}`);
-        this.props.setUserAccount(data.defaults.accounts);
-      }
     });
+
+    if (store.fileExists(STORE_FILE_USER_PREFERENCES)) {
+      this.props.setUserAccount(store.get(STORE_FILE_USER_PREFERENCES));
+    } 
+
   }
 
   render() {

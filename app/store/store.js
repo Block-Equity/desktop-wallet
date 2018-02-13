@@ -8,16 +8,24 @@ const fs = require('fs');
 
 class Store {
 
-  constructor(opts, exists) {
+  constructor(opts) {
     const userDataPath = (electron.app || electron.remote.app).getPath('userData');
     this.path = path.join(userDataPath, opts.configName + '.json');
     if (!fs.existsSync(path)) {
       this.data = createFile(this.path, opts.defaults);
-      exists(false, this.data);
     } else {
       console.log('File exists');
       this.data = parseDataFile(this.path, opts.defaults);
-      exists(true, this.data);
+    }
+  }
+
+  fileExists(fileName) {
+    const userDataPath = (electron.app || electron.remote.app).getPath('userData');
+    this.path = path.join(userDataPath, fileName + '.json');
+    if (!fs.existsSync(path)) {
+      return false;
+    } else {
+      return true;
     }
   }
   
