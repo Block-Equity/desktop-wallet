@@ -12,10 +12,9 @@ class Store {
     const userDataPath = (electron.app || electron.remote.app).getPath('userData');
     this.path = path.join(userDataPath, opts.configName + '.json');
     if (!fs.existsSync(path)) {
-      //this.data = parseDataFile(this.path, opts.defaults);
-      //Create File
-      //writeFile also creates file. 
-      createFile(this.path, opts.defaults);
+      this.data = createFile(this.path, opts.defaults);
+    } else {
+      console.log('File exists');
     }
   }
   
@@ -37,9 +36,9 @@ class Store {
 }
 
 function createFile(filePath, content) {
-  fs.writeFile(filePath, content, (err, data) => {
+  fs.writeFile(filePath, JSON.stringify(content), (err) => {
     if (err) throw err;
-    return JSON.parse(data);
+    return JSON.parse(JSON.stringify(content));
     console.log(`File ${filePath} was successfully saved`);
   });
 }
@@ -51,7 +50,6 @@ function parseDataFile(filePath, defaults) {
     }
     return JSON.parse(data);
   });
-
 }
 
 module.exports = Store;
