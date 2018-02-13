@@ -33,12 +33,16 @@ class Store {
         }
     });
   }
+  
 }
 
 function createFile(filePath, content) {
-  fs.writeFile(filePath, JSON.stringify(content), (err) => {
-    if (err) throw err;
-    return JSON.parse(JSON.stringify(content));
+  var contentString = JSON.stringify(content);
+  fs.writeFile(filePath, contentString, (err) => {
+    if (err) {
+      return console.error(err);
+    }
+    return JSON.parse(contentString);
     console.log(`File ${filePath} was successfully saved`);
   });
 }

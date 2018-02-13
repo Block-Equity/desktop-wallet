@@ -37,4 +37,13 @@ class MainViewPage extends Component {
   }
 }
 
+/*
+function mapStateToProps(state) {
+  return {
+    accounts: state.userState
+  }
+}
+*/
+
 export default MainViewPage;
+//export default connect(mapStateToProps, null) (MainViewPage);

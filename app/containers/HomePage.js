@@ -1,6 +1,8 @@
 /* eslint-disable */
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { setUserAccount } from '../actions/userStateAction';
 import Home from '../components/Home';
 import LocalStore from '../store/store';
 
@@ -10,7 +12,7 @@ type Props = {};
 const STORE_FILE_USER_PREFERENCES = 'horizon-user-preferences';
 var store;
 
-export default class HomePage extends Component<Props> {
+class HomePage extends Component<Props> {
   props: Props;
 
   componentDidMount() {
@@ -20,6 +22,7 @@ export default class HomePage extends Component<Props> {
         accounts: []
       }
     });
+    //TODO: Store to redux
   }
 
   render() {
@@ -28,3 +31,5 @@ export default class HomePage extends Component<Props> {
     );
   }
 }
+
+export default connect(null, { setUserAccount })(HomePage);
