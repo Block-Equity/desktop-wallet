@@ -11,7 +11,10 @@ class Store {
   constructor(opts) {
     const userDataPath = (electron.app || electron.remote.app).getPath('userData');
     this.path = path.join(userDataPath, opts.configName + '.json');
-    this.data = parseDataFile(this.path, opts.defaults);
+    if (fs.existsSync(path)) {
+      // Do something
+      this.data = parseDataFile(this.path, opts.defaults);
+    }
   }
   
   get(key) {
@@ -20,7 +23,6 @@ class Store {
 
   set(key, val, success, failure) {
     this.data[key] = val;
-
     fs.writeFile(this.path, JSON.stringify(this.data), (err) => {
         if (err) {
             failure(err);
@@ -29,31 +31,17 @@ class Store {
             success()
         }
     });
-
-    /*try {
-        fs.writeFileSync(this.path, JSON.stringify(this.data));
-        success();
-      } catch(error) {
-        failure(error);
-      }*/
   }
 }
 
 function parseDataFile(filePath, defaults) {
-  
   fs.readFile(filePath, (err, data) => {
     if (err) {
         return console.error(err);
     }
     return JSON.parse(data);
   });
-  
-  try {
-    return JSON.parse(fs.readFileSync(filePath));
-  } catch(error) {
-    console.log(error);
-    return defaults;
-  }
+
 }
 
 module.exports = Store;
