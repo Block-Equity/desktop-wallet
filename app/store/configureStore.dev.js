@@ -8,6 +8,10 @@ import * as counterActions from '../actions/counter';
 
 const history = createHashHistory();
 
+const initialState = {
+
+};
+
 const configureStore = () => {
   // Redux Configuration
   const middleware = [];
@@ -51,7 +55,7 @@ const configureStore = () => {
   const enhancer = composeEnhancers(...enhancers);
 
   // Create Store
-  const store = createStore(rootReducer, null, enhancer);
+  const store = createStore(rootReducer, initialState, enhancer);
 
   if (module.hot) {
     module.hot.accept('../reducers', () =>
