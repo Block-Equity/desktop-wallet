@@ -12,23 +12,39 @@ var Datastore = require('nedb')
   , path = require('path')
   , db = new Datastore({ filename: path.join(userDataPath, 'user.db'), autoload: true });
 
+const NO_DATA = 0;
 
 class HomePage extends Component {
 
   constructor(props) {
     super(props);
+    //this.props = props.bind(this);
   }
 
   componentDidMount() {
-    db.find({ }, function (err, docs) {
-      console.log(docs);
-      if (docs.hasOwnProperty('user')) {
-        console.log('User exists');
+    this.loadDB( data => {
+      this.props.setUserAccount(data);
+    });
+  }
+
+  loadDB(cb) {
+    db.count({}, function (err, count) {
+      console.log(count);
+      if (count !== NO_DATA) {
+        //data exists
+        db.find({}, function (err, doc) {
+          cb(doc[0].user.accounts);
+          //console.log(doc[0].user.accounts);
+          //
+          //this.state.setUserAccount(newDoc[0].user.accounts);
+        });
       } else {
-        console.log('User does not exists');
-        var doc = { user: { accounts: ['test'] } };
+        //data doesn't exists
+        var doc = { user: { accounts: [] } };
         db.insert(doc, function (err, newDoc) {   
           console.log(newDoc);
+          cb(newDoc[0].user.accounts);
+          //this.state.setUserAccount(newDoc[0].user.accounts);
         });
       }
     });
