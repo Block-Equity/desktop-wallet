@@ -2,6 +2,9 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { setUserAccount } from '../actions/userStateAction';
+import { addUserAccount } from '../store/datastore';
+
 import styles from './MainApp.css';
 import walletIcon from '../assets/icnWallet.png';
 import settingIcon from '../assets/icnSettings.png';
@@ -13,15 +16,30 @@ const NAV_ICON_SIZE = 30;
 class MainViewPage extends Component {
 
   componentDidMount() {
-      createSeed(publicKey => {
+    if (this.props.accounts.length == 0) {
+      this.networkCalls();
+    } else {
+      console.log(this.props.accounts.length);
+    }
+      
+  }
+
+  networkCalls() {
+    createSeed(publicKey => {
         createTestAccount(publicKey, response => {
             getAccountDetail(publicKey, response => {
-
+              this.appendAccountDB(publicKey);
             });
         }, failure => {
 
         });
       })
+  }
+
+  appendAccountDB(publicKey) {
+    addUserAccount(publicKey, accounts => {
+      this.props.setUserAccount(accounts);
+    });
   }
 
   render() {
@@ -31,19 +49,18 @@ class MainViewPage extends Component {
           <img src={walletIcon} alt="" width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
           <img src={settingIcon} className={styles.mainPageNavContainerSpacer} alt="" width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
         </div>
-        <div className={styles.mainPageContentContainer} />
+        <div className={styles.mainPageContentContainer}> 
+       
+        </div>
       </div>
     );
   }
 }
 
-/*
 function mapStateToProps(state) {
   return {
-    accounts: state.userState
+    accounts: state.userAccounts
   }
 }
-*/
 
-export default MainViewPage;
-//export default connect(mapStateToProps, null) (MainViewPage);
+export default connect(mapStateToProps, { setUserAccount }) (MainViewPage);
