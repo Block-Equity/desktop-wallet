@@ -11,22 +11,41 @@ class Store {
   constructor(opts) {
     const userDataPath = (electron.app || electron.remote.app).getPath('userData');
     this.path = path.join(userDataPath, opts.configName + '.json');
-    if (!fs.existsSync(path)) {
-      this.data = createFile(this.path, opts.defaults);
-    } else {
-      console.log('File exists');
-      this.data = parseDataFile(this.path, opts.defaults);
-    }
+    const pathName = this.path;
+    var data;
+
+    checkIfFile(pathName, function(err, isFile) {
+      if (isFile) {
+        data = parseDataFile(pathName, opts.defaults);
+      } else {
+        data = createFile(pathName, opts.defaults);
+      }
+    });
+
+    this.data = data;
   }
 
-  fileExists(fileName) {
+  get fileExists() {
     const userDataPath = (electron.app || electron.remote.app).getPath('userData');
-    this.path = path.join(userDataPath, fileName + '.json');
-    if (!fs.existsSync(path)) {
-      return false;
-    } else {
-      return true;
-    }
+    const pathName = path.join(userDataPath, 'horizon-user-preferences' + '.json');
+    var fileExists;
+    /*checkIfFile(pathName, function(err, isFile) {
+      return isFile;
+    });
+    return true;*/
+
+    fs.stat(pathName, function fsStat(err, stats) {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          fileExists = false;
+        } else {
+          fileExists = false;
+        }
+      }
+      fileExists = stats.isFile();
+    });
+
+    return fileExists;
   }
   
   get(key) {
@@ -45,6 +64,19 @@ class Store {
     });
   }
 
+}
+
+function checkIfFile(file, cb) {
+  fs.stat(file, function fsStat(err, stats) {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        return cb(null, false);
+      } else {
+        return cb(err);
+      }
+    }
+    return cb(null, stats.isFile());
+  });
 }
 
 function createFile(filePath, content) {

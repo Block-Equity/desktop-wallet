@@ -4,30 +4,36 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { setUserAccount } from '../actions/userStateAction';
 import Home from '../components/Home';
-import LocalStore from '../store/store';
+import { isUndefined } from '../utils/utility';
 
-type Props = {};
+import Datastore from 'nedb';
+var db = new Datastore();
 
-//Local Store Initialization
-const STORE_FILE_USER_PREFERENCES = 'horizon-user-preferences';
-var store;
+class HomePage extends Component {
 
-class HomePage extends Component<Props> {
-  props: Props;
+  constructor(props) {
+    super(props);
+  }
 
   componentDidMount() {
-    //Don't like this structure - think of less convuluding way
-    store = new LocalStore({
-      configName: STORE_FILE_USER_PREFERENCES,
-      defaults: {
-        accounts: []
-      }
+    db.loadDatabase(function (err) {    
+      db.find({}, function (err, docs) {
+        console.log(`Error: ${err}`);
+        console.log(`Data: ${docs.user.accounts}`);
+        if (isUndefined(docs.user.accounts)) {
+          var doc = { user: {
+            accounts: []
+          } };
+          db.insert(doc, function (err, newDoc) {  
+            // newDoc is the newly inserted document
+            console.log(newDoc);
+          });
+        } else {
+          console.log('Accounts Exist');
+        }
+
+      });
     });
-
-    if (store.fileExists(STORE_FILE_USER_PREFERENCES)) {
-      this.props.setUserAccount(store.get(STORE_FILE_USER_PREFERENCES));
-    } 
-
   }
 
   render() {
