@@ -26,7 +26,7 @@ class HomePage extends Component {
         console.log('User exists');
       } else {
         console.log('User does not exists');
-        var doc = { user: { accounts: [] } };
+        var doc = { user: { accounts: ['test'] } };
         db.insert(doc, function (err, newDoc) {   
           console.log(newDoc);
         });
