@@ -6,8 +6,12 @@ import { setUserAccount } from '../actions/userStateAction';
 import Home from '../components/Home';
 import { isUndefined } from '../utils/utility';
 
-import Datastore from 'nedb';
-var db = new Datastore();
+const electron = require('electron');
+const userDataPath = (electron.app || electron.remote.app).getPath('appData');
+var Datastore = require('nedb')
+  , path = require('path')
+  , db = new Datastore({ filename: path.join(userDataPath, 'user.db'), autoload: true });
+
 
 class HomePage extends Component {
 
@@ -16,23 +20,17 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    db.loadDatabase(function (err) {    
-      db.find({}, function (err, docs) {
-        console.log(`Error: ${err}`);
-        console.log(`Data: ${docs.user.accounts}`);
-        if (isUndefined(docs.user.accounts)) {
-          var doc = { user: {
-            accounts: []
-          } };
-          db.insert(doc, function (err, newDoc) {  
-            // newDoc is the newly inserted document
-            console.log(newDoc);
-          });
-        } else {
-          console.log('Accounts Exist');
-        }
-
-      });
+    db.find({ }, function (err, docs) {
+      console.log(docs);
+      if (docs.hasOwnProperty('user')) {
+        console.log('User exists');
+      } else {
+        console.log('User does not exists');
+        var doc = { user: { accounts: [] } };
+        db.insert(doc, function (err, newDoc) {   
+          console.log(newDoc);
+        });
+      }
     });
   }
 
