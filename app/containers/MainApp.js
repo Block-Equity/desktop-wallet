@@ -13,11 +13,12 @@ import settingIcon from '../assets/icnSettings.png';
 import { createSeed, createTestAccount, getAccountDetail } from '../network/horizon';
 
 const NAV_ICON_SIZE = 30;
+const NO_ACCOUNT_EXISTS = 0;
 
 class MainViewPage extends Component {
 
   componentDidMount() {
-    if (this.props.accounts.length == 0) {
+    if (this.props.accounts.length == NO_ACCOUNT_EXISTS) {
       this.networkCalls();
     } else {
       console.log(this.props.accounts);
@@ -27,8 +28,8 @@ class MainViewPage extends Component {
   networkCalls() {
     createSeed(publicKey => {
         createTestAccount(publicKey, response => {
-            getAccountDetail(publicKey, balance => {
-              this.appendAccountDB(publicKey, balance);
+            getAccountDetail(publicKey, ({balance, sequence}) => {
+              this.appendAccountDB(publicKey, balance, sequence);
             });
         }, failure => {
 

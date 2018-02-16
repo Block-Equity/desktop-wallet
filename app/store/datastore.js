@@ -27,7 +27,7 @@ var Datastore = require('nedb')
   }
 
   export function addUserAccount(pKey, balance, sequence, cb) {
-    db.find({ }, function (err, doc) {
+    db.find({}, function (err, doc) {
         var accountCreated = { pKey: pKey, balance: balance, sequence: sequence }
         db.update({ }, { $addToSet: { 'user.accounts': accountCreated } }, {returnUpdatedDocs: true, multi: false}, 
             function (err, numReplaced, affectedDocuments) {
@@ -35,6 +35,10 @@ var Datastore = require('nedb')
             cb(affectedDocuments.user.accounts);
         });
     });
+  }
+
+  export function updateTransactionSequence() {
+
   }
 
   export function clearAllUserInfo(cb) {
