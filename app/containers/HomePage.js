@@ -7,7 +7,6 @@ import Home from '../components/Home';
 import { initialCreationOfUserInfo, clearAllUserInfo } from '../store/datastore';
 
 class HomePage extends Component {
-
   constructor(props) {
     super(props);
   }
@@ -16,7 +15,7 @@ class HomePage extends Component {
     initialCreationOfUserInfo( data => {
       this.props.setUserAccount(data);
     });
-    /*clearAllUserInfo( success => {
+    /*clearAllUserInfo(cb => {
 
     });*/
   }

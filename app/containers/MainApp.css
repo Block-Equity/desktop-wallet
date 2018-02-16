@@ -31,7 +31,27 @@
 }
 
 .mainPageContentContainer {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
     flex: 1 1 auto;
-    margin-left: 240px;
+    margin-left: 100px;
     overflow: auto;
+}
+
+.mainPageContentContainer h3 {
+    margin-top: 3rem;
+    font-size: 1rem;
+    font-weight: 100;
+    color: #000000;
+}
+
+.mainPageContentContainer h5 {
+    margin-top: 1rem;
+    font-size: 1.5rem;
+    font-weight: 100;
+    color: #000000;
 }

@@ -25,14 +25,13 @@ var Datastore = require('nedb')
       });
   }
 
-  export function addUserAccount(pKey, cb) {
+  export function addUserAccount(pKey, balance, cb) {
     db.find({ }, function (err, doc) {
-        var accounts = doc[0].user.accounts;
-        accounts.push(pKey);
-        db.update({ }, { $addToSet: { 'user.accounts': pKey } }, {returnUpdatedDocs: true, multi: false}, 
+        var accountCreated = { pKey: pKey, balance: balance }
+        db.update({ }, { $addToSet: { 'user.accounts': accountCreated } }, {returnUpdatedDocs: true, multi: false}, 
             function (err, numReplaced, affectedDocuments) {
             console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`);
-            cb(accounts);
+            cb(affectedDocuments.user.accounts);
         });
     });
   }
