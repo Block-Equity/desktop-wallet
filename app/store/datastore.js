@@ -7,6 +7,7 @@ var Datastore = require('nedb')
   , db = new Datastore({ filename: path.join(userDataPath, 'user.db'), autoload: true });
 
   const NO_DATA = 0;
+  const DOCUMENT_ID = 0;
 
   export function initialCreationOfUserInfo(cb) {
     db.count({}, function (err, count) {
@@ -19,7 +20,7 @@ var Datastore = require('nedb')
         } else {
           db.find({}, function (err, doc) {
             console.log(`DB Exists  ||  Data: ${JSON.stringify(doc)}`);
-            cb(doc[0].user.accounts);
+            cb(doc[DOCUMENT_ID].user.accounts);
           });
         }
       });
