@@ -1,15 +1,30 @@
 /* eslint-disable */
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { setUserAccount } from '../actions/userStateAction';
 import Home from '../components/Home';
+import { initialCreationOfUserInfo, clearAllUserInfo } from '../store/datastore';
 
-type Props = {};
+class HomePage extends Component {
+  constructor(props) {
+    super(props);
+  }
 
-export default class HomePage extends Component<Props> {
-  props: Props;
+  componentDidMount() {
+    initialCreationOfUserInfo( data => {
+      this.props.setUserAccount(data);
+    });
+    /*clearAllUserInfo(cb => {
+
+    });*/
+  }
+
   render() {
     return (
       <Home />
     );
   }
 }
+
+export default connect(null, { setUserAccount })(HomePage);

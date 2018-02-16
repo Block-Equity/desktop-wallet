@@ -1,10 +1,21 @@
+/* eslint-disable */
+
 // @flow
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Home.css';
 import mainLogo from '../assets/beLaunchLogoGray.png';
+import { clearAllUserInfo, initialCreationOfUserInfo } from '../store/datastore';
 
 export default class Home extends Component {
+
+  resetDB() {
+    //<button type="button" className="btn btn-outline-danger" onClick={(e) => clearAllUserInfo()}>Clear</button>
+    clearAllUserInfo( success => {
+
+    });
+  }
+
   render() {
     return (
       <div>
