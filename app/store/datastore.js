@@ -10,16 +10,16 @@ var Datastore = require('nedb')
 
   export function initialCreationOfUserInfo(cb) {
     db.count({}, function (err, count) {
-        if (count !== NO_DATA) {
-          db.find({}, function (err, doc) {
-            console.log(`DB Exists  ||  Data: ${JSON.stringify(doc)}`);
-            cb(doc[0].user.accounts);
-          });
-        } else {
+        if (count == NO_DATA) {
           var doc = { user: { accounts: [] } };
           db.insert(doc, function (err, newDoc) {   
             console.log(`New DB!   ||   Data: ${JSON.stringify(newDoc)}`);
             cb(newDoc.user.accounts);
+          });
+        } else {
+          db.find({}, function (err, doc) {
+            console.log(`DB Exists  ||  Data: ${JSON.stringify(doc)}`);
+            cb(doc[0].user.accounts);
           });
         }
       });

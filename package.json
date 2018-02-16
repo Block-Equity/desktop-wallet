@@ -195,7 +195,6 @@
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "nedb": "^1.8.0",
-    "qrcode": "^1.2.0",
     "qrcode.react": "^0.7.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
