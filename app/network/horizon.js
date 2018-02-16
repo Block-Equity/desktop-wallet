@@ -34,9 +34,16 @@ export function getAccountDetail(publicKey, success) {
     server.loadAccount(publicKey)
     .then(account => {
         console.log('Balances for account: ' + publicKey);
+        var accBalance;
         account.balances.forEach(function(balance) {
           console.log('Type:', balance.asset_type, ', Balance:', balance.balance);
-          success(balance);
+          accBalance = balance;
         });
+        success(accBalance, account.sequence);
     });
 }
+
+export function buildTransaction() {
+
+}
+
