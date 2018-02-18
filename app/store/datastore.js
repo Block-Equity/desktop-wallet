@@ -10,15 +10,15 @@ var Datastore = require('nedb')
   const DOCUMENT_ID = 0;
 
   export function initialCreationOfUserInfo(cb) {
-    db.count({}, function (err, count) {
+    db.count({}, (err, count) => {
         if (count == NO_DATA) {
           var doc = { user: { accounts: [] } };
-          db.insert(doc, function (err, newDoc) {   
+          db.insert(doc, (err, newDoc) => {   
             console.log(`New DB!   ||   Data: ${JSON.stringify(newDoc)}`);
             cb(newDoc.user.accounts);
           });
         } else {
-          db.find({}, function (err, doc) {
+          db.find({}, (err, doc) => {
             console.log(`DB Exists  ||  Data: ${JSON.stringify(doc)}`);
             cb(doc[DOCUMENT_ID].user.accounts);
           });
@@ -27,18 +27,26 @@ var Datastore = require('nedb')
   }
 
   export function addUserAccount(pKey, balance, sequence, cb) {
-    db.find({}, function (err, doc) {
-        var accountCreated = { pKey: pKey, balance: balance, sequence: sequence }
-        db.update({ }, { $addToSet: { 'user.accounts': accountCreated } }, {returnUpdatedDocs: true, multi: false}, 
-            function (err, numReplaced, affectedDocuments) {
-            console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`);
-            cb(affectedDocuments.user.accounts);
-        });
+    var accountCreated = { pKey: pKey, balance: balance, sequence: sequence }
+    db.update({ }, { $addToSet: { 'user.accounts': accountCreated } }, {returnUpdatedDocs: true, multi: false}, 
+        (err, numReplaced, affectedDocuments) => {
+        console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`);
+        cb(affectedDocuments.user.accounts);
     });
   }
 
-  export function updateTransactionSequence() {
+  //Transaction
+  //https://www.stellar.org/developers/js-stellar-base/reference/building-transactions.html
+  export function setTransactionSequence(account, sequence) {
+    //updated sequence ready for next transaction
+    db.update({pkey: account}, { $set: { sequence: sequence }}, { returnUpdatedDocs: true }, 
+       (err, numReplaced, affectedDocuments) => {
 
+    });
+  }
+
+  export function getTransactionSequence() {
+    //last sequence used
   }
 
   export function clearAllUserInfo(cb) {

@@ -4,7 +4,9 @@ import StellarSdk, {Config} from 'stellar-sdk';
 import axios from 'axios';
 
 //Horizon API Setup
-Config.setAllowHttp(true);
+Config.setAllowHttp(true); //TODO: BAD PRACTICE - Secure Server 
+StellarSdk.Network.useTestNetwork();
+
 const BASE_URL_TEST_NET = 'http://ec2-18-219-131-250.us-east-2.compute.amazonaws.com/';
 const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org';
 const BASE_URL = BASE_URL_TEST_NET;
@@ -43,7 +45,7 @@ export function getAccountDetail(publicKey, success) {
     });
 }
 
-export function buildTransaction() {
-
+export function buildTransaction(publicKey, sequence) {
+  
 }
 
