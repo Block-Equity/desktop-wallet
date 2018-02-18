@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { initUserDB } from '../store/datastore';
+import { initUserDB, addUserAccountToDB } from '../store/datastore';
 import { createSeed, createTestAccount, getAccountDetail } from '../network/horizon';
 
 export const USER_ACCOUNT = 'user_account';
@@ -11,7 +11,7 @@ export function initDB() {
                 dispatch(setUserAccount(accounts));
             } else {
                 networkCalls((publickey, balance, sequence) => {
-                    addUserAccount(publicKey, balance, sequence, accounts => {
+                    addUserAccountToDB(publicKey, balance, sequence, accounts => {
                         dispatch(setUserAccount(accounts));
                     });
                 })

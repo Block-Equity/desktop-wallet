@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { setUserAccount } from '../actions/userStateAction';
+import { initDB, setUserAccount } from '../actions/userStateAction';
 import { addUserAccount } from '../store/datastore';
 import QRCode from 'qrcode.react';
 
@@ -18,11 +18,12 @@ const NO_ACCOUNT_EXISTS = 0;
 class MainViewPage extends Component {
 
   componentDidMount() {
-    if (this.props.accounts.length == NO_ACCOUNT_EXISTS) {
+    /*if (this.props.accounts.length == NO_ACCOUNT_EXISTS) {
       this.networkCalls();
     } else {
       console.log(this.props.accounts);
-    }
+    }*/
+    this.props.initDB();
   }
 
   networkCalls() {
@@ -68,4 +69,4 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps, { setUserAccount }) (MainViewPage);
+export default connect(mapStateToProps, { initDB, setUserAccount }) (MainViewPage);

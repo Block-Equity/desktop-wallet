@@ -12,9 +12,12 @@ var Datastore = require('nedb')
 
   export function initUserDB(cb) {
     db.findOne({type: DOCUMENT_TYPE_USER_INFO}, (err, doc) => {
+      console.log(`UserDB || Data: ${JSON.stringify(doc)}`);
       if (doc == null) {
+        console.log('Create New Document');
         var newDoc  = { type: DOCUMENT_TYPE_USER_INFO, accounts: [] };
         db.insert(newDoc, (err, newDocument) => {
+          console.log(`Created new document! || Data: ${JSON.stringify(doc)}`);
           cb(newDocument.accounts, false);
         });
       } else {
@@ -40,7 +43,7 @@ var Datastore = require('nedb')
       });
   }
 
-  export function addUserAccount(pKey, balance, sequence, cb) {
+  export function addUserAccountToDB(pKey, balance, sequence, cb) {
     var accountCreated = { pKey: pKey, balance: balance, sequence: sequence }
     db.update({ }, { $addToSet: { 'user.accounts': accountCreated } }, {returnUpdatedDocs: true, multi: false}, 
         (err, numReplaced, affectedDocuments) => {
