@@ -12,12 +12,12 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    initialCreationOfUserInfo( data => {
+    /*initialCreationOfUserInfo( data => {
       this.props.setUserAccount(data);
-    });
-    /*clearAllUserInfo(cb => {
-
     });*/
+    clearAllUserInfo(cb => {
+
+    });
   }
 
   render() {

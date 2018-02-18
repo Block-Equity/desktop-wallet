@@ -8,6 +8,20 @@ var Datastore = require('nedb')
 
   const NO_DATA = 0;
   const DOCUMENT_ID = 0;
+  const DOCUMENT_TYPE_USER_INFO = 'userInfo';
+
+  export function initUserDB(cb) {
+    db.findOne({type: DOCUMENT_TYPE_USER_INFO}, (err, doc) => {
+      if (doc == null) {
+        var newDoc  = { type: DOCUMENT_TYPE_USER_INFO, accounts: [] };
+        db.insert(newDoc, (err, newDocument) => {
+          cb(newDocument.accounts, false);
+        });
+      } else {
+        cb(doc.accounts, true);
+      }
+    });
+  }
 
   export function initialCreationOfUserInfo(cb) {
     db.count({}, (err, count) => {
