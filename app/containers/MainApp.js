@@ -26,6 +26,7 @@ class MainViewPage extends Component {
       sendAddress: '',
       sendAmount: ''
     }
+    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -33,29 +34,35 @@ class MainViewPage extends Component {
     this.props.initDB();
   }  
 
+  handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    this.setState(
+      {[name]: value}
+    );
+  }
+
   handleSubmit(event) {
     event.preventDefault();
     if (!event.target.checkValidity()) {
-        this.setState({
-        invalid: true,
-        displayErrors: true,
-      });
+      this.setState({
+      invalid: true,
+      displayErrors: true,
+    });
       return;
     }
 
-    const form = event.target;
-    const data = new FormData(form);
+    console.log(`Valid Form Input || Account : ${this.state.sendAddress}`);
+    console.log(`Valid Form Input || Amount : ${this.state.sendAmount}`);
 
-    for (let name of data.keys()) {
-      const input = form.elements[name];
-      const parserName = input.dataset.parse;
-      if (parserName) {
-        const parsedValue = inputParsers[parserName](data.get(name))
-        data.set(name, parsedValue);
-      }
-    }
+    
 
-    console.log(`Valid Form Input || ${JSON.stringify(data)}`);
+    this.setState( {
+      sendAddress: '',
+      sendAmount: '',
+      displayErrors: false
+    });
   }
 
   renderAccountInfoContent() {
@@ -75,22 +82,29 @@ class MainViewPage extends Component {
   renderSendMoneySection() {
     const { invalid, displayErrors } = this.state;
 
+    var formStyle = "";
+
+    if (displayErrors) {
+      formStyle = styles.sendAssetFormDisplayErrors
+    }
+
     return (
-      <form id="sendAssetForm" onSubmit={this.handleSubmit} noValidate 
-        className={displayErrors ? 'qsend-asset-form-display-errors send-asset-form-width' : 
-        'send-asset-form-width'}>
-        <div className="form-group">
-          <label htmlFor="sendAddress">Send to address: </label>
-          <input type="text" className="form-control" placeholder="Send Address" 
-            id="sendAddress" name="sendAddress" required></input>
-        </div>
-        <div className="form-group">
-          <label htmlFor="sendAmount">Amount in XLM: </label>
-          <input type="text" className="form-control" placeholder="Amount in XLM" 
-            id="sendAmount" name="sendAmount" required></input>
-        </div>
-        <button className="btn btn-outline-success" type="submit">Save</button>
-      </form>
+      <div className={styles.sendAssetFormContainer}>
+          <form id="sendAssetForm" onSubmit={this.handleSubmit} noValidate 
+          className={formStyle}>
+          <div className="form-group">
+            <label className={styles.sendAssetFormLabel} htmlFor="sendAddress">Send to address: </label>
+            <input type="text" className="form-control" placeholder="Send Address" 
+              id="sendAddress" name="sendAddress" value={this.state.sendAddress} onChange={this.handleChange} required></input>
+          </div>
+          <div className="form-group">
+            <label className={styles.sendAssetFormLabel} htmlFor="sendAmount">Amount in XLM: </label>
+            <input type="text" className="form-control" placeholder="Amount in XLM" 
+              id="sendAmount" name="sendAmount" value={this.state.sendAmount} onChange={this.handleChange} required></input>
+          </div>
+          <button className="btn btn-outline-success" type="submit">Save</button>
+        </form>
+      </div>
     );
   }
 

@@ -56,10 +56,15 @@
     color: #000000;
 }
 
-.sendAssetFormWidth {
-    width: 75%;
+.sendAssetFormContainer {
+    width: 70%;
+    margin-top: 3rem;
     padding-bottom: 10rem;
     padding-left: 2rem;
+}
+
+.sendAssetFormLabel {
+    color: #000000;
 }
 
 .sendAssetFormDisplayErrors input:invalid {
