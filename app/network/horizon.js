@@ -2,6 +2,8 @@
 
 import StellarSdk, {Config} from 'stellar-sdk';
 import axios from 'axios';
+import { addUserAccountToDB } from '../store/datastore';
+
 
 //Horizon API Setup
 Config.setAllowHttp(true); //TODO: BAD PRACTICE - Secure Server 
@@ -11,6 +13,20 @@ const BASE_URL_TEST_NET = 'http://ec2-18-219-131-250.us-east-2.compute.amazonaws
 const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org';
 const BASE_URL = BASE_URL_TEST_NET;
 const server = new StellarSdk.Server(BASE_URL);
+
+export function accountCreation(success) {
+  createSeed(publicKey => {
+    createTestAccount(publicKey, response => {
+      getAccountDetail(publicKey, (balance, sequence) => {
+        addUserAccountToDB(publicKey, balance, sequence, accounts => {
+          success(accounts);
+        });
+      });
+    }, failure => {
+
+    })
+  })
+}
 
 export function createSeed(success) {
     const pair = StellarSdk.Keypair.random();

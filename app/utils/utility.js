@@ -7,3 +7,7 @@ export function isUndefined(value){
     var undefined = void(0);
     return value === undefined;
 }
+
+export function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+}

@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { initUserDB, addUserAccountToDB } from '../store/datastore';
-import { createSeed, createTestAccount, getAccountDetail } from '../network/horizon';
+import { accountCreation } from '../network/horizon';
 
 export const USER_ACCOUNT = 'user_account';
 
@@ -8,29 +8,17 @@ export function initDB() {
     return (dispatch) => { 
         initUserDB( (accounts, exists) => {
             if (exists) {
+                console.log(`UserAction || Data: Exists`);
                 dispatch(setUserAccount(accounts));
             } else {
-                networkCalls((publickey, balance, sequence) => {
-                    addUserAccountToDB(publicKey, balance, sequence, accounts => {
-                        dispatch(setUserAccount(accounts));
-                    });
-                })
+                accountCreation((accounts) => {
+                    console.log(`UserAction || ${JSON.stringify(accounts)}`);
+                    dispatch(setUserAccount(accounts));
+                });
             }
         });
     };
 }
-
-function networkCalls(cb) {
-    createSeed(publicKey => {
-        createTestAccount(publicKey, response => {
-            getAccountDetail(publicKey, (balance, sequence) => {
-                cb(publickey, balance, sequence);
-            });
-        }, failure => {
-            //TODO: Handle errors please!
-        });
-    })
-}   
 
 export function setUserAccount(accounts) {
     return {

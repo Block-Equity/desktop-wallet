@@ -17,7 +17,7 @@ var Datastore = require('nedb')
         console.log('Create New Document');
         var newDoc  = { type: DOCUMENT_TYPE_USER_INFO, accounts: [] };
         db.insert(newDoc, (err, newDocument) => {
-          console.log(`Created new document! || Data: ${JSON.stringify(doc)}`);
+          console.log(`Created new document! || Data: ${JSON.stringify(newDocument)}`);
           cb(newDocument.accounts, false);
         });
       } else {
@@ -26,29 +26,12 @@ var Datastore = require('nedb')
     });
   }
 
-  export function initialCreationOfUserInfo(cb) {
-    db.count({}, (err, count) => {
-        if (count == NO_DATA) {
-          var doc = { user: { accounts: [] } };
-          db.insert(doc, (err, newDoc) => {   
-            console.log(`New DB!   ||   Data: ${JSON.stringify(newDoc)}`);
-            cb(newDoc.user.accounts);
-          });
-        } else {
-          db.find({}, (err, doc) => {
-            console.log(`DB Exists  ||  Data: ${JSON.stringify(doc)}`);
-            cb(doc[DOCUMENT_ID].user.accounts);
-          });
-        }
-      });
-  }
-
   export function addUserAccountToDB(pKey, balance, sequence, cb) {
     var accountCreated = { pKey: pKey, balance: balance, sequence: sequence }
     db.update({type: DOCUMENT_TYPE_USER_INFO}, { $addToSet: { 'accounts': accountCreated } }, {returnUpdatedDocs: true, multi: false}, 
         (err, numReplaced, affectedDocuments) => {
         console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`);
-        cb(affectedDocuments.user.accounts);
+        cb(affectedDocuments.accounts);
     });
   }
 

@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { initDB, setUserAccount } from '../actions/userStateAction';
 import { addUserAccount } from '../store/datastore';
+import { isEmpty } from '../utils/utility';
 import QRCode from 'qrcode.react';
 
 import styles from './MainApp.css';
@@ -13,36 +14,35 @@ import settingIcon from '../assets/icnSettings.png';
 import { createSeed, createTestAccount, getAccountDetail } from '../network/horizon';
 
 const NAV_ICON_SIZE = 30;
-const NO_ACCOUNT_EXISTS = 0;
+const EMPTY = 0;
 
 class MainViewPage extends Component {
 
+  constructor(props) {
+    super();
+    this.state = {
+      mainAccountAddress: '',
+      mainAccountBalance: ''
+    }
+}
+
   componentDidMount() {
-    /*if (this.props.accounts.length == NO_ACCOUNT_EXISTS) {
-      this.networkCalls();
-    } else {
-      console.log(this.props.accounts);
-    }*/
     this.props.initDB();
+  }  
+
+  renderContent() {
+    if (!isEmpty(this.props.accounts)) {
+      this.state.mainAccountAddress = this.props.accounts[0].pKey;
+      this.state.mainAccountBalance = this.props.accounts[0].balance.balance;
+      return (
+        <div className={styles.mainPageContentContainer}> 
+          <h3>{this.state.mainAccountAddress}</h3>
+          <h5>Balance: {this.state.mainAccountBalance} </h5>
+          <QRCode value={this.state.mainAccountAddress} size={100} />
+        </div>
+      )
+    }
   }
-
-  networkCalls() {
-    createSeed(publicKey => {
-        createTestAccount(publicKey, response => {
-            getAccountDetail(publicKey, ({balance, sequence}) => {
-              this.appendAccountDB(publicKey, balance, sequence);
-            });
-        }, failure => {
-
-        });
-      })
-  }
-
-  appendAccountDB(publicKey, balance) {
-    addUserAccount(publicKey, balance, accounts => {
-      this.props.setUserAccount(accounts);
-    });
-  }       
 
   render() {
     return (
@@ -51,21 +51,17 @@ class MainViewPage extends Component {
           <img src={walletIcon} alt="" width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
           <img src={settingIcon} className={styles.mainPageNavContainerSpacer} alt="" width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
         </div>
-        <div className={styles.mainPageContentContainer}> 
-          <h3>{this.props.mainAccountAddress}</h3>
-          <h5>Balance: {this.props.mainAccountBalance} </h5>
-          <QRCode value={this.props.mainAccountAddress} size={100} />
-        </div>
+        { this.renderContent() }
       </div>
     );
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
+  console.log(`MainApp.js || mapStateToProps: ${JSON.stringify(state.userAccounts)}`);
+
   return {
-    accounts: state.userAccounts,
-    mainAccountAddress: state.userAccounts[0].pKey,
-    mainAccountBalance: state.userAccounts[0].balance.balance
+    accounts: state.userAccounts
   }
 }
 
