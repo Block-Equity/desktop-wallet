@@ -2,8 +2,8 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { initDB } from '../actions/userStateAction';
-import { addUserAccount } from '../store/datastore';
+import { initDB, setUserAccount } from '../actions/userStateAction';
+import { addUserAccountToDB } from '../store/datastore';
 import { isEmpty } from '../utils/utility';
 import QRCode from 'qrcode.react';
 
@@ -11,7 +11,7 @@ import styles from './MainApp.css';
 import walletIcon from '../assets/icnWallet.png';
 import settingIcon from '../assets/icnSettings.png';
 
-import { sendPayment } from '../network/horizon';
+import { sendPayment, getAccountDetail } from '../network/horizon';
 
 const NAV_ICON_SIZE = 30;
 const EMPTY = 0;
@@ -65,6 +65,14 @@ class MainViewPage extends Component {
             sendAmount: '',
             displayErrors: false
           });
+
+          getAccountDetail(this.state.mainAccountAddress, (balance, nextSequence) => {
+            addUserAccountToDB(this.state.mainAccountAddress, sKey, balance, nextSequence, 
+              accounts => {
+                this.props.setUserAccount(accounts);
+            });
+          });
+
         }, failure => {
 
         }
@@ -160,10 +168,10 @@ class MainViewPage extends Component {
   }
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
     accounts: state.userAccounts
   }
 }
 
-export default connect(mapStateToProps, { initDB }) (MainViewPage);
+export default connect(mapStateToProps, { initDB, setUserAccount }) (MainViewPage);
