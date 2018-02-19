@@ -14,7 +14,7 @@ const BASE_URL = BASE_URL_TEST_NET;
 const server = new StellarSdk.Server(BASE_URL);
 
 export function accountCreation(success) {
-  createSeed(publicKey, secretKey => {
+  createSeed((publicKey, secretKey) => {
     createTestAccount(publicKey, response => {
       getAccountDetail(publicKey, (balance, sequence) => {
         addUserAccountToDB(publicKey, secretKey, balance, sequence, accounts => {
@@ -60,7 +60,7 @@ export function getAccountDetail(publicKey, success) {
     });
 }
 
-export function buildTransaction(publicKey, sKey, sequence, destinationId, amount, success, failure) {
+export function sendPayment(publicKey, sKey, sequence, destinationId, amount, success, failure) {
   var sourceKeys = StellarSdk.Keypair.fromSecret(sKey);
   var transaction;
 

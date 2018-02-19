@@ -11,7 +11,7 @@ import styles from './MainApp.css';
 import walletIcon from '../assets/icnWallet.png';
 import settingIcon from '../assets/icnSettings.png';
 
-import { createSeed, createTestAccount, getAccountDetail } from '../network/horizon';
+import { sendPayment } from '../network/horizon';
 
 const NAV_ICON_SIZE = 30;
 const EMPTY = 0;
@@ -56,11 +56,19 @@ class MainViewPage extends Component {
     console.log(`Valid Form Input || Account : ${this.state.sendAddress}`);
     console.log(`Valid Form Input || Amount : ${this.state.sendAmount}`);
 
-    this.setState( {
-      sendAddress: '',
-      sendAmount: '',
-      displayErrors: false
-    });
+    const { sKey, sequence } = this.props.accounts[0];
+
+    sendPayment(this.state.mainAccountAddress, sKey, sequence, this.state.sendAddress, 
+        this.state.sendAmount, success => {
+          this.setState( {
+            sendAddress: '',
+            sendAmount: '',
+            displayErrors: false
+          });
+        }, failure => {
+
+        }
+    );
   }
 
   renderAccountInfoContent() {
@@ -88,8 +96,7 @@ class MainViewPage extends Component {
 
     return (
       <div className={styles.sendAssetFormContainer}>
-          <form id="sendAssetForm" onSubmit={this.handleSubmit} noValidate 
-          className={formStyle}>
+          <form id="sendAssetForm" onSubmit={this.handleSubmit} noValidate className={formStyle}>
           <div className="form-group">
             <label className={styles.sendAssetFormLabel} htmlFor="sendAddress">Send to address: </label>
             <input type="text" className="form-control" placeholder="Send Address" 
