@@ -56,8 +56,6 @@ class MainViewPage extends Component {
     console.log(`Valid Form Input || Account : ${this.state.sendAddress}`);
     console.log(`Valid Form Input || Amount : ${this.state.sendAmount}`);
 
-    
-
     this.setState( {
       sendAddress: '',
       sendAmount: '',
@@ -104,6 +102,37 @@ class MainViewPage extends Component {
           </div>
           <button className="btn btn-outline-success" type="submit">Save</button>
         </form>
+      </div>
+    );
+  }
+
+  renderConfirmModal() {
+    return (
+      <div className="modal fade" id="confirmSendAssetModal" tabindex="-1" role="dialog" 
+          aria-labelledby="confirmSendAssetModal" aria-hidden="true">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel">Enter your 24 word mnemonic:</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <form>
+                <div className="form-group">
+                  <label for="message-text" className="col-form-label">Enter your secret key:</label>
+                  <input type="text" className="form-control" placeholder="Secret 24 word mnemonic" 
+                    id="mnemonicWords" name="mnemonicWords" value={this.state.sendAmount} onChange={this.handleChange} required></input>
+                </div>
+              </form>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-primary">Send message</button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

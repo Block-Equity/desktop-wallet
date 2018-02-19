@@ -24,8 +24,8 @@ var Datastore = require('nedb')
     });
   }
 
-  export function addUserAccountToDB(pKey, balance, sequence, cb) {
-    var accountCreated = { pKey: pKey, balance: balance, sequence: sequence }
+  export function addUserAccountToDB(pKey, sKey, balance, sequence, cb) {
+    var accountCreated = { pKey: pKey, sKey: sKey, balance: balance, sequence: sequence }
     db.update({type: DOCUMENT_TYPE_USER_INFO}, { $addToSet: { 'accounts': accountCreated } }, {returnUpdatedDocs: true, multi: false}, 
         (err, numReplaced, affectedDocuments) => {
         console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`);

@@ -15,9 +15,9 @@ class HomePage extends Component {
     /*initialCreationOfUserInfo( data => {
       this.props.setUserAccount(data);
     });*/
-    /*clearAllUserInfo(cb => {
+    clearAllUserInfo(cb => {
 
-    });*/
+    });
   }
 
   render() {
