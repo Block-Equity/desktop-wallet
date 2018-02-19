@@ -24,13 +24,13 @@ class MainViewPage extends Component {
       mainAccountAddress: '',
       mainAccountBalance: ''
     }
-}
+  }
 
   componentDidMount() {
     this.props.initDB();
   }  
 
-  renderContent() {
+  renderAccountInfoContent() {
     if (!isEmpty(this.props.accounts)) {
       this.state.mainAccountAddress = this.props.accounts[0].pKey;
       this.state.mainAccountBalance = this.props.accounts[0].balance.balance;
@@ -44,6 +44,10 @@ class MainViewPage extends Component {
     }
   }
 
+  renderSendMoneySection() {
+    
+  }
+
   render() {
     return (
       <div className={styles.mainPageContainer}>
@@ -51,15 +55,13 @@ class MainViewPage extends Component {
           <img src={walletIcon} alt="" width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
           <img src={settingIcon} className={styles.mainPageNavContainerSpacer} alt="" width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
         </div>
-        { this.renderContent() }
+        { this.renderAccountInfoContent() }
       </div>
     );
   }
 }
 
 function mapStateToProps(state, ownProps) {
-  console.log(`MainApp.js || mapStateToProps: ${JSON.stringify(state.userAccounts)}`);
-
   return {
     accounts: state.userAccounts
   }

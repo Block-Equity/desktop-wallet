@@ -1,9 +1,8 @@
 /* eslint-disable */
 
-import StellarSdk, {Config} from 'stellar-sdk';
+import StellarSdk, { Config } from 'stellar-sdk';
 import axios from 'axios';
 import { addUserAccountToDB } from '../store/datastore';
-
 
 //Horizon API Setup
 Config.setAllowHttp(true); //TODO: BAD PRACTICE - Secure Server 
@@ -28,7 +27,7 @@ export function accountCreation(success) {
   })
 }
 
-export function createSeed(success) {
+function createSeed(success) {
     const pair = StellarSdk.Keypair.random();
     let secretKey = pair.secret();
     let publicKey = pair.publicKey();
@@ -36,7 +35,7 @@ export function createSeed(success) {
     success(publicKey);
 }
 
-export function createTestAccount(publicKey, success, failure) {
+function createTestAccount(publicKey, success, failure) {
   //Friend Bot is only on Horizon Test Net
   const request = axios.get(`${BASE_URL_HORIZON_TEST_NET}/friendbot?addr=${publicKey}`)
     .then(response => {
