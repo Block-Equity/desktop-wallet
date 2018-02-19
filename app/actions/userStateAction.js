@@ -20,7 +20,7 @@ export function initDB() {
     };
 }
 
-export function setUserAccount(accounts) {
+function setUserAccount(accounts) {
     return {
         type: USER_ACCOUNT,
         payload: accounts

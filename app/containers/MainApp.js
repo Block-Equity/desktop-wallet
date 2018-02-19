@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { initDB, setUserAccount } from '../actions/userStateAction';
+import { initDB } from '../actions/userStateAction';
 import { addUserAccount } from '../store/datastore';
 import { isEmpty } from '../utils/utility';
 import QRCode from 'qrcode.react';
@@ -65,4 +65,4 @@ function mapStateToProps(state, ownProps) {
   }
 }
 
-export default connect(mapStateToProps, { initDB, setUserAccount }) (MainViewPage);
+export default connect(mapStateToProps, { initDB }) (MainViewPage);

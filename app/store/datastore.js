@@ -6,8 +6,6 @@ var Datastore = require('nedb')
   , path = require('path')
   , db = new Datastore({ filename: path.join(userDataPath, 'user.db'), autoload: true });
 
-  const NO_DATA = 0;
-  const DOCUMENT_ID = 0;
   const DOCUMENT_TYPE_USER_INFO = 'userInfo';
 
   export function initUserDB(cb) {
