@@ -22,13 +22,41 @@ class MainViewPage extends Component {
     super();
     this.state = {
       mainAccountAddress: '',
-      mainAccountBalance: ''
+      mainAccountBalance: '',
+      sendAddress: '',
+      sendAmount: ''
     }
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
     this.props.initDB();
   }  
+
+  handleSubmit(event) {
+    event.preventDefault();
+    if (!event.target.checkValidity()) {
+        this.setState({
+        invalid: true,
+        displayErrors: true,
+      });
+      return;
+    }
+
+    const form = event.target;
+    const data = new FormData(form);
+
+    for (let name of data.keys()) {
+      const input = form.elements[name];
+      const parserName = input.dataset.parse;
+      if (parserName) {
+        const parsedValue = inputParsers[parserName](data.get(name))
+        data.set(name, parsedValue);
+      }
+    }
+
+    console.log(`Valid Form Input || ${JSON.stringify(data)}`);
+  }
 
   renderAccountInfoContent() {
     if (!isEmpty(this.props.accounts)) {
@@ -45,7 +73,25 @@ class MainViewPage extends Component {
   }
 
   renderSendMoneySection() {
-    
+    const { invalid, displayErrors } = this.state;
+
+    return (
+      <form id="sendAssetForm" onSubmit={this.handleSubmit} noValidate 
+        className={displayErrors ? 'qsend-asset-form-display-errors send-asset-form-width' : 
+        'send-asset-form-width'}>
+        <div className="form-group">
+          <label htmlFor="sendAddress">Send to address: </label>
+          <input type="text" className="form-control" placeholder="Send Address" 
+            id="sendAddress" name="sendAddress" required></input>
+        </div>
+        <div className="form-group">
+          <label htmlFor="sendAmount">Amount in XLM: </label>
+          <input type="text" className="form-control" placeholder="Amount in XLM" 
+            id="sendAmount" name="sendAmount" required></input>
+        </div>
+        <button className="btn btn-outline-success" type="submit">Save</button>
+      </form>
+    );
   }
 
   render() {
@@ -55,7 +101,10 @@ class MainViewPage extends Component {
           <img src={walletIcon} alt="" width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
           <img src={settingIcon} className={styles.mainPageNavContainerSpacer} alt="" width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
         </div>
-        { this.renderAccountInfoContent() }
+        <div className={styles.mainPageContentContainer}> 
+          { this.renderAccountInfoContent() }
+          { this.renderSendMoneySection() }
+        </div>
       </div>
     );
   }

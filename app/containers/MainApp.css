@@ -55,3 +55,13 @@
     font-weight: 100;
     color: #000000;
 }
+
+.sendAssetFormWidth {
+    width: 75%;
+    padding-bottom: 10rem;
+    padding-left: 2rem;
+}
+
+.sendAssetFormDisplayErrors input:invalid {
+    border-color: #f73772;
+}
