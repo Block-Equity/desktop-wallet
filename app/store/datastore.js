@@ -13,7 +13,7 @@ var Datastore = require('nedb')
       console.log(`UserDB || Data: ${JSON.stringify(doc)}`);
       if (doc == null) {
         console.log('Create New Document');
-        var newDoc  = { type: DOCUMENT_TYPE_USER_INFO, accounts: [] };
+        var newDoc  = { type: DOCUMENT_TYPE_USER_INFO, accounts: {} };
         db.insert(newDoc, (err, newDocument) => {
           console.log(`Created new document! || Data: ${JSON.stringify(newDocument)}`);
           cb(newDocument.accounts, false);
@@ -26,8 +26,17 @@ var Datastore = require('nedb')
 
   export function addUserAccountToDB(pKey, sKey, balance, sequence, cb) {
     var accountCreated = { pKey: pKey, sKey: sKey, balance: balance, sequence: sequence }
-    db.update({type: DOCUMENT_TYPE_USER_INFO}, { $addToSet: { 'accounts': accountCreated } }, {returnUpdatedDocs: true, multi: false}, 
+    var newField = `accounts: ${pKey}`;
+    db.update({type: DOCUMENT_TYPE_USER_INFO}, { $set: { newField : accountCreated } }, {returnUpdatedDocs: true, multi: false}, 
         (err, numReplaced, affectedDocuments) => {
+        console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`);
+        cb(affectedDocuments.accounts);
+    });
+  }
+
+  export function updateUserAccountToDB(pKey, sKey, balance, sequence, cb) {
+    var updatedAccount = { pKey: pKey, sKey: sKey, balance: balance, sequence: sequence }
+    db.update({accounts: pKey}, { $set: { pKey: updatedAccount } }, {returnUpdatedDocs: true, multi: false}, (err, numReplaced, affectedDocuments) => {
         console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`);
         cb(affectedDocuments.accounts);
     });

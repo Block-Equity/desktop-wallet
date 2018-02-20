@@ -3,7 +3,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { initDB, setUserAccount } from '../actions/userStateAction';
-import { addUserAccountToDB } from '../store/datastore';
+import { addUserAccountToDB, updateUserAccountToDB } from '../store/datastore';
 import { isEmpty } from '../utils/utility';
 import QRCode from 'qrcode.react';
 
@@ -56,7 +56,8 @@ class MainViewPage extends Component {
     console.log(`Valid Form Input || Account : ${this.state.sendAddress}`);
     console.log(`Valid Form Input || Amount : ${this.state.sendAmount}`);
 
-    const { sKey, sequence } = this.props.accounts[0];
+    var updatedAccount = this.props.accounts.length - 1;
+    const { sKey, sequence } = this.props.accounts[updatedAccount];
 
     sendPayment(this.state.mainAccountAddress, sKey, sequence, this.state.sendAddress, 
         this.state.sendAmount, success => {
@@ -67,7 +68,7 @@ class MainViewPage extends Component {
           });
 
           getAccountDetail(this.state.mainAccountAddress, (balance, nextSequence) => {
-            addUserAccountToDB(this.state.mainAccountAddress, sKey, balance, nextSequence, 
+            updateUserAccountToDB(this.state.mainAccountAddress, sKey, balance, nextSequence, 
               accounts => {
                 this.props.setUserAccount(accounts);
             });
@@ -81,8 +82,9 @@ class MainViewPage extends Component {
 
   renderAccountInfoContent() {
     if (!isEmpty(this.props.accounts)) {
-      this.state.mainAccountAddress = this.props.accounts[0].pKey;
-      this.state.mainAccountBalance = this.props.accounts[0].balance.balance;
+      var updatedAccount = this.props.accounts.length - 1;
+      this.state.mainAccountAddress = this.props.accounts[updatedAccount].pKey;
+      this.state.mainAccountBalance = this.props.accounts[updatedAccount].balance.balance;
       return (
         <div className={styles.mainPageContentContainer}> 
           <h3>{this.state.mainAccountAddress}</h3>
