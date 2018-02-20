@@ -56,8 +56,7 @@ class MainViewPage extends Component {
     console.log(`Valid Form Input || Account : ${this.state.sendAddress}`);
     console.log(`Valid Form Input || Amount : ${this.state.sendAmount}`);
 
-    var updatedAccount = this.props.accounts.length - 1;
-    const { sKey, sequence } = this.props.accounts[updatedAccount];
+    const { sKey, sequence } = this.props.accounts[this.props.currentWallet];
 
     sendPayment(this.state.mainAccountAddress, sKey, sequence, this.state.sendAddress, 
         this.state.sendAmount, success => {
@@ -81,10 +80,9 @@ class MainViewPage extends Component {
   }
 
   renderAccountInfoContent() {
-    if (!isEmpty(this.props.accounts)) {
-      var updatedAccount = this.props.accounts.length - 1;
-      this.state.mainAccountAddress = this.props.accounts[updatedAccount].pKey;
-      this.state.mainAccountBalance = this.props.accounts[updatedAccount].balance.balance;
+    if (!isEmpty(this.props.currentWallet)) {
+      this.state.mainAccountAddress = this.props.accounts[this.props.currentWallet].pKey;
+      this.state.mainAccountBalance = this.props.accounts[this.props.currentWallet].balance.balance;
       return (
         <div className={styles.mainPageContentContainer}> 
           <h3>{this.state.mainAccountAddress}</h3>
@@ -172,7 +170,8 @@ class MainViewPage extends Component {
 
 function mapStateToProps(state) {
   return {
-    accounts: state.userAccounts
+    accounts: state.userAccounts,
+    currentWallet: state.currentWallet
   }
 }
 
