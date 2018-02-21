@@ -66,7 +66,7 @@ export const getAccountDetail = async (publicKey) => {
   let latest = account.balances[account.balances.length - 1]
 
   return {
-    balance: latest.balance,
+    balance: latest,
     sequence: account.sequence
   }
 }

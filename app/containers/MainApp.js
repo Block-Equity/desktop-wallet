@@ -95,7 +95,7 @@ class MainViewPage extends Component {
   renderAccountInfoContent () {
     if (!isEmpty(this.props.currentWallet)) {
       this.state.mainAccountAddress = this.props.accounts[this.props.currentWallet].pKey
-      this.state.mainAccountBalance = this.props.accounts[this.props.currentWallet].balance
+      this.state.mainAccountBalance = this.props.accounts[this.props.currentWallet].balance.balance
       return (
         <div className={styles.mainPageContentContainer}>
           <h3>{this.state.mainAccountAddress}</h3>
