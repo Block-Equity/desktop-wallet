@@ -1,10 +1,7 @@
 /* eslint-disable */
 
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { setUserAccount } from '../actions/userStateAction';
 import Home from '../components/Home';
-import { initialCreationOfUserInfo, clearAllUserInfo } from '../store/datastore';
 
 class HomePage extends Component {
   constructor(props) {
@@ -12,9 +9,7 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    /*initialCreationOfUserInfo( data => {
-      this.props.setUserAccount(data);
-    });*/
+    //TODO: Remove below for production. Only for testing.
     clearAllUserInfo(cb => {
 
     });
@@ -27,4 +22,4 @@ class HomePage extends Component {
   }
 }
 
-export default connect(null, { setUserAccount })(HomePage);
+export default HomePage;
