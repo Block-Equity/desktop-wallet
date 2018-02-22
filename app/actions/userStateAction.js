@@ -1,13 +1,29 @@
 import { initializeDb } from '../store/datastore'
 import { createAccount } from '../network/horizon'
+import { Storage } from '../common/security'
 
 export const USER_ACCOUNT = 'USER_ACCOUNT'
 export const CURRENT_USER_WALLET = 'CURRENT_USER_WALLET'
 
 export function initializeAccount () {
   return (dispatch) => {
-    (async () => {
-      let { accounts, exists } = await initializeDb()
+    return (async () => {
+      // TODO: password will be passed in accordingly
+      // It will be composed of:
+      // (a) email/username
+      // (b) password
+      // (c) 2FA code
+      // (d) a key (from the keychain)
+      let storage = new Storage({ password: 'd6F3Efeq' })
+
+      // TODO: simply here for dubugging purposes
+      if (process.env.NODE_ENV === 'development') {
+        global.STORAGE = storage
+      }
+
+      let db = await storage.open()
+
+      let { accounts, exists } = await initializeDb(db)
 
       // If it was just created (so it didn't exist), create an account
       if (!exists) {
@@ -18,8 +34,12 @@ export function initializeAccount () {
         }
       }
 
+      console.log('initializeAccount', accounts)
+
       dispatch(setUserAccount(accounts))
       dispatch(setCurrentUserWallet(Object.keys(accounts)[0]))
+
+      return Promise.resolve()
     })()
   }
 }
