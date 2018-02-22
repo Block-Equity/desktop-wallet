@@ -1,4 +1,10 @@
 import StellarSdk, { Config } from 'stellar-sdk'
+
+import {
+  StellarWallet,
+  generate as generateMnemonic
+} from '../common/security'
+
 import axios from 'axios'
 import { addUserAccountToDB } from '../store/datastore'
 
@@ -19,12 +25,14 @@ const createTestAccount = (publicKey) => {
 }
 
 // TODO: Perhaps this should go somewhere else, as it doesn't really have much to do with Horizon
-export const createSeed = () => {
-  const pair = StellarSdk.Keypair.random()
+export const createSeed = (password = undefined) => {
+  const mnemonic = generateMnemonic()
+  console.log('Mnemonic', mnemonic)
 
-  // TODO: Secret Key as mnemonic words
-  const secretKey = pair.secret()
-  const publicKey = pair.publicKey()
+  const wallet = StellarWallet.createFromMnemonic(mnemonic, password)
+
+  const publicKey = wallet.getPublicKey(0)
+  const secretKey = wallet.getSecret(0)
 
   console.log(`Secret: ${secretKey} || Public: ${publicKey}`)
 
@@ -35,7 +43,7 @@ export const createSeed = () => {
 }
 
 // TODO: possibly do some try/catch logic in here to catch potential errors
-export const createAccount = async () => {
+export const createAccount = async (password = undefined) => {
   const { publicKey, secretKey } = await createSeed()
   await createTestAccount(publicKey)
 
