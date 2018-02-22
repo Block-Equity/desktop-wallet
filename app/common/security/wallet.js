@@ -1,8 +1,8 @@
 import StellarSdk from 'stellar-sdk'
 import { derivePath } from 'ed25519-hd-key'
-
 import bip39 from 'bip39'
 import has from 'lodash/has'
+import isString from 'lodash/isString'
 
 /**
  * Generate a mnemonic using BIP39
@@ -12,8 +12,8 @@ import has from 'lodash/has'
  * @param {function} [props.rng] RNG function (default is crypto.randomBytes)
  */
 export const generateMnemonic = ({ entropyBits = 256, language = 'english', rngFn = undefined } = {}) => {
-  if (language && !has(bip39.wordlists, language)) {
-    throw new TypeError(`Language ${language} does not have a wordlist in the bip39 module`)
+  if (!has(bip39.wordlists, language)) {
+    throw new TypeError(`Language ${language} not suported`)
   }
   const wordlist = bip39.wordlists[language]
   return bip39.generateMnemonic(entropyBits, rngFn, wordlist)
@@ -81,7 +81,8 @@ export class StellarWallet extends Wallet {
    * @param {string} [password] Optional mnemonic password
    */
   static createFromMnemonic (mnemonic, password = undefined) {
-    return new StellarWallet(mnemonicToSeedHex(mnemonic, password))
+    const seedHex = mnemonicToSeedHex(mnemonic, password)
+    return new StellarWallet(seedHex)
   }
 
   /**
@@ -91,9 +92,13 @@ export class StellarWallet extends Wallet {
   static createFromSeed (seed) {
     let seedHex
 
-    if (Buffer.isBuffer(seed)) seedHex = seed.toString('hex')
-    else if (typeof seed === 'string') seedHex = seed
-    else throw new TypeError('Invalid seed (must be a Buffer or hex string)')
+    if (Buffer.isBuffer(seed)) {
+      seedHex = seed.toString('hex')
+    } else if (isString(seed)) {
+      seedHex = seed
+    } else {
+      throw new TypeError('Invalid seed')
+    }
 
     return new StellarWallet(seedHex)
   }
