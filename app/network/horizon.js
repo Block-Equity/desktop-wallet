@@ -80,7 +80,6 @@ export const getAccountDetail = async (publicKey) => {
 }
 
 export const receivePaymentStream = (publicKey) => {
-  console.log('Streaming Payments');
   return new Promise(resolve => {
     server.payments()
       .cursor('now')
