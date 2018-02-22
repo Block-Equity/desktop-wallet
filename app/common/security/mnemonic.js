@@ -4,17 +4,17 @@ import has from 'lodash/has'
 /**
  * Generate a mnemonic using BIP39
  * @param {Object} props Properties defining how to generate the mnemonic
- * @param {Number} [props.entropyBits=256] Entropy bits (default is 24 word mnemonic)
+ * @param {Number} [props.strength=256] Entropy bits (default is 24 word mnemonic)
  * @param {string} [props.language='english'] name of a language wordlist as defined in the 'bip39' npm module.
  * @param {function} [props.rng] RNG function (default is crypto.randomBytes)
  * @return {String} A string of space delimited words representing the mnemonic
  */
-export const generate = ({ entropyBits = 256, language = 'english', rngFn = undefined } = {}) => {
+export const generate = ({ strength = 256, language = 'english', rngFn = undefined } = {}) => {
   if (!has(bip39.wordlists, language)) {
     throw new Error(`Language ${language} not suported`)
   }
   const wordlist = bip39.wordlists[language]
-  return bip39.generateMnemonic(entropyBits, rngFn, wordlist)
+  return bip39.generateMnemonic(strength, rngFn, wordlist)
 }
 
 /**
