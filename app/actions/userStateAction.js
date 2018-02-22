@@ -9,11 +9,15 @@ export function initializeAccount () {
   return (dispatch) => {
     return (async () => {
       // TODO: password will be passed in accordingly
+      //
       // It will be composed of:
       // (a) email/username
       // (b) password
       // (c) 2FA code
       // (d) a key (from the keychain)
+      //
+      // This will eventually be fetched via another module. For now, assume the password
+      // is the following:
       let storage = new Storage({ password: 'd6F3Efeq' })
 
       // TODO: simply here for dubugging purposes

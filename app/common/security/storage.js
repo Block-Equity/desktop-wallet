@@ -13,7 +13,7 @@ export default class Storage {
   constructor ({ password = undefined }) {
     const appPath = (electron.app || electron.remote.app).getPath('appData')
     // Simply for security concerns, do some composition with the encrypt/decrypt functions,
-    // so that we can add `password` without having to explicitly store as a property of any object.
+    // so that we can add `password` without having to explicitly store it as a property of any object.
     this.encrypt = (buffer) => encrypt(buffer, password)
     this.decrypt = (buffer) => decrypt(buffer, password)
     this.decryptedPath = path.join(appPath, 'user.db')
