@@ -188,8 +188,10 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
+    "bip39": "^2.5.0",
     "bootstrap": "^4.0.0",
     "devtron": "^1.4.0",
+    "ed25519-hd-key": "^0.5.0",
     "electron-debug": "^1.5.0",
     "electron-store": "^1.3.0",
     "font-awesome": "^4.7.0",
