@@ -5,22 +5,22 @@ export const USER_ACCOUNT = 'USER_ACCOUNT'
 export const CURRENT_USER_WALLET = 'CURRENT_USER_WALLET'
 
 export function initializeAccount () {
-  return (dispatch) => {
-    (async () => {
-      let { accounts, exists } = await initializeDb()
+  return async dispatch => {
+    let { accounts, exists } = await initializeDb()
 
-      // If it was just created (so it didn't exist), create an account
-      if (!exists) {
-        try {
-          accounts = await createAccount()
-        } catch (e) {
-          // TODO: dispatch an error
-        }
+    // If it was just created (so it didn't exist), create an account
+    if (!exists) {
+      try {
+        accounts = await createAccount()
+        return success;
+      } catch (e) {
+        // TODO: dispatch an error
+        return error;
       }
+    }
 
-      dispatch(setUserAccount(accounts))
-      dispatch(setCurrentUserWallet(Object.keys(accounts)[0]))
-    })()
+    dispatch(setUserAccount(accounts))
+    dispatch(setCurrentUserWallet(Object.keys(accounts)[0]))
   }
 }
 
