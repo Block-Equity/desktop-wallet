@@ -7,6 +7,7 @@ import has from 'lodash/has'
  * @param {Number} [props.entropyBits=256] Entropy bits (default is 24 word mnemonic)
  * @param {string} [props.language='english'] name of a language wordlist as defined in the 'bip39' npm module.
  * @param {function} [props.rng] RNG function (default is crypto.randomBytes)
+ * @return {String} A string of space delimited words representing the mnemonic
  */
 export const generate = ({ entropyBits = 256, language = 'english', rngFn = undefined } = {}) => {
   if (!has(bip39.wordlists, language)) {
@@ -16,6 +17,12 @@ export const generate = ({ entropyBits = 256, language = 'english', rngFn = unde
   return bip39.generateMnemonic(entropyBits, rngFn, wordlist)
 }
 
+/**
+ * Generate a seed hex from a mnemoic using BIP39
+ * @param {Object} mnemonic Properties defining how to generate the mnemonic
+ * @param {Number} [passwords] Optional mnemonic password
+ * @return {String} The seed as hex
+ */
 export const toSeedHex = (mnemonic, password = undefined) => {
   return bip39.mnemonicToSeedHex(mnemonic, password)
 }
