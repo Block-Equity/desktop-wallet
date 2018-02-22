@@ -79,6 +79,19 @@ export const getAccountDetail = async (publicKey) => {
   }
 }
 
+export const receivePaymentStream = (publicKey) => {
+  return new Promise(resolve => {
+    server.payments()
+      .cursor('now')
+      .forAccount(publicKey)
+      .stream({
+        onmessage: (message) => {
+          resolve(message);
+        }
+      })
+  })
+}
+
 export const sendPayment = ({ publicKey, secretKey, sequence, destinationId, amount }) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(secretKey)
   let transaction
