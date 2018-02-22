@@ -1,8 +1,9 @@
 import StellarSdk, { Config } from 'stellar-sdk'
+
 import {
   StellarWallet,
-  generateMnemonic
-} from '../common/security/wallet'
+  generate as generateMnemonic
+} from '../common/security'
 
 import axios from 'axios'
 import { addUserAccountToDB } from '../store/datastore'
