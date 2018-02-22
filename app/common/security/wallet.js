@@ -13,7 +13,7 @@ import isString from 'lodash/isString'
  */
 export const generateMnemonic = ({ entropyBits = 256, language = 'english', rngFn = undefined } = {}) => {
   if (!has(bip39.wordlists, language)) {
-    throw new TypeError(`Language ${language} not suported`)
+    throw new Error(`Language ${language} not suported`)
   }
   const wordlist = bip39.wordlists[language]
   return bip39.generateMnemonic(entropyBits, rngFn, wordlist)
@@ -111,6 +111,8 @@ export class StellarWallet extends Wallet {
    */
   getKeypair (index) {
     const key = this.derive(`m/44'/148'/${index}'`)
+    // Create a new Keypair object from an ed25519 secret key seed raw byte
+    // See: https://stellar.github.io/js-stellar-sdk/Keypair.html#.fromRawEd25519Seed
     return StellarSdk.Keypair.fromRawEd25519Seed(key)
   }
 }
