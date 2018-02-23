@@ -24,7 +24,7 @@ export function initializeAccount () {
       global.STORAGE = storage
     }
 
-    let db = await storage.open()
+    let db = await storage.unlock()
 
     let { accounts, exists } = await initializeDb(db)
 

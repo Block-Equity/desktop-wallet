@@ -24,7 +24,7 @@ export default class Storage {
    * Creates a descrypted version of the database.
    * @return {NeDB} an NeDB object
    */
-  async open () {
+  async unlock () {
     let buffer
 
     try {
@@ -58,7 +58,7 @@ export default class Storage {
    * Encripts the database instance
    * @return {NeDB} an NeDB object
    */
-  async close () {
+  async lock () {
     try {
       let buffer = await promisifiedReadFile(this.decryptedPath)
       let encrypted = this.encrypt(buffer)
