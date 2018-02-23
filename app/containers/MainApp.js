@@ -9,7 +9,7 @@ import styles from './MainApp.css'
 import walletIcon from '../assets/icnWallet.png'
 import settingIcon from '../assets/icnSettings.png'
 
-import { sendPayment, getAccountDetail } from '../network/horizon'
+import { sendPayment, getAccountDetail, receivePaymentStream } from '../network/horizon'
 
 const NAV_ICON_SIZE = 30
 
@@ -20,14 +20,42 @@ class MainViewPage extends Component {
       mainAccountAddress: '',
       mainAccountBalance: '',
       sendAddress: '',
-      sendAmount: ''
+      sendAmount: '',
+      streamRegistered: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  componentDidMount () {
-    this.props.initializeAccount()
+  async componentDidMount () {
+    try {
+      await this.props.initializeAccount()
+
+      if (!this.state.streamRegistered) {
+        this.setState({ streamRegistered: true })
+        const { pKey, sKey, sequence } = this.props.accounts[this.props.currentWallet];
+        
+        // 2. Receive payment stream
+        await receivePaymentStream(pKey)
+
+        // 3. Get the account details
+        const { balance, sequence: nextSequence } = await getAccountDetail(pKey)
+
+        // 4. Update the user account (in the local DB) with the the details retrieved from above
+        const accounts = await updateUserAccountToDB({
+          publicKey: pKey,
+          secretKey: sKey,
+          balance,
+          sequence: nextSequence
+        })
+
+        this.props.setUserAccount(accounts)
+      }
+
+    } catch (e) {
+      // TODO: display something on the UI
+      console.error('Unable to send payment', e)
+    }
   }
 
   handleChange (event) {
