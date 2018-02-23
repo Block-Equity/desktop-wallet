@@ -1,12 +1,10 @@
-const electron = require('electron')
-const userDataPath = (electron.app || electron.remote.app).getPath('appData')
-const Datastore = require('nedb')
-const path = require('path')
-const db = new Datastore({ filename: path.join(userDataPath, 'user.db'), autoload: true })
-
 const DOCUMENT_TYPE_USER_INFO = 'userInfo'
 
-export const initializeDb = () => {
+let db = null
+
+export const initializeDb = async (dbIntance) => {
+  db = dbIntance
+
   return new Promise((resolve, reject) => {
     db.findOne({type: DOCUMENT_TYPE_USER_INFO}, (err, doc) => {
       if (err) {

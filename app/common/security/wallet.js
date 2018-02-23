@@ -52,7 +52,7 @@ class Wallet {
 
 /**
  * Stellar-friendly SEP-0005 key derivation.
- * @see {@link https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md|SEP-0005}
+ * @see https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md|SEP-0005
  */
 export class StellarWallet extends Wallet {
   /**
@@ -87,7 +87,7 @@ export class StellarWallet extends Wallet {
    * Get Stellar account keypair for child key at given index
    * @param {Number} index Account index into path m/44'/148'/{index}
    * @return {stellar-base.Keypair} Keypair instance for the account
-   * @see {@link https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md#multi-account-hierarchy-for-deterministic-wallets|SEP-0005}
+   * @see https://github.com/stellar/stellar-protocol/blob/master/ecosystem/sep-0005.md#multi-account-hierarchy-for-deterministic-wallets|SEP-0005
    */
   getKeypair (index) {
     const key = this.derive(`m/44'/148'/${index}'`)
