@@ -1,9 +1,14 @@
-const DOCUMENT_TYPE_USER_INFO = 'userInfo'
+import NeDB from 'nedb'
+
+import {
+  DATABASE_PATH,
+  DOCUMENT_TYPE_USER_INFO
+} from './constants'
 
 let db = null
 
-export const initializeDb = async (dbIntance) => {
-  db = dbIntance
+export const initializeDb = async () => {
+  db = new NeDB({ filename: DATABASE_PATH, autoload: true })
 
   return new Promise((resolve, reject) => {
     db.findOne({type: DOCUMENT_TYPE_USER_INFO}, (err, doc) => {

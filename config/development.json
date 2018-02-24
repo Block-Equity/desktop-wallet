@@ -1,0 +1,9 @@
+{
+  "app": {
+    "identifier": "com.blockeq.Development",
+    "testNetUrl": "http://ec2-18-219-131-250.us-east-2.compute.amazonaws.com/"
+  },
+  "horizon": {
+    "testNetUrl": "https://horizon-testnet.stellar.org"
+  }
+}

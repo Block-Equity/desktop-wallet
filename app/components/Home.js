@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Home.css';
 import mainLogo from '../assets/beLaunchLogoGray.png';
-import { clearAllUserInfo, initialCreationOfUserInfo } from '../store/datastore';
+import { clearAllUserInfo } from '../db';
 
 export default class Home extends Component {
 

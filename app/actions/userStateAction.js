@@ -1,6 +1,6 @@
-import { initializeDb } from '../store/datastore'
-import { createAccount } from '../network/horizon'
-import { Storage } from '../common/security'
+import { initializeDb } from '../db'
+import { createAccount } from '../services/networking/horizon'
+import { unlock, lock, destroy } from '../services/authentication/locking'
 
 export const USER_ACCOUNT = 'USER_ACCOUNT'
 export const CURRENT_USER_WALLET = 'CURRENT_USER_WALLET'
@@ -17,16 +17,14 @@ export function initializeAccount () {
     //
     // This will eventually be fetched via another module. For now, assume the password
     // is the following:
-    let storage = new Storage({ password: 'd6F3Efeq' })
+    await unlock({ password: 'd6F3Efeq' })
 
     // TODO: simply here for dubugging purposes
     if (process.env.NODE_ENV === 'development') {
-      global.STORAGE = storage
+      global.DATABASE = { unlock, lock, destroy }
     }
 
-    let db = await storage.unlock()
-
-    let { accounts, exists } = await initializeDb(db)
+    let { accounts, exists } = await initializeDb()
 
     // If it was just created (so it didn't exist), create an account
     if (!exists) {

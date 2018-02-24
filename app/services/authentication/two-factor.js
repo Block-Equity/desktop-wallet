@@ -1,23 +1,23 @@
 import keytar from 'keytar'
 import authenticator from 'authenticator'
 import { decryptText, encryptText } from '../security/encryption'
+import config from 'config'
 
-// TODO: clean this up into a config file
-const SERVICE = `com.blockeq.${process.env.NODE_ENV}`
-const ACCOUNT = 'com.blockeq.2fa'
+const APP_IDENTIFIER = config.get('app.identifier')
+const ACCOUNT = `${config.get('app.name')}.2fa`
 
 const get = async (password) => {
-  let result = await keytar.getPassword(SERVICE, ACCOUNT)
+  let result = await keytar.getPassword(APP_IDENTIFIER, ACCOUNT)
   return decryptText(result, password)
 }
 
 const update = async (secret, password) => {
   let result = await encryptText(secret, password)
-  return keytar.setPassword(SERVICE, ACCOUNT, result)
+  return keytar.setPassword(APP_IDENTIFIER, ACCOUNT, result)
 }
 
 export const remove = async () => {
-  return keytar.deletePassword(SERVICE, ACCOUNT)
+  return keytar.deletePassword(APP_IDENTIFIER, ACCOUNT)
 }
 
 export const verify = async (token) => {
