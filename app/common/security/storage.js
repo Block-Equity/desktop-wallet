@@ -3,7 +3,7 @@ import electron from 'electron'
 import NeDB from 'nedb'
 import path from 'path'
 import promisify from 'util.promisify'
-import { encrypt, decrypt } from './encryption'
+import { encryptBuffer, decryptBuffer } from './encryption'
 
 const promisifiedReadFile = promisify(fs.readFile)
 const promisifiedWriteFile = promisify(fs.writeFile)
@@ -14,8 +14,8 @@ export default class Storage {
     const appPath = (electron.app || electron.remote.app).getPath('appData')
     // Simply for security concerns, do some composition with the encrypt/decrypt functions,
     // so that we can add `password` without having to explicitly store it as a property of any object.
-    this.encrypt = (buffer) => encrypt(buffer, password)
-    this.decrypt = (buffer) => decrypt(buffer, password)
+    this.encrypt = (buffer) => encryptBuffer(buffer, password)
+    this.decrypt = (buffer) => decryptBuffer(buffer, password)
     this.decryptedPath = path.join(appPath, 'user.db')
     this.encryptedPath = path.join(appPath, 'user.db.enc')
   }
@@ -24,7 +24,7 @@ export default class Storage {
    * Creates a descrypted version of the database.
    * @return {NeDB} an NeDB object
    */
-  async open () {
+  async unlock () {
     let buffer
 
     try {
@@ -58,7 +58,7 @@ export default class Storage {
    * Encripts the database instance
    * @return {NeDB} an NeDB object
    */
-  async close () {
+  async lock () {
     try {
       let buffer = await promisifiedReadFile(this.decryptedPath)
       let encrypted = this.encrypt(buffer)
