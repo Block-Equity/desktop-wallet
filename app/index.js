@@ -1,14 +1,16 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
-import createHistory from 'history/createBrowserHistory'
+import { createHashHistory } from 'history'
 
 // Note: using path aliases here breaks hot reloading
 import App from './App'
 import createStore from './common/store'
 import rootReducer from './common/store/rootReducer'
 
-const history = createHistory()
+import './app.global.css'
+
+const history = createHashHistory()
 const store = createStore(history)
 
 render(

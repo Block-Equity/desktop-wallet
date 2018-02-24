@@ -2,8 +2,14 @@ import { createStore, applyMiddleware, compose } from 'redux'
 import { routerMiddleware } from 'react-router-redux'
 import rootReducer from './rootReducer'
 import thunk from 'redux-thunk'
+import { createLogger } from 'redux-logger'
 
 const isDev = process.env.NODE_ENV === 'development'
+
+const logger = createLogger({
+  level: 'info',
+  collapsed: true
+})
 
 function devTools () {
   if (isDev && window.devToolsExtension) {
@@ -18,7 +24,7 @@ export default history => {
     rootReducer,
     undefined, // initialState
     compose(
-      applyMiddleware(...middleware),
+      applyMiddleware(...middleware, logger),
       devTools()
     )
   )

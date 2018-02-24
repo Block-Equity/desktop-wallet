@@ -3,6 +3,7 @@ import { createReducer } from '../utils'
 export const INITIAL_STATE = {
   isAuthenticated: false,
   isFetching: false,
+  loginFailed: false,
   user: undefined
 }
 

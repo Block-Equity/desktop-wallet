@@ -44,14 +44,14 @@ export const ContentContainer = styled.div`
   overflow: auto;
 `
 
-export const HeaderThree = styled.h3`
+export const AccountAddressLabel = styled.h3`
   margin-top: 3rem;
   font-size: 1rem;
   font-weight: 100;
   color: #000000;
 `
 
-export const HeaderFive = styled.h5`
+export const AccountBalanceLabel = styled.h5`
   margin-top: 1rem;
   font-size: 1.5rem;
   font-weight: 100;
@@ -67,6 +67,17 @@ export const SendAssetFormContainer = styled.div`
 
 export const SendAssetFormLabel = styled.label`
   color: #000000;
+`
+
+export const SettingsIcon = styled.img`
+  margin-top: 1.5rem;
+  width: 30px;
+  height: 30px;
+`
+
+export const WalletIcon = styled.img`
+  width: 30px;
+  height: 30px;
 `
 
 // .sendAssetFormDisplayErrors input:invalid {

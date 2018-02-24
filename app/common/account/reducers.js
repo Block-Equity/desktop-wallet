@@ -5,8 +5,7 @@ export const INITIAL_STATE = {
   isFetching: false,
   error: undefined,
   accounts: undefined,
-  currentAccountId: undefined,
-  currentAccountDetails: undefined
+  currentAccountId: undefined
 }
 
 function accountCreationRequest (state) {
