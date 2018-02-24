@@ -1,22 +1,46 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { initializeAccount, setUserAccount } from '../actions/userStateAction'
-import { updateUserAccountToDB } from '../db'
-import { isEmpty } from '../utils/utility'
+import isEqual from 'lodash/isEqual'
+
+import {
+  initializeAccount,
+  fetchAccountDetails
+ } from '../../common/account/actions'
+
+import { getAccounts, getCurrentAccount } from '../../common/account/selectors'
+
+import { updateUserAccountToDB } from '../../db'
+import isEmpty from 'lodash/isEmpty'
 import QRCode from 'qrcode.react'
 
-import styles from './MainApp.css'
-import walletIcon from '../assets/icnWallet.png'
-import settingIcon from '../assets/icnSettings.png'
+// import styles from './MainApp.css'
+import walletIcon from './images/icnWallet.png'
+import settingIcon from './images/icnSettings.png'
 
-import { sendPayment, getAccountDetail, receivePaymentStream } from '../services/networking/horizon'
+import { sendPayment, getAccountDetail, receivePaymentStream } from '../../services/networking/horizon'
+
+import {
+  MainContainer,
+  NavigationContainer,
+  // NavigationContainerSpacer,
+  // NavigationSpacer,
+  ContentContainer,
+  HeaderThree,
+  HeaderFive,
+  SendAssetFormContainer
+  // SendAssetFormLabel
+} from './styledComponents'
+
+const styles = {}
 
 const NAV_ICON_SIZE = 30
 
-class MainViewPage extends Component {
+class Main extends Component {
   constructor (props) {
     super()
     this.state = {
+      currentAccount: undefined,
+      currentAccountDetails: undefined,
       mainAccountAddress: '',
       mainAccountBalance: '',
       sendAddress: '',
@@ -27,30 +51,32 @@ class MainViewPage extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
+  componentWillReceiveProps (nextProps) {
+    console.log('nextProps', nextProps)
+
+    if (!isEqual(this.props.currentAccount, nextProps.currentAccount)) {
+      const { currentAccount } = nextProps
+      fetchAccountDetails(currentAccount)
+
+      // TODO:
+      // - Cancel previous state stream when switching to another account
+      // - Bind a `resolve` function that is triggered by the stream whenever a message
+      //   is received
+      receivePaymentStream(currentAccount.pKey)
+    }
+
+    if (!isEqual(this.props.currentAccountDetails, nextProps.currentAccountDetails)) {
+      const { currentAccountDetails } = nextProps
+
+      this.setState({
+        currentAccountDetails
+      })
+    }
+  }
+
   async componentDidMount () {
     try {
-      await this.props.initializeAccount()
-
-      if (!this.state.streamRegistered) {
-        this.setState({ streamRegistered: true })
-        const { pKey, sKey, sequence } = this.props.accounts[this.props.currentWallet]
-
-        // 2. Receive payment stream
-        await receivePaymentStream(pKey)
-
-        // 3. Get the account details
-        const { balance, sequence: nextSequence } = await getAccountDetail(pKey)
-
-        // 4. Update the user account (in the local DB) with the the details retrieved from above
-        const accounts = await updateUserAccountToDB({
-          publicKey: pKey,
-          secretKey: sKey,
-          balance,
-          sequence: nextSequence
-        })
-
-        this.props.setUserAccount(accounts)
-      }
+      this.props.initializeAccount()
     } catch (e) {
       // TODO: display something on the UI
       console.error('Unable to send payment', e)
@@ -124,11 +150,11 @@ class MainViewPage extends Component {
       this.state.mainAccountAddress = this.props.accounts[this.props.currentWallet].pKey
       this.state.mainAccountBalance = this.props.accounts[this.props.currentWallet].balance.balance
       return (
-        <div className={styles.mainPageContentContainer}>
-          <h3>{this.state.mainAccountAddress}</h3>
-          <h5>Balance: {this.state.mainAccountBalance} </h5>
+        <MainContainer>
+          <HeaderThree>{this.state.mainAccountAddress}</HeaderThree>
+          <HeaderFive>Balance: {this.state.mainAccountBalance}</HeaderFive>
           <QRCode value={this.state.mainAccountAddress} size={100} />
-        </div>
+        </MainContainer>
       )
     }
   }
@@ -143,7 +169,7 @@ class MainViewPage extends Component {
     }
 
     return (
-      <div className={styles.sendAssetFormContainer}>
+      <SendAssetFormContainer>
         <form id='sendAssetForm' onSubmit={this.handleSubmit} noValidate className={formStyle}>
           <div className='form-group'>
             <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>Send to address: </label>
@@ -157,31 +183,33 @@ class MainViewPage extends Component {
           </div>
           <button className='btn btn-outline-success' type='submit'>Save</button>
         </form>
-      </div>
+      </SendAssetFormContainer>
     )
   }
 
   render () {
     return (
-      <div className={styles.mainPageContainer}>
-        <div className={styles.mainPageNavContainer}>
+      <MainContainer>
+        <NavigationContainer>
           <img src={walletIcon} alt='' width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
           <img src={settingIcon} className={styles.mainPageNavContainerSpacer} alt='' width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
-        </div>
-        <div className={styles.mainPageContentContainer}>
+        </NavigationContainer>
+        <ContentContainer>
           { this.renderAccountInfoContent() }
           { this.renderSendMoneySection() }
-        </div>
-      </div>
+        </ContentContainer>
+      </MainContainer>
     )
   }
 }
 
 function mapStateToProps (state) {
   return {
-    accounts: state.userAccounts,
-    currentWallet: state.currentWallet
+    accounts: getAccounts(state),
+    currentAccount: getCurrentAccount(state)
   }
 }
 
-export default connect(mapStateToProps, { initializeAccount, setUserAccount })(MainViewPage)
+export default connect(mapStateToProps, {
+  initializeAccount
+})(Main)

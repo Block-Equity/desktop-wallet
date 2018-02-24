@@ -38,3 +38,8 @@ export const update = async (username, password) => {
 
   return keytar.setPassword(APP_IDENTIFIER, ACCOUNT, hash)
 }
+
+export const logout = async () => {
+  // TODO: implement
+  return true
+}

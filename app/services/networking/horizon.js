@@ -82,9 +82,7 @@ export const receivePaymentStream = (publicKey) => {
       .cursor('now')
       .forAccount(publicKey)
       .stream({
-        onmessage: (message) => {
-          resolve(message)
-        }
+        onmessage: message => resolve(message)
       })
   })
 }
