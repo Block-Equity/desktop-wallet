@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import Home from '../components/Home';
-import { clearAllUserInfo } from '../store/datastore';
+import { clearAllUserInfo } from '../db';
 
 class HomePage extends Component {
   constructor(props) {

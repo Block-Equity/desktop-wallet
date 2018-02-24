@@ -1,14 +1,13 @@
 import keytar from 'keytar'
-
 import { create as createHash } from '../security/password'
+import config from 'config'
 
-// TODO: clean this up into a config file
-const SERVICE = `com.blockeq.${process.env.NODE_ENV}`
-const ACCOUNT = 'com.blockeq.verification'
-const SALT = 'blockeq'
+const APP_IDENTIFIER = config.get('app.identifier')
+const APP_NAME = config.get('app.name')
+const ACCOUNT = `${APP_NAME}.verification`
 
 const get = async () => {
-  return keytar.getPassword(SERVICE, ACCOUNT)
+  return keytar.getPassword(APP_IDENTIFIER, ACCOUNT)
 }
 
 export const verify = async (username, password) => {
@@ -16,7 +15,7 @@ export const verify = async (username, password) => {
 
   let hash = await createHash({
     text: username + password,
-    salt: SALT
+    salt: APP_NAME
   })
 
   if (hash !== storedHash) {
@@ -25,7 +24,7 @@ export const verify = async (username, password) => {
 
   let token = await createHash({
     text: hash + password,
-    salt: SALT
+    salt: APP_NAME
   })
 
   return token
@@ -34,8 +33,8 @@ export const verify = async (username, password) => {
 export const update = async (username, password) => {
   let hash = await createHash({
     text: username + password,
-    salt: SALT
+    salt: APP_NAME
   })
 
-  return keytar.setPassword(SERVICE, ACCOUNT, hash)
+  return keytar.setPassword(APP_IDENTIFIER, ACCOUNT, hash)
 }

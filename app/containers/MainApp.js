@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { initializeAccount, setUserAccount } from '../actions/userStateAction'
-import { updateUserAccountToDB } from '../store/datastore'
+import { updateUserAccountToDB } from '../db'
 import { isEmpty } from '../utils/utility'
 import QRCode from 'qrcode.react'
 
@@ -9,7 +9,7 @@ import styles from './MainApp.css'
 import walletIcon from '../assets/icnWallet.png'
 import settingIcon from '../assets/icnSettings.png'
 
-import { sendPayment, getAccountDetail, receivePaymentStream } from '../network/horizon'
+import { sendPayment, getAccountDetail, receivePaymentStream } from '../services/networking/horizon'
 
 const NAV_ICON_SIZE = 30
 
@@ -33,8 +33,8 @@ class MainViewPage extends Component {
 
       if (!this.state.streamRegistered) {
         this.setState({ streamRegistered: true })
-        const { pKey, sKey, sequence } = this.props.accounts[this.props.currentWallet];
-        
+        const { pKey, sKey, sequence } = this.props.accounts[this.props.currentWallet]
+
         // 2. Receive payment stream
         await receivePaymentStream(pKey)
 
@@ -51,7 +51,6 @@ class MainViewPage extends Component {
 
         this.props.setUserAccount(accounts)
       }
-
     } catch (e) {
       // TODO: display something on the UI
       console.error('Unable to send payment', e)

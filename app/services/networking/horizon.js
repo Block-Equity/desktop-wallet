@@ -1,21 +1,18 @@
 import StellarSdk, { Config } from 'stellar-sdk'
-
-import {
-  StellarWallet,
-  generate as generateMnemonic
-} from '../common/security'
+import config from 'config'
+import { StellarWallet } from '../security/wallet'
+import { generate as generateMnemonic } from '../security/mnemonic'
 
 import axios from 'axios'
-import { addUserAccountToDB } from '../store/datastore'
+import { addUserAccountToDB } from '../../db'
 
 // Horizon API Setup
 // TODO: BAD PRACTICE - Secure Server
 Config.setAllowHttp(true)
 StellarSdk.Network.useTestNetwork()
 
-// TODO: move this into a configuration file
-const BASE_URL_TEST_NET = 'http://ec2-18-219-131-250.us-east-2.compute.amazonaws.com/'
-const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
+const BASE_URL_TEST_NET = config.get('app.testNetUrl')
+const BASE_URL_HORIZON_TEST_NET = config.get('horizon.testNetUrl')
 const BASE_URL = BASE_URL_TEST_NET
 const server = new StellarSdk.Server(BASE_URL)
 
@@ -86,7 +83,7 @@ export const receivePaymentStream = (publicKey) => {
       .forAccount(publicKey)
       .stream({
         onmessage: (message) => {
-          resolve(message);
+          resolve(message)
         }
       })
   })
