@@ -6,14 +6,13 @@ import { initializeAccount, fetchAccountDetails } from '../../common/account/act
 import { getAccounts, getCurrentAccount } from '../../common/account/selectors'
 import { sendPaymentToAddress } from '../../common/payment/actions'
 
-// import { updateUserAccountToDB } from '../../db'
 import isEmpty from 'lodash/isEmpty'
 import QRCode from 'qrcode.react'
 
 import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
 
-import { /* sendPayment, getAccountDetail, */ receivePaymentStream } from '../../services/networking/horizon'
+// import { receivePaymentStream } from '../../services/networking/horizon'
 
 import {
   MainContainer,
@@ -54,7 +53,7 @@ class Main extends Component {
       // - Cancel previous state stream when switching to another account
       // - Bind a `resolve` function that is triggered by the stream whenever a message
       //   is received
-      receivePaymentStream(currentAccount.pKey)
+      // receivePaymentStream(currentAccount.pKey)
     }
 
     if (!isEqual(this.props.currentAccountDetails, nextProps.currentAccountDetails)) {
@@ -71,7 +70,6 @@ class Main extends Component {
       this.props.initializeAccount()
     } catch (e) {
       // TODO: display something on the UI
-      console.error('Unable to send payment', e)
     }
   }
 
@@ -102,44 +100,6 @@ class Main extends Component {
       destination: this.state.sendAddress,
       amount: this.state.sendAmount
     })
-
-    // const { sKey, sequence } = this.props.accounts[this.props.currentWallet]
-
-    // const mainAccountAddress = this.state.mainAccountAddress
-
-    // try {
-    //   // 1. Send the payment
-    //   await sendPayment({
-    //     publicKey: mainAccountAddress,
-    //     secretKey: sKey,
-    //     sequence,
-    //     destinationId: this.state.sendAddress,
-    //     amount: this.state.sendAmount
-    //   })
-
-    //   // 2. Set the state. Note: This will occur only when `sendPayment` above completes
-    //   this.setState({
-    //     sendAddress: '',
-    //     sendAmount: '',
-    //     displayErrors: false
-    //   })
-
-    //   // 3. Get the account details
-    //   const { balance, sequence: nextSequence } = await getAccountDetail(mainAccountAddress)
-
-    //   // 4. Update the user account (in the local DB) with the the details retrieved from above
-    //   const accounts = await updateUserAccountToDB({
-    //     publicKey: mainAccountAddress,
-    //     secretKey: sKey,
-    //     balance,
-    //     sequence: nextSequence
-    //   })
-
-    //   this.props.setUserAccount(accounts)
-    // } catch (e) {
-    //   // TODO: display something on the UI
-    //   console.error('Unable to send payment', e)
-    // }
   }
 
   renderAccountInfoContent () {

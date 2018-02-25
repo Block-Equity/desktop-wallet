@@ -9,9 +9,10 @@ let db = null
 
 export const initializeDb = async () => {
   db = new NeDB({ filename: DATABASE_PATH, autoload: true })
+  console.log('DATABASE_PATH', DATABASE_PATH)
 
   return new Promise((resolve, reject) => {
-    db.findOne({type: DOCUMENT_TYPE_USER_INFO}, (err, doc) => {
+    db.findOne({ type: DOCUMENT_TYPE_USER_INFO }, (err, doc) => {
       if (err) {
         reject(err)
         return
