@@ -1,6 +1,7 @@
 import { sendPayment } from '../../services/networking/horizon'
 import { fetchAccountDetails } from '../account/actions'
 import { getCurrentAccount } from '../account/selectors'
+import * as Types from './types'
 
 export function sendPaymentToAddress ({ destination, amount }) {
   return async (dispatch, getState) => {
@@ -37,20 +38,20 @@ export function sendPaymentToAddress ({ destination, amount }) {
 
 export function paymentSendRequest () {
   return {
-    type: 'payment/PAYMENT_SEND_REQUEST'
+    type: Types.PAYMENT_SEND_REQUEST
   }
 }
 
 export function paymentSendSuccess (payment) {
   return {
-    type: 'payment/PAYMENT_SEND_SUCCESS',
+    type: Types.PAYMENT_SEND_SUCCESS,
     payload: payment
   }
 }
 
 export function paymentSendFailure (error) {
   return {
-    type: 'payment/PAYMENT_SEND_FAILURE',
+    type: Types.PAYMENT_SEND_FAILURE,
     payload: error,
     error: true
   }

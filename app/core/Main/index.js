@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import isEqual from 'lodash/isEqual'
 
+import { unlock } from '../../common/auth/actions'
 import { initializeAccount, fetchAccountDetails } from '../../common/account/actions'
 import { getAccounts, getCurrentAccount } from '../../common/account/selectors'
 import { sendPaymentToAddress } from '../../common/payment/actions'
@@ -67,6 +68,10 @@ class Main extends Component {
 
   async componentDidMount () {
     try {
+      // TODO: this is temporarily here. It will be moved to the Login (or auth flow) once
+      // it's done
+      await this.props.unlock('d6F3Efeq')
+
       this.props.initializeAccount()
     } catch (e) {
       // TODO: display something on the UI
@@ -167,6 +172,7 @@ function mapStateToProps (state) {
 }
 
 export default connect(mapStateToProps, {
+  unlock,
   initializeAccount,
   fetchAccountDetails,
   sendPaymentToAddress

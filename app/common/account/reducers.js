@@ -1,4 +1,5 @@
 import { createReducer } from '../utils'
+import * as Types from './types'
 
 export const INITIAL_STATE = {
   isAccountCreated: false,
@@ -68,14 +69,14 @@ function accountDetailsFailure (state, error) {
   }
 }
 const reducers = {
-  'account/ACCOUNT_CREATION_REQUEST': accountCreationRequest,
-  'account/ACCOUNT_CREATION_SUCCESS': accountCreationSuccess,
-  'account/ACCOUNT_CREATION_FAILURE': accountCreationFailure,
-  'account/ACCOUNTS': setAccounts,
-  'account/CURRENT_ACCOUNT': setCurrentAccountId,
-  'account/ACCOUNT_DETAILS_REQUEST': accountDetailsRequest,
-  'account/ACCOUNT_DETAILS_SUCCESS': accountDetailsSuccess,
-  'account/CURRENT_ACACCOUNT_DETAILS_FAILURECOUNT': accountDetailsFailure
+  [Types.ACCOUNT_CREATION_REQUEST]: accountCreationRequest,
+  [Types.ACCOUNT_CREATION_SUCCESS]: accountCreationSuccess,
+  [Types.ACCOUNT_CREATION_FAILURE]: accountCreationFailure,
+  [Types.SET_ACCOUNTS]: setAccounts,
+  [Types.SET_CURRENT_ACCOUNT]: setCurrentAccountId,
+  [Types.ACCOUNT_DETAILS_REQUEST]: accountDetailsRequest,
+  [Types.ACCOUNT_DETAILS_SUCCESS]: accountDetailsSuccess,
+  [Types.ACCOUNT_DETAILS_FAILURE]: accountDetailsFailure
 }
 
 export default createReducer(INITIAL_STATE, reducers)

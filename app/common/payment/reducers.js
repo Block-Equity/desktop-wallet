@@ -1,4 +1,5 @@
 import { createReducer } from '../utils'
+import * as Types from './types'
 
 export const INITIAL_STATE = {
   isSending: false,
@@ -38,9 +39,9 @@ function paymentSendFailure (state, error) {
 }
 
 const reducers = {
-  'payment/PAYMENT_SEND_REQUEST': paymentSendRequest,
-  'payment/PAYMENT_SEND_SUCCESS': paymentSendSuccess,
-  'payment/PAYMENT_SEND_FAILURE': paymentSendFailure
+  [Types.PAYMENT_SEND_REQUEST]: paymentSendRequest,
+  [Types.PAYMENT_SEND_SUCCESS]: paymentSendSuccess,
+  [Types.PAYMENT_SEND_FAILURE]: paymentSendFailure
 }
 
 export default createReducer(INITIAL_STATE, reducers)

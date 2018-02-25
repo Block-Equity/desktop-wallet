@@ -1,5 +1,6 @@
 import React from 'react'
-import { Switch, Route } from 'react-router-dom'
+import { Switch } from 'react-router-dom'
+import Route from './common/auth/route'
 import Launch from './core/Launch'
 import Main from './core/Main'
 

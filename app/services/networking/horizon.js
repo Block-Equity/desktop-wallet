@@ -24,7 +24,7 @@ const createTestAccount = (publicKey) => {
 // TODO: Perhaps this should go somewhere else, as it doesn't really have much to do with Horizon
 export const createSeed = (password = undefined) => {
   const mnemonic = generateMnemonic()
-  console.log('Mnemonic', mnemonic)
+  console.log('Mnemonic', mnemonic, password)
 
   const wallet = StellarWallet.createFromMnemonic(mnemonic, password)
 

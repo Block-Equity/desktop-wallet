@@ -3,10 +3,11 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Redirect, Route } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { isAuthenticated } from './selectors'
 
 // Where to redirect not logged in users to try to access app
-
-const openRoutes = ['/login']
+// TODO: obviously, remove the `/wallet` one as soon as the login flow is implemented
+const openRoutes = ['/', '/login', '/wallet']
 
 export const AuthRoute = ({ component, ...props }) => {
   if (props.path === undefined) {
@@ -26,5 +27,5 @@ AuthRoute.propTypes = {
 }
 
 export default connect(state => ({
-  isAuthenticated: state.auth.isAuthenticated
+  isAuthenticated: isAuthenticated(state)
 }))(AuthRoute)
