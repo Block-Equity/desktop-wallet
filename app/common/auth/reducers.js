@@ -74,10 +74,11 @@ function loginRequest (state) {
 }
 
 function loginSuccess (state, payload) {
+  const { user } = payload
   return {
     ...state,
     isAuthenticated: true,
-    user: payload.user,
+    user: user,
     loginFailed: false
   }
 }

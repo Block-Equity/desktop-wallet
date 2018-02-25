@@ -26,9 +26,7 @@ export function initializeAccount () {
       }
     }
 
-    dispatch(setAccounts(accounts))
-
-    return dispatch(setCurrentAccountId(Object.keys(accounts)[0]))
+    return dispatch(setAccounts(accounts))
   }
 }
 
@@ -84,14 +82,14 @@ export function accountCreationFailure (error) {
 export function setAccounts (accounts) {
   return {
     type: Types.SET_ACCOUNTS,
-    payload: accounts
+    payload: { accounts }
   }
 }
 
 export function setCurrentAccountId (accountId) {
   return {
     type: Types.SET_CURRENT_ACCOUNT,
-    payload: accountId
+    payload: { accountId }
   }
 }
 
@@ -104,7 +102,7 @@ export function accountDetailsRequest () {
 export function accountDetailsSuccess (details) {
   return {
     type: Types.ACCOUNT_DETAILS_SUCCESS,
-    payload: details
+    payload: { details }
   }
 }
 

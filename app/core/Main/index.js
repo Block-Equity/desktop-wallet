@@ -1,10 +1,18 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import isEqual from 'lodash/isEqual'
 
 import { unlock } from '../../common/auth/actions'
-import { initializeAccount, fetchAccountDetails } from '../../common/account/actions'
-import { getAccounts, getCurrentAccount } from '../../common/account/selectors'
+import {
+  initializeAccount,
+  fetchAccountDetails,
+  setCurrentAccount
+} from '../../common/account/actions'
+
+import {
+  getAccounts,
+  getCurrentAccount
+} from '../../common/account/selectors'
+
 import { sendPaymentToAddress } from '../../common/payment/actions'
 
 import isEmpty from 'lodash/isEmpty'
@@ -13,12 +21,12 @@ import QRCode from 'qrcode.react'
 import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
 
+// TODO: fix this
 // import { receivePaymentStream } from '../../services/networking/horizon'
 
 import {
   MainContainer,
   NavigationContainer,
-
   ContentContainer,
   AccountAddressLabel,
   AccountBalanceLabel,
@@ -34,8 +42,7 @@ class Main extends Component {
   constructor (props) {
     super()
     this.state = {
-      currentAccount: undefined,
-      currentAccountDetails: undefined,
+      // TODO: temporary here, cuz I'm tired of populating every time :p
       sendAddress: 'GACCYANIKFQPYJZ7VTWKR6DH3AWNOLO7ETVFBVWHLLZ62VPRIFNDZTJ2',
       sendAmount: ''
     }
@@ -43,37 +50,23 @@ class Main extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  componentWillReceiveProps (nextProps) {
-    console.log('nextProps', nextProps)
-
-    if (!isEqual(this.props.currentAccount, nextProps.currentAccount)) {
-      const { currentAccount } = nextProps
-      this.props.fetchAccountDetails(currentAccount)
-
-      // TODO:
-      // - Cancel previous state stream when switching to another account
-      // - Bind a `resolve` function that is triggered by the stream whenever a message
-      //   is received
-      // receivePaymentStream(currentAccount.pKey)
-    }
-
-    if (!isEqual(this.props.currentAccountDetails, nextProps.currentAccountDetails)) {
-      const { currentAccountDetails } = nextProps
-
-      this.setState({
-        currentAccountDetails
-      })
-    }
-  }
-
   async componentDidMount () {
+    // debugger
     try {
       // TODO: this is temporarily here. It will be moved to the Login (or auth flow) once
       // it's done
       await this.props.unlock('d6F3Efeq')
+      await this.props.initializeAccount()
 
-      this.props.initializeAccount()
+      const { accounts } = this.state
+      if (accounts) {
+      // Make the first account in the list the current account
+        const currentAccount = accounts[Object.keys(accounts)[0]]
+        await this.props.setCurrentAccount(currentAccount)
+        await this.props.fetchAccountDetails(currentAccount)
+      }
     } catch (e) {
+      console.log(e)
       // TODO: display something on the UI
     }
   }
@@ -121,6 +114,7 @@ class Main extends Component {
   }
 
   renderSendMoneySection () {
+    // TODO: handle form errors
     const { invalid, displayErrors } = this.state
 
     var formStyle = ''
@@ -164,10 +158,10 @@ class Main extends Component {
   }
 }
 
-function mapStateToProps (state) {
+const mapStateToProps = (state) => {
   return {
     accounts: getAccounts(state),
-    currentAccount: getCurrentAccount(state)
+    account: getCurrentAccount(state)
   }
 }
 
@@ -175,5 +169,6 @@ export default connect(mapStateToProps, {
   unlock,
   initializeAccount,
   fetchAccountDetails,
+  setCurrentAccount,
   sendPaymentToAddress
 })(Main)

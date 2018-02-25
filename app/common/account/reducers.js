@@ -6,7 +6,7 @@ export const INITIAL_STATE = {
   isFetching: false,
   error: undefined,
   accounts: undefined,
-  currentAccountId: undefined
+  currentAccount: undefined
 }
 
 function accountCreationRequest (state) {
@@ -33,17 +33,19 @@ function accountCreationFailure (state, error) {
   }
 }
 
-function setAccounts (state, accounts) {
+function setAccounts (state, payload) {
+  const { accounts } = payload
   return {
     ...state,
     accounts
   }
 }
 
-function setCurrentAccountId (state, accountId) {
+function setCurrentAccount (state, payload) {
+  const { account } = payload
   return {
     ...state,
-    currentAccountId: accountId
+    currentAccount: account
   }
 }
 
@@ -54,10 +56,12 @@ function accountDetailsRequest (state) {
   }
 }
 
-function accountDetailsSuccess (state) {
+function accountDetailsSuccess (state, payload) {
+  const { accounts } = payload
   return {
     ...state,
-    isFetching: false
+    isFetching: false,
+    accounts
   }
 }
 
@@ -73,7 +77,7 @@ const reducers = {
   [Types.ACCOUNT_CREATION_SUCCESS]: accountCreationSuccess,
   [Types.ACCOUNT_CREATION_FAILURE]: accountCreationFailure,
   [Types.SET_ACCOUNTS]: setAccounts,
-  [Types.SET_CURRENT_ACCOUNT]: setCurrentAccountId,
+  [Types.SET_CURRENT_ACCOUNT]: setCurrentAccount,
   [Types.ACCOUNT_DETAILS_REQUEST]: accountDetailsRequest,
   [Types.ACCOUNT_DETAILS_SUCCESS]: accountDetailsSuccess,
   [Types.ACCOUNT_DETAILS_FAILURE]: accountDetailsFailure
