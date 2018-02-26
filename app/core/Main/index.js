@@ -24,7 +24,7 @@ import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
 
 // TODO: fix this
-// import { receivePaymentStream } from '../../services/networking/horizon'
+import { receivePaymentStream, getTransactionList } from '../../services/networking/horizon'
 
 import {
   MainContainer,
@@ -84,6 +84,8 @@ class Main extends Component {
 
         await this.props.setCurrentAccount(currentAccount)
         await this.props.fetchAccountDetails({ publicKey, secretKey })
+        await getTransactionList(pKey)
+
       }
     } catch (e) {
       console.log(e)

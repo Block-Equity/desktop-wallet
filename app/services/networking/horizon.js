@@ -59,6 +59,27 @@ export const getAccountDetail = async (publicKey) => {
   }
 }
 
+//Ref: https://www.stellar.org/developers/js-stellar-sdk/reference/examples.html
+export const getTransactionList = async (publicKey) => {
+  return new Promise(resolve => {
+    server.transactions()
+      .forAccount(publicKey)
+      .call()
+      .then(page => {
+        console.log('Page 1: ');
+        console.log(JSON.stringify(page.records));
+        return page.next();
+      })
+      .then(page => {
+          console.log('Page 2: ');
+          console.log(JSON.stringify(page.records));
+      })
+      .catch(err => {
+          console.log(err);
+      });
+  })
+}
+
 export const receivePaymentStream = (publicKey) => {
   return new Promise(resolve => {
     server.payments()
