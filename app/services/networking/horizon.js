@@ -60,10 +60,12 @@ export const getAccountDetail = async (publicKey) => {
 }
 
 //Ref: https://www.stellar.org/developers/js-stellar-sdk/reference/examples.html
-export const getTransactionList = async (publicKey) => {
+export const getPaymentOperationList = async (publicKey) => {
   return new Promise(resolve => {
-    server.transactions()
+    server.operations()
       .forAccount(publicKey)
+      .order('desc')
+      .limit(25)
       .call()
       .then(page => {
         console.log('Page 1: ');
