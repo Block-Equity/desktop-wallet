@@ -1,4 +1,4 @@
-import { sendPayment } from '../../services/networking/horizon'
+import { sendPayment, getPaymentOperationList } from '../../services/networking/horizon'
 import { fetchAccountDetails, setCurrentAccount } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
 import * as Types from './types'
@@ -43,6 +43,31 @@ export function sendPaymentToAddress ({ destination, amount }) {
   }
 }
 
+export function fetchPaymentOperationList() {
+  return async (dispatch, getState) => {
+    let currentAccount = getCurrentAccount(getState())
+
+    const {
+      pKey: publicKey,
+    } = currentAccount
+
+    dispatch(paymentOperationListRequest())
+
+    try {
+      await getPaymentOperationList({
+        publicKey
+      })
+
+      return dispatch(paymentOperationListSuccess({
+        destination,
+        amount
+      }))
+    } catch (e) {
+      return dispatch(paymentOperationListFailure(e))
+    }
+  }
+}
+
 export function paymentSendRequest () {
   return {
     type: Types.PAYMENT_SEND_REQUEST
@@ -63,3 +88,25 @@ export function paymentSendFailure (error) {
     error: true
   }
 }
+
+export function paymentOperationListRequest () {
+  return {
+    type: Types.PAYMENT_LIST_REQUEST
+  }
+}
+
+export function paymentOperationListSuccess (list) {
+  return {
+    type: Types.PAYMENT_LIST_SUCCESS,
+    payload: list
+  }
+}
+
+export function paymentOperationListFailure (error) {
+  return {
+    type: Types.PAYMENT_LIST_FAILURE,
+    payload: error,
+    error: true
+  }
+}
+
