@@ -1,29 +1,40 @@
-import {
-  initializeDb,
-  updateUserAccountToDB
-} from '../../db'
-
-import {
-  createAccount,
-  getAccountDetail
-} from '../../services/networking/horizon'
-
+import * as db from '../../db'
+import * as horizon from '../../services/networking/horizon'
 import * as Types from './types'
 
 export function initializeAccount () {
   return async dispatch => {
-    let { accounts, exists } = await initializeDb()
+    dispatch(accountInitializationRequest())
 
-    // If it was just created (so it didn't exist), create an account
-    if (!exists) {
-      dispatch(accountCreationRequest())
+    try {
+      let { accounts } = await db.initialize()
+      return dispatch(accountInitializationSuccess(accounts))
+    } catch (e) {
+      return dispatch(accountInitializationFailure(e))
+    }
+  }
+}
 
-      try {
-        accounts = await createAccount()
-        dispatch(accountCreationSuccess())
-      } catch (e) {
-        return dispatch(accountCreationFailure(e))
-      }
+export function createAccount ({ publicKey, secretKey }) {
+  return async dispatch => {
+    dispatch(accountCreationRequest())
+
+    let accounts = null
+
+    try {
+      accounts = await horizon.createAccount(publicKey)
+      const { balance, sequence } = accounts
+
+      await db.addUserAccount({
+        publicKey,
+        secretKey,
+        balance,
+        sequence
+      })
+
+      dispatch(accountCreationSuccess())
+    } catch (e) {
+      return dispatch(accountCreationFailure(e))
     }
 
     return dispatch(setAccounts(accounts))
@@ -39,11 +50,11 @@ export function fetchAccountDetails (account) {
     try {
       const { pKey: publicKey, sKey: secretKey } = account
 
-      details = await getAccountDetail(publicKey)
+      details = await horizon.getAccountDetail(publicKey)
 
       const { balance, sequence: nextSequence } = details
 
-      const accounts = await updateUserAccountToDB({
+      const accounts = await db.updateUserAccount({
         publicKey,
         secretKey,
         balance,
@@ -56,6 +67,27 @@ export function fetchAccountDetails (account) {
     }
 
     return dispatch(accountDetailsSuccess(details))
+  }
+}
+
+export function accountInitializationRequest () {
+  return {
+    type: Types.ACCOUNT_INITIALIZATION_REQUEST
+  }
+}
+
+export function accountInitializationSuccess (accounts) {
+  return {
+    type: Types.ACCOUNT_INITIALIZATION_SUCCESS,
+    payload: { accounts }
+  }
+}
+
+export function accountInitializationFailure (error) {
+  return {
+    type: Types.ACCOUNT_INITIALIZATION_FAILURE,
+    payload: error,
+    error: true
   }
 }
 
@@ -86,10 +118,10 @@ export function setAccounts (accounts) {
   }
 }
 
-export function setCurrentAccountId (accountId) {
+export function setCurrentAccount (account) {
   return {
     type: Types.SET_CURRENT_ACCOUNT,
-    payload: { accountId }
+    payload: { account }
   }
 }
 

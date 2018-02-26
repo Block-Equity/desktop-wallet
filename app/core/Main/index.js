@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { unlock } from '../../common/auth/actions'
 import {
   initializeAccount,
+  createAccount,
   fetchAccountDetails,
   setCurrentAccount
 } from '../../common/account/actions'
@@ -36,6 +37,8 @@ import {
   SettingsIcon
 } from './styledComponents'
 
+import * as horizon from '../../services/networking/horizon'
+
 const styles = {}
 
 class Main extends Component {
@@ -58,9 +61,23 @@ class Main extends Component {
       await this.props.unlock('d6F3Efeq')
       await this.props.initializeAccount()
 
-      const { accounts } = this.state
-      if (accounts) {
-      // Make the first account in the list the current account
+      const { accounts } = this.props
+
+      if (isEmpty(accounts)) {
+        // TODO: friend bot is broken, so comment the two lines below, and use harcoded keypair
+        // const { mnemonic, publicKey, secretKey } = horizon.createSeed()
+        // await this.props.createAccount({ publicKey, secretKey })
+
+        /// ///// DELETE WHEN IT'S BACK UP /////////
+        const publicKey = 'GBW74UVOXKGHO3WX6AV5ZGTB4JYBKCEJOUQAUSI25NRO3PKY5BC7WYZS'
+        const secretKey = 'SA3W53XXG64ITFFIYQSBIJDG26LMXYRIMEVMNQMFAQJOYCZACCYBA34L'
+        const { balance, sequence } = await horizon.getAccountDetail(publicKey)
+        const currentAccount = { pKey: publicKey, sKey: secretKey, balance, sequence }
+        await this.props.setCurrentAccount(currentAccount)
+        await this.props.fetchAccountDetails(currentAccount)
+        /// ///// DELETE WHEN IT'S BACK UP /////////
+      } else {
+        // Make the first account in the list the current account
         const currentAccount = accounts[Object.keys(accounts)[0]]
         await this.props.setCurrentAccount(currentAccount)
         await this.props.fetchAccountDetails(currentAccount)
@@ -161,13 +178,14 @@ class Main extends Component {
 const mapStateToProps = (state) => {
   return {
     accounts: getAccounts(state),
-    account: getCurrentAccount(state)
+    currentAccount: getCurrentAccount(state)
   }
 }
 
 export default connect(mapStateToProps, {
   unlock,
   initializeAccount,
+  createAccount,
   fetchAccountDetails,
   setCurrentAccount,
   sendPaymentToAddress

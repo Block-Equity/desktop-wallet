@@ -7,7 +7,7 @@ import {
 
 let db = null
 
-export const initializeDb = async () => {
+export const initialize = async () => {
   db = new NeDB({ filename: DATABASE_PATH, autoload: true })
   console.log('DATABASE_PATH', DATABASE_PATH)
 
@@ -43,7 +43,7 @@ export const initializeDb = async () => {
   })
 }
 
-export const addUserAccountToDB = ({ publicKey, secretKey, balance, sequence }) => {
+export const addUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
   const accountCreated = {
     [publicKey]: {
       pKey: publicKey,
@@ -65,7 +65,7 @@ export const addUserAccountToDB = ({ publicKey, secretKey, balance, sequence }) 
   })
 }
 
-export const updateUserAccountToDB = ({ publicKey, secretKey, balance, sequence }) => {
+export const updateUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
   const updatedAccount = {
     pKey: publicKey,
     sKey: secretKey,
