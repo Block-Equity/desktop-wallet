@@ -2,16 +2,16 @@
  * Build config for electron renderer process
  */
 
-import path from 'path';
-import webpack from 'webpack';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
-import merge from 'webpack-merge';
-import UglifyJSPlugin from 'uglifyjs-webpack-plugin';
-import baseConfig from './webpack.config.base';
-import CheckNodeEnv from './internals/scripts/CheckNodeEnv';
+import path from 'path'
+import webpack from 'webpack'
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer'
+import merge from 'webpack-merge'
+import UglifyJSPlugin from 'uglifyjs-webpack-plugin'
+import baseConfig from './webpack.config.base'
+import CheckNodeEnv from './internals/scripts/CheckNodeEnv'
 
-CheckNodeEnv('production');
+CheckNodeEnv('production')
 
 export default merge.smart(baseConfig, {
   devtool: 'source-map',
@@ -36,10 +36,10 @@ export default merge.smart(baseConfig, {
           use: {
             loader: 'css-loader',
             options: {
-              minimize: true,
+              minimize: true
             }
           },
-          fallback: 'style-loader',
+          fallback: 'style-loader'
         })
       },
       // Pipe other styles through css modules and append to style.css
@@ -52,10 +52,10 @@ export default merge.smart(baseConfig, {
               modules: true,
               minimize: true,
               importLoaders: 1,
-              localIdentName: '[name]__[local]__[hash:base64:5]',
+              localIdentName: '[name]__[local]__[hash:base64:5]'
             }
           }
-        }),
+        })
       },
       // Add SASS support  - compile all .global.scss files and pipe it to style.css
       {
@@ -65,14 +65,14 @@ export default merge.smart(baseConfig, {
             {
               loader: 'css-loader',
               options: {
-                minimize: true,
+                minimize: true
               }
             },
             {
               loader: 'sass-loader'
             }
           ],
-          fallback: 'style-loader',
+          fallback: 'style-loader'
         })
       },
       // Add SASS support  - compile all other .scss files and pipe it to style.css
@@ -85,13 +85,13 @@ export default merge.smart(baseConfig, {
               modules: true,
               minimize: true,
               importLoaders: 1,
-              localIdentName: '[name]__[local]__[hash:base64:5]',
+              localIdentName: '[name]__[local]__[hash:base64:5]'
             }
           },
           {
             loader: 'sass-loader'
           }]
-        }),
+        })
       },
       // WOFF Font
       {
@@ -100,9 +100,9 @@ export default merge.smart(baseConfig, {
           loader: 'url-loader',
           options: {
             limit: 10000,
-            mimetype: 'application/font-woff',
+            mimetype: 'application/font-woff'
           }
-        },
+        }
       },
       // WOFF2 Font
       {
@@ -111,7 +111,7 @@ export default merge.smart(baseConfig, {
           loader: 'url-loader',
           options: {
             limit: 10000,
-            mimetype: 'application/font-woff',
+            mimetype: 'application/font-woff'
           }
         }
       },
@@ -129,7 +129,7 @@ export default merge.smart(baseConfig, {
       // EOT Font
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-        use: 'file-loader',
+        use: 'file-loader'
       },
       // SVG Font
       {
@@ -138,14 +138,14 @@ export default merge.smart(baseConfig, {
           loader: 'url-loader',
           options: {
             limit: 10000,
-            mimetype: 'image/svg+xml',
+            mimetype: 'image/svg+xml'
           }
         }
       },
       // Common Image Formats
       {
         test: /\.(?:ico|gif|png|jpg|jpeg|webp)$/,
-        use: 'url-loader',
+        use: 'url-loader'
       }
     ]
   },
@@ -174,6 +174,6 @@ export default merge.smart(baseConfig, {
     new BundleAnalyzerPlugin({
       analyzerMode: process.env.OPEN_ANALYZER === 'true' ? 'server' : 'disabled',
       openAnalyzer: process.env.OPEN_ANALYZER === 'true'
-    }),
-  ],
-});
+    })
+  ]
+})

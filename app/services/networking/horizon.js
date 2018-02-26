@@ -4,7 +4,6 @@ import { StellarWallet } from '../security/wallet'
 import { generate as generateMnemonic } from '../security/mnemonic'
 
 import axios from 'axios'
-import { addUserAccountToDB } from '../../db'
 
 // Horizon API Setup
 // TODO: BAD PRACTICE - Secure Server
@@ -13,10 +12,10 @@ StellarSdk.Network.useTestNetwork()
 
 const BASE_URL_TEST_NET = config.get('app.testNetUrl')
 const BASE_URL_HORIZON_TEST_NET = config.get('horizon.testNetUrl')
-const BASE_URL = BASE_URL_TEST_NET
+const BASE_URL = BASE_URL_HORIZON_TEST_NET
 const server = new StellarSdk.Server(BASE_URL)
 
-const createTestAccount = (publicKey) => {
+export const createAccount = (publicKey) => {
   // Friend Bot is only on Horizon Test Net
   return axios.get(`${BASE_URL_HORIZON_TEST_NET}/friendbot?addr=${publicKey}`)
 }
@@ -24,7 +23,7 @@ const createTestAccount = (publicKey) => {
 // TODO: Perhaps this should go somewhere else, as it doesn't really have much to do with Horizon
 export const createSeed = (password = undefined) => {
   const mnemonic = generateMnemonic()
-  console.log('Mnemonic', mnemonic)
+  console.log('Mnemonic', mnemonic, password)
 
   const wallet = StellarWallet.createFromMnemonic(mnemonic, password)
 
@@ -34,26 +33,10 @@ export const createSeed = (password = undefined) => {
   console.log(`Secret: ${secretKey} || Public: ${publicKey}`)
 
   return {
+    mnemonic,
     publicKey,
     secretKey
   }
-}
-
-// TODO: possibly do some try/catch logic in here to catch potential errors
-export const createAccount = async (password = undefined) => {
-  const { publicKey, secretKey } = await createSeed()
-  await createTestAccount(publicKey)
-
-  const { balance, sequence } = await getAccountDetail(publicKey)
-
-  const accounts = await addUserAccountToDB({
-    publicKey,
-    secretKey,
-    balance,
-    sequence
-  })
-
-  return accounts
 }
 
 export const getAccountDetail = async (publicKey) => {
@@ -82,9 +65,7 @@ export const receivePaymentStream = (publicKey) => {
       .cursor('now')
       .forAccount(publicKey)
       .stream({
-        onmessage: (message) => {
-          resolve(message)
-        }
+        onmessage: message => resolve(message)
       })
   })
 }

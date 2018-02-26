@@ -7,11 +7,12 @@ import {
 
 let db = null
 
-export const initializeDb = async () => {
+export const initialize = async () => {
   db = new NeDB({ filename: DATABASE_PATH, autoload: true })
+  console.log('DATABASE_PATH', DATABASE_PATH)
 
   return new Promise((resolve, reject) => {
-    db.findOne({type: DOCUMENT_TYPE_USER_INFO}, (err, doc) => {
+    db.findOne({ type: DOCUMENT_TYPE_USER_INFO }, (err, doc) => {
       if (err) {
         reject(err)
         return
@@ -42,7 +43,7 @@ export const initializeDb = async () => {
   })
 }
 
-export const addUserAccountToDB = ({ publicKey, secretKey, balance, sequence }) => {
+export const addUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
   const accountCreated = {
     [publicKey]: {
       pKey: publicKey,
@@ -64,7 +65,7 @@ export const addUserAccountToDB = ({ publicKey, secretKey, balance, sequence }) 
   })
 }
 
-export const updateUserAccountToDB = ({ publicKey, secretKey, balance, sequence }) => {
+export const updateUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
   const updatedAccount = {
     pKey: publicKey,
     sKey: secretKey,
@@ -72,7 +73,7 @@ export const updateUserAccountToDB = ({ publicKey, secretKey, balance, sequence 
     sequence
   }
   return new Promise((resolve, reject) => {
-    db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: { [publicKey]: updatedAccount } } }, { returnUpdatedDocs: true, multi: false}, (err, numReplaced, affectedDocuments) => {
+    db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: { [publicKey]: updatedAccount } } }, { returnUpdatedDocs: true, multi: false }, (err, numReplaced, affectedDocuments) => {
       if (err) {
         reject(err)
         return
