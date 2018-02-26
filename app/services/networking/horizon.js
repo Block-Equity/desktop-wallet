@@ -71,7 +71,6 @@ export const receivePaymentStream = (publicKey) => {
 }
 
 export const sendPayment = ({ publicKey, secretKey, sequence, destinationId, amount }) => {
-  debugger
   let sourceKeys = StellarSdk.Keypair.fromSecret(secretKey)
   let transaction
 
