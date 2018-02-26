@@ -12,7 +12,7 @@ StellarSdk.Network.useTestNetwork()
 
 const BASE_URL_TEST_NET = config.get('app.testNetUrl')
 const BASE_URL_HORIZON_TEST_NET = config.get('horizon.testNetUrl')
-const BASE_URL = BASE_URL_TEST_NET
+const BASE_URL = BASE_URL_HORIZON_TEST_NET
 const server = new StellarSdk.Server(BASE_URL)
 
 export const createAccount = (publicKey) => {

@@ -17,6 +17,7 @@ import {
 import { sendPaymentToAddress } from '../../common/payment/actions'
 
 import isEmpty from 'lodash/isEmpty'
+import get from 'lodash/get'
 import QRCode from 'qrcode.react'
 
 import walletIcon from './images/icnWallet.png'
@@ -72,15 +73,17 @@ class Main extends Component {
         const publicKey = 'GBW74UVOXKGHO3WX6AV5ZGTB4JYBKCEJOUQAUSI25NRO3PKY5BC7WYZS'
         const secretKey = 'SA3W53XXG64ITFFIYQSBIJDG26LMXYRIMEVMNQMFAQJOYCZACCYBA34L'
         const { balance, sequence } = await horizon.getAccountDetail(publicKey)
-        const currentAccount = { pKey: publicKey, sKey: secretKey, balance, sequence }
-        await this.props.setCurrentAccount(currentAccount)
-        await this.props.fetchAccountDetails(currentAccount)
+
+        await this.props.setCurrentAccount({ pKey: publicKey, sKey: secretKey, balance, sequence })
+        await this.props.fetchAccountDetails({ publicKey, secretKey })
         /// ///// DELETE WHEN IT'S BACK UP /////////
       } else {
         // Make the first account in the list the current account
         const currentAccount = accounts[Object.keys(accounts)[0]]
+        const { pKey: publicKey, sKey: secretKey } = currentAccount
+
         await this.props.setCurrentAccount(currentAccount)
-        await this.props.fetchAccountDetails(currentAccount)
+        await this.props.fetchAccountDetails({ publicKey, secretKey })
       }
     } catch (e) {
       console.log(e)
@@ -111,7 +114,7 @@ class Main extends Component {
     console.log(`Valid Form Input || Account : ${this.state.sendAddress}`)
     console.log(`Valid Form Input || Amount : ${this.state.sendAmount}`)
 
-    this.props.sendPaymentToAddress({
+    await this.props.sendPaymentToAddress({
       destination: this.state.sendAddress,
       amount: this.state.sendAmount
     })

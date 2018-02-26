@@ -41,15 +41,13 @@ export function createAccount ({ publicKey, secretKey }) {
   }
 }
 
-export function fetchAccountDetails (account) {
+export function fetchAccountDetails ({ publicKey, secretKey }) {
   return async dispatch => {
     dispatch(accountDetailsRequest())
 
     let details
 
     try {
-      const { pKey: publicKey, sKey: secretKey } = account
-
       details = await horizon.getAccountDetail(publicKey)
 
       const { balance, sequence: nextSequence } = details
@@ -66,7 +64,7 @@ export function fetchAccountDetails (account) {
       return dispatch(accountDetailsFailure(e))
     }
 
-    return dispatch(accountDetailsSuccess(details))
+    return dispatch(accountDetailsSuccess())
   }
 }
 
@@ -131,10 +129,9 @@ export function accountDetailsRequest () {
   }
 }
 
-export function accountDetailsSuccess (details) {
+export function accountDetailsSuccess () {
   return {
-    type: Types.ACCOUNT_DETAILS_SUCCESS,
-    payload: { details }
+    type: Types.ACCOUNT_DETAILS_SUCCESS
   }
 }
 

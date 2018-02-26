@@ -81,12 +81,10 @@ function accountDetailsRequest (state) {
   }
 }
 
-function accountDetailsSuccess (state, payload) {
-  const { accounts } = payload
+function accountDetailsSuccess (state) {
   return {
     ...state,
-    isFetching: false,
-    accounts
+    isFetching: false
   }
 }
 

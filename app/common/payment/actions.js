@@ -1,11 +1,11 @@
 import { sendPayment } from '../../services/networking/horizon'
-import { fetchAccountDetails } from '../account/actions'
-import { getCurrentAccount } from '../account/selectors'
+import { fetchAccountDetails, setCurrentAccount } from '../account/actions'
+import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
 import * as Types from './types'
 
 export function sendPaymentToAddress ({ destination, amount }) {
   return async (dispatch, getState) => {
-    const currentAccount = getCurrentAccount(getState())
+    let currentAccount = getCurrentAccount(getState())
 
     const {
       pKey: publicKey,
@@ -16,6 +16,7 @@ export function sendPaymentToAddress ({ destination, amount }) {
     dispatch(paymentSendRequest())
 
     try {
+      // 1. Start the payment process
       await sendPayment({
         publicKey,
         secretKey,
@@ -24,8 +25,14 @@ export function sendPaymentToAddress ({ destination, amount }) {
         amount
       })
 
-      await fetchAccountDetails(currentAccount)
+      // 2. Fetch the account details to get the updated balance
+      await dispatch(fetchAccountDetails({ publicKey, secretKey }))
 
+      // 3. Update the current account (as this would not be automatically done otherwise)
+      currentAccount = getAccountByPublicKey(getState(), publicKey)
+      await dispatch(setCurrentAccount(currentAccount))
+
+      // 4. And we're done!
       return dispatch(paymentSendSuccess({
         destination,
         amount
@@ -45,7 +52,7 @@ export function paymentSendRequest () {
 export function paymentSendSuccess (payment) {
   return {
     type: Types.PAYMENT_SEND_SUCCESS,
-    payload: payment
+    payload: { payment }
   }
 }
 
