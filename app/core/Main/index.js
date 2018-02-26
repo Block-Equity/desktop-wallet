@@ -14,7 +14,10 @@ import {
   getCurrentAccount
 } from '../../common/account/selectors'
 
-import { sendPaymentToAddress } from '../../common/payment/actions'
+import {
+  sendPaymentToAddress,
+  fetchPaymentOperationList
+} from '../../common/payment/actions'
 
 import isEmpty from 'lodash/isEmpty'
 import get from 'lodash/get'
@@ -84,7 +87,7 @@ class Main extends Component {
 
         await this.props.setCurrentAccount(currentAccount)
         await this.props.fetchAccountDetails({ publicKey, secretKey })
-        await getPaymentOperationList(publicKey)
+        await this.props.fetchPaymentOperationList()
       }
     } catch (e) {
       console.log(e)
@@ -192,5 +195,6 @@ export default connect(mapStateToProps, {
   createAccount,
   fetchAccountDetails,
   setCurrentAccount,
-  sendPaymentToAddress
+  sendPaymentToAddress,
+  fetchPaymentOperationList
 })(Main)

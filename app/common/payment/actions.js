@@ -54,14 +54,8 @@ export function fetchPaymentOperationList() {
     dispatch(paymentOperationListRequest())
 
     try {
-      await getPaymentOperationList({
-        publicKey
-      })
-
-      return dispatch(paymentOperationListSuccess({
-        destination,
-        amount
-      }))
+      const paymentList = await getPaymentOperationList(publicKey)
+      return dispatch(paymentOperationListSuccess(paymentList))
     } catch (e) {
       return dispatch(paymentOperationListFailure(e))
     }

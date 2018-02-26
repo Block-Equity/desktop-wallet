@@ -68,13 +68,7 @@ export const getPaymentOperationList = async (publicKey) => {
       .limit(25)
       .call()
       .then(page => {
-        console.log('Page 1: ');
-        console.log(JSON.stringify(page.records));
-        return page.next();
-      })
-      .then(page => {
-          console.log('Page 2: ');
-          console.log(JSON.stringify(page.records));
+        resolve(page.records)
       })
       .catch(err => {
           console.log(err);
