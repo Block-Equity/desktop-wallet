@@ -27,7 +27,7 @@ import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
 
 // TODO: fix this
-//import { receivePaymentStream, getPaymentOperationList } from '../../services/networking/horizon'
+//import { receivePaymentStream } from '../../services/networking/horizon'
 
 import {
   MainContainer,
