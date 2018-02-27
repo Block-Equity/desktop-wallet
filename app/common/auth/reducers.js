@@ -2,19 +2,26 @@ import { createReducer } from '../utils'
 import * as Types from './types'
 
 export const INITIAL_STATE = {
-  // TODO: make `isAuthenticated` only true when all the steps are successfull,
-  // and not just when the credentials are valid.
-  isAuthenticated: false,
   // Log in
-  loginFailed: false,
+  isVerifyingCredentials: false,
+  areCredentialsVerified: false,
+  credentialsFailed: false,
+  token: undefined, // <-- needed to decrypt 2-FA secret from keychain, and DB
+  // 2-FA
+  isVerifyingTwoFa: false,
+  isTwoFaVerified: false,
+  twoFaVerificationFailed: false,
   // Locking
   isUnlocking: false,
   isLocking: false,
   lockingFailed: false,
   unlockingFailed: false,
   isLocked: true,
-  // User
-  user: undefined
+  // Auth values
+  error: undefined,
+  // When Credentials and 2-FA succeed, the user is fully
+  // authenticated (and thus actually logged in)
+  isAuthenticated: false
 }
 
 function unlockRequest (state) {
@@ -66,29 +73,61 @@ function lockFailure (state, error) {
   }
 }
 
-function loginRequest (state) {
+function verifyCredentialsRequest (state) {
   return {
     ...state,
-    loginFailed: false
+    isVerifyingCredentials: true
   }
 }
 
-function loginSuccess (state, payload) {
-  const { user } = payload
+function verifyCredentialsSuccess (state, payload) {
+  const { token } = payload
   return {
     ...state,
-    isAuthenticated: true,
-    user: user,
-    loginFailed: false
+    token,
+    areCredentialsVerified: true,
+    isVerifyingCredentials: false
   }
 }
 
-function loginFailure (state, error) {
+function verifyCredentialsFailure (state, error) {
   return {
     ...state,
-    isAuthenticated: false,
-    loginFailed: true,
+    isVerifyingCredentials: false,
+    credentialsFailed: true,
     error
+  }
+}
+
+function verifyTwoFaRequest (state) {
+  return {
+    ...state,
+    isVerifying: true
+  }
+}
+
+function verifyTwoFaSuccess (state) {
+  return {
+    ...state,
+    isTwoFaVerified: true,
+    isVerifyingTwoFa: false
+  }
+}
+
+function verifyTwoFaFailure (state, error) {
+  return {
+    ...state,
+    isTwoFaVerified: false,
+    isVerifyingTwoFa: false,
+    twoFaVerificationFailed: true,
+    error
+  }
+}
+
+function setAuthenticated (state) {
+  return {
+    ...state,
+    isAuthenticated: true
   }
 }
 
@@ -99,9 +138,13 @@ const reducers = {
   [Types.LOCK_REQUEST]: lockRequest,
   [Types.LOCK_SUCCESS]: lockSuccess,
   [Types.LOCK_FAILURE]: lockFailure,
-  [Types.LOGIN_REQUEST]: loginRequest,
-  [Types.LOGIN_SUCCESS]: loginSuccess,
-  [Types.LOGIN_FAILURE]: loginFailure
+  [Types.VERIFY_CRENDENTIALS_REQUEST]: verifyCredentialsRequest,
+  [Types.VERIFY_CRENDENTIALS_SUCCESS]: verifyCredentialsSuccess,
+  [Types.VERIFY_CRENDENTIALS_FAILURE]: verifyCredentialsFailure,
+  [Types.VERIFY_2FA_REQUEST]: verifyTwoFaRequest,
+  [Types.VERIFY_2FA_SUCCESS]: verifyTwoFaSuccess,
+  [Types.VERIFY_2FA_FAILURE]: verifyTwoFaFailure,
+  [Types.SET_AUTHENTICATED]: setAuthenticated
 }
 
 export default createReducer(INITIAL_STATE, reducers)

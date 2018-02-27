@@ -1,4 +1,5 @@
-import { verify } from '../../services/authentication/credentials'
+import * as credentials from '../../services/authentication/credentials'
+import * as twoFactor from '../../services/authentication/two-factor'
 import * as Types from './types'
 
 import {
@@ -43,14 +44,26 @@ export function lock (password) {
   }
 }
 
-export function login ({ username, password }) {
+export function verifyCredentials ({ username, password }) {
   return async dispatch => {
-    dispatch(loginRequest())
+    dispatch(verifyCredentialsRequest())
     try {
-      const token = await verify(username, password)
-      return dispatch(loginSuccess(token))
+      const token = await credentials.verify(username, password)
+      return dispatch(verifyCredentialsSuccess(token))
     } catch (err) {
-      return dispatch(loginFailure(err))
+      return dispatch(verifyCredentialsFailure(err))
+    }
+  }
+}
+
+export function verifiyTwoFa (token) {
+  return async dispatch => {
+    dispatch(verifyTwoFaRequest())
+    try {
+      await twoFactor.verify(token)
+      return dispatch(verifyTwoFaSuccess())
+    } catch (err) {
+      return dispatch(verifyTwoFaFailure(err))
     }
   }
 }
@@ -61,7 +74,7 @@ export function unlockRequest () {
   }
 }
 
-export function unlockSuccess (details) {
+export function unlockSuccess () {
   return {
     type: Types.UNLOCK_SUCCESS
   }
@@ -95,23 +108,49 @@ export function lockFailure (error) {
   }
 }
 
-export function loginRequest () {
+export function verifyCredentialsRequest () {
   return {
-    type: Types.LOGIN_REQUEST
+    type: Types.VERIFY_CRENDENTIALS_REQUEST
   }
 }
 
-export function loginSuccess (user) {
+export function verifyCredentialsSuccess (token) {
   return {
-    type: Types.LOGIN_SUCCESS,
-    payload: { user }
+    type: Types.VERIFY_CRENDENTIALS_SUCCESS,
+    payload: { token }
   }
 }
 
-export function loginFailure (error) {
+export function verifyCredentialsFailure (error) {
   return {
-    type: Types.LOGIN_FAILURE,
+    type: Types.VERIFY_CRENDENTIALS_FAILURE,
     payload: error,
     error: true
+  }
+}
+
+export function verifyTwoFaRequest () {
+  return {
+    type: Types.VERIFY_2FA_REQUEST
+  }
+}
+
+export function verifyTwoFaSuccess () {
+  return {
+    type: Types.VERIFY_2FA_SUCCESS
+  }
+}
+
+export function verifyTwoFaFailure (error) {
+  return {
+    type: Types.VERIFY_2FA_FAILURE,
+    payload: error,
+    error: true
+  }
+}
+
+export function setAuthenticated () {
+  return {
+    type: Types.SET_AUTHENTICATED
   }
 }
