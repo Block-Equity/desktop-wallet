@@ -60,18 +60,14 @@ export const getAccountDetail = async (publicKey) => {
 }
 
 export const getPaymentOperationList = async (publicKey) => {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     server.operations()
       .forAccount(publicKey)
       .order('desc')
       .limit(25)
       .call()
-      .then(page => {
-        resolve(page.records)
-      })
-      .catch(err => {
-          console.log(err);
-      });
+      .then(({ records }) => resolve(records))
+      .catch(error => reject(error));
   })
 }
 
