@@ -7,7 +7,19 @@ export function initializeAccount () {
     dispatch(accountInitializationRequest())
 
     try {
+      //1. Initialize Account
       let { accounts } = await db.initialize()
+
+      //2. Make the first account in the list the current account
+      //& set the current account
+      const currentAccount = accounts[Object.keys(accounts)[0]]
+      const { pKey: publicKey, sKey: secretKey } = currentAccount
+      await dispatch(setCurrentAccount(currentAccount))
+
+      //3. Get Account details for the current account
+      await this.props.fetchAccountDetails({ publicKey, secretKey })
+
+      //4. Success
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
       return dispatch(accountInitializationFailure(e))

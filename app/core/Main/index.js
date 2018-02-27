@@ -16,7 +16,8 @@ import {
 
 import {
   sendPaymentToAddress,
-  fetchPaymentOperationList
+  fetchPaymentOperationList,
+  streamPayments
 } from '../../common/payment/actions'
 
 import isEmpty from 'lodash/isEmpty'
@@ -78,13 +79,10 @@ class Main extends Component {
         await this.props.fetchAccountDetails({ publicKey, secretKey })
         /// ///// DELETE WHEN IT'S BACK UP /////////
       } else {
-        // Make the first account in the list the current account
-        const currentAccount = accounts[Object.keys(accounts)[0]]
-        const { pKey: publicKey, sKey: secretKey } = currentAccount
-
-        await this.props.setCurrentAccount(currentAccount)
-        await this.props.fetchAccountDetails({ publicKey, secretKey })
+        //TODO: Fetching payment operation list will be component specific
         await this.props.fetchPaymentOperationList()
+        await this.props.streamPayments()
+
       }
     } catch (e) {
       console.log(e)
@@ -193,5 +191,6 @@ export default connect(mapStateToProps, {
   fetchAccountDetails,
   setCurrentAccount,
   sendPaymentToAddress,
-  fetchPaymentOperationList
+  fetchPaymentOperationList,
+  streamPayments
 })(Main)
