@@ -41,7 +41,7 @@ export const enroll = async ({ username, password }) => {
 
   await update({ secret, password })
 
-  let result = authenticator.generateTotpUri(secret, username, 'BlockEQ', 'SHA1', 6, 30)
+  let result = authenticator.generateTotpUri(secret, username, config.get('app.name'), 'SHA1', 6, 30)
 
   return result
 }
