@@ -59,7 +59,6 @@ export const getAccountDetail = async (publicKey) => {
   }
 }
 
-//Ref: https://www.stellar.org/developers/js-stellar-sdk/reference/examples.html
 export const getPaymentOperationList = async (publicKey) => {
   return new Promise(resolve => {
     server.operations()
