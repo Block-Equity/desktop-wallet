@@ -59,7 +59,7 @@ class Main extends Component {
     try {
       // TODO: this is temporarily here. It will be moved to the Login (or auth flow) once
       // it's done
-      await this.props.unlock('d6F3Efeq')
+      await this.props.unlock()
       await this.props.initializeAccount()
 
       const { accounts } = this.props
