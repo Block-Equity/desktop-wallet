@@ -1,4 +1,4 @@
-import { sendPayment, getPaymentOperationList } from '../../services/networking/horizon'
+import { sendPayment, getPaymentOperationList, receivePaymentStream } from '../../services/networking/horizon'
 import { fetchAccountDetails, setCurrentAccount } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
 import * as Types from './types'
@@ -60,6 +60,10 @@ export function fetchPaymentOperationList() {
       return dispatch(paymentOperationListFailure(e))
     }
   }
+}
+
+export function streamPayments() {
+
 }
 
 export function paymentSendRequest () {
