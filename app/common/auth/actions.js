@@ -17,7 +17,7 @@ export function verifyCredentials ({ username, password }) {
   }
 }
 
-export function verifiyTwoFa (token) {
+export function verifyTwoFa (token) {
   return async dispatch => {
     dispatch(verifyTwoFaRequest())
 
