@@ -59,6 +59,18 @@ export const getAccountDetail = async (publicKey) => {
   }
 }
 
+export const getPaymentOperationList = async (publicKey) => {
+  return new Promise((resolve, reject) => {
+    server.operations()
+      .forAccount(publicKey)
+      .order('desc')
+      .limit(25)
+      .call()
+      .then(({ records }) => resolve(records))
+      .catch(error => reject(error));
+  })
+}
+
 export const receivePaymentStream = (publicKey) => {
   return new Promise(resolve => {
     server.payments()
