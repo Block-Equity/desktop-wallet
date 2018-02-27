@@ -11,7 +11,7 @@ const get = async (password) => {
   return decryptText(result, password)
 }
 
-const update = async (secret, password) => {
+const update = async ({ secret, password }) => {
   let result = await encryptText(secret, password)
   return keytar.setPassword(APP_IDENTIFIER, ACCOUNT, result)
 }
@@ -20,12 +20,12 @@ export const remove = async () => {
   return keytar.deletePassword(APP_IDENTIFIER, ACCOUNT)
 }
 
-export const verify = async (token) => {
+export const verify = async ({ password, code }) => {
   // 1) Get the secret
-  const secret = await get()
+  const secret = await get(password)
 
   // 2) Check that the token is valid
-  const delta = authenticator.verifyToken(secret, token)
+  const delta = authenticator.verifyToken(secret, code)
 
   // 3) If it's not, then throw an error
   if (delta === null) {
@@ -35,11 +35,11 @@ export const verify = async (token) => {
   return true
 }
 
-export const enroll = async (username) => {
+export const enroll = async ({ username, password }) => {
   // TODO: auto-generate this
   let secret = authenticator.generateKey()
 
-  await update(secret)
+  await update({ secret, password })
 
   let result = authenticator.generateTotpUri(secret, username, 'BlockEQ', 'SHA1', 6, 30)
 

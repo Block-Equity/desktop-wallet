@@ -17,12 +17,13 @@ export function verifyCredentials ({ username, password }) {
   }
 }
 
-export function verifyTwoFa (token) {
-  return async dispatch => {
+export function verifyTwoFa (code) {
+  return async (dispatch, getState) => {
     dispatch(verifyTwoFaRequest())
 
     try {
-      await twoFactor.verify(token)
+      const token = getAuthToken(getState())
+      await twoFactor.verify({ password: token, code })
       return dispatch(verifyTwoFaSuccess())
     } catch (err) {
       return dispatch(verifyTwoFaFailure(err))
@@ -37,7 +38,6 @@ export function unlock () {
     try {
       // Pull the auth token from the state, and use it to unlock the DB
       const token = getAuthToken(getState())
-
       await locking.unlock({ password: token })
       // TODO: simply here for dubugging purposes
       if (process.env.NODE_ENV === 'development') {
