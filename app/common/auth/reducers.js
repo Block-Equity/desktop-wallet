@@ -6,7 +6,7 @@ export const INITIAL_STATE = {
   isVerifyingCredentials: false,
   areCredentialsVerified: false,
   credentialsFailed: false,
-  token: undefined, // <-- needed to decrypt 2-FA secret from keychain, and DB
+  token: undefined, // <-- needed to unlock the DB
   // 2-FA
   isVerifyingTwoFa: false,
   isTwoFaVerified: false,
