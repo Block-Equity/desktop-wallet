@@ -70,15 +70,12 @@ export function streamPayments() {
       pKey: publicKey,
     } = currentAccount
 
-    dispatch(streamPaymentRequest())
-
     try {
       let incomingPayment = await receivePaymentStream(publicKey)
       return dispatch(streamPaymentSuccess(incomingPayment))
     } catch (e) {
       return dispatch(streamPaymentFailure(e))
     }
-
   }
 }
 
@@ -121,12 +118,6 @@ export function paymentOperationListFailure (error) {
     type: Types.PAYMENT_OPERATION_LIST_FAILURE,
     payload: error,
     error: true
-  }
-}
-
-export function streamPaymentRequest () {
-  return {
-    type: Types.PAYMENT_STREAMING_REQUEST
   }
 }
 
