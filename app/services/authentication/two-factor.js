@@ -41,7 +41,23 @@ export const enroll = async ({ username, password }) => {
 
   await update({ secret, password })
 
-  let result = authenticator.generateTotpUri(secret, username, config.get('app.name'), 'SHA1', 6, 30)
+  const ALGORITHM = 'SHA1'
+
+  // Determines how long of a one-time passcode to display to the user.
+  // (may have the values 6 or 8)
+  const DIGITS = 6
+
+  // Defines a period that a TOTP code will be valid for, in seconds.
+  const PERIOD = 30
+
+  let result = authenticator.generateTotpUri(
+    secret,
+    username,
+    config.get('app.name'),
+    ALGORITHM,
+    DIGITS,
+    PERIOD
+  )
 
   return result
 }
