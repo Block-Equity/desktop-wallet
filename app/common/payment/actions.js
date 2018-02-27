@@ -54,7 +54,7 @@ export function fetchPaymentOperationList() {
     dispatch(paymentOperationListRequest())
 
     try {
-      const paymentList = await getPaymentOperationList(publicKey)
+      let paymentList = await getPaymentOperationList(publicKey)
       return dispatch(paymentOperationListSuccess(paymentList))
     } catch (e) {
       return dispatch(paymentOperationListFailure(e))
@@ -85,20 +85,20 @@ export function paymentSendFailure (error) {
 
 export function paymentOperationListRequest () {
   return {
-    type: Types.PAYMENT_LIST_REQUEST
+    type: Types.PAYMENT_OPERATION_LIST_REQUEST
   }
 }
 
 export function paymentOperationListSuccess (list) {
   return {
-    type: Types.PAYMENT_LIST_SUCCESS,
-    payload: list
+    type: Types.PAYMENT_OPERATION_LIST_SUCCESS,
+    payload: { list }
   }
 }
 
 export function paymentOperationListFailure (error) {
   return {
-    type: Types.PAYMENT_LIST_FAILURE,
+    type: Types.PAYMENT_OPERATION_LIST_FAILURE,
     payload: error,
     error: true
   }

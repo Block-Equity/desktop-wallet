@@ -76,9 +76,9 @@ const paymentSendReducers = {
 }
 
 const paymentTransactionReducers = {
-  [Types.PAYMENT_LIST_REQUEST]: paymentTransactionsRequest,
-  [Types.PAYMENT_LIST_SUCCESS]: paymentTransactionsSuccess,
-  [Types.PAYMENT_LIST_FAILURE]: paymentTransactionsFailure
+  [Types.PAYMENT_OPERATION_LIST_REQUEST]: paymentOperationListRequest,
+  [Types.PAYMENT_OPERATION_LIST_SUCCESS]: paymentOperationListSuccess,
+  [Types.PAYMENT_OPERATION_LIST_FAILURE]: paymentOperationListFailure
 }
 
 export default createReducer(INITIAL_STATE, {...paymentSendReducers, ...paymentTransactionReducers})
