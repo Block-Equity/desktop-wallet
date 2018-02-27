@@ -1,4 +1,5 @@
 import * as db from '../../db'
+import { getCurrentAccount } from './selectors'
 import * as horizon from '../../services/networking/horizon'
 import * as Types from './types'
 
@@ -7,19 +8,7 @@ export function initializeAccount () {
     dispatch(accountInitializationRequest())
 
     try {
-      //1. Initialize Account
       let { accounts } = await db.initialize()
-
-      //2. Make the first account in the list the current account
-      //& set the current account
-      const currentAccount = accounts[Object.keys(accounts)[0]]
-      const { pKey: publicKey, sKey: secretKey } = currentAccount
-      await dispatch(setCurrentAccount(currentAccount))
-
-      //3. Get Account details for the current account
-      await this.props.fetchAccountDetails({ publicKey, secretKey })
-
-      //4. Success
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
       return dispatch(accountInitializationFailure(e))
@@ -53,8 +42,10 @@ export function createAccount ({ publicKey, secretKey }) {
   }
 }
 
-export function fetchAccountDetails ({ publicKey, secretKey }) {
-  return async dispatch => {
+export function fetchAccountDetails () {
+  return async (dispatch, getState) => {
+    let currentAccount = getCurrentAccount(getState())
+    const { pKey: publicKey, sKey: secretKey } = currentAccount
     dispatch(accountDetailsRequest())
 
     let details
@@ -71,7 +62,9 @@ export function fetchAccountDetails ({ publicKey, secretKey }) {
         sequence: nextSequence
       })
 
+      const updatedCurrentAccount = accounts[Object.keys(accounts)[0]]
       dispatch(setAccounts(accounts))
+      dispatch(setCurrentAccount(updatedCurrentAccount))
     } catch (e) {
       return dispatch(accountDetailsFailure(e))
     }

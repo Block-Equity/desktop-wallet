@@ -136,3 +136,10 @@ export function streamPaymentFailure (error) {
   }
 }
 
+export function clearStreamPaymentMessage() {
+  return {
+    type: Types.PAYMENT_OPERATION_LIST_SUCCESS,
+    payload: {}
+  }
+}
+

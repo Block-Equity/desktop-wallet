@@ -49,14 +49,14 @@ class Main extends Component {
     this.state = {
       // TODO: temporary here, cuz I'm tired of populating every time :p
       sendAddress: 'GACCYANIKFQPYJZ7VTWKR6DH3AWNOLO7ETVFBVWHLLZ62VPRIFNDZTJ2',
-      sendAmount: ''
+      sendAmount: '',
+      paymentTransactions: []
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   async componentDidMount () {
-    // debugger
     try {
       // TODO: this is temporarily here. It will be moved to the Login (or auth flow) once
       // it's done
@@ -76,13 +76,24 @@ class Main extends Component {
         const { balance, sequence } = await horizon.getAccountDetail(publicKey)
 
         await this.props.setCurrentAccount({ pKey: publicKey, sKey: secretKey, balance, sequence })
-        await this.props.fetchAccountDetails({ publicKey, secretKey })
-        /// ///// DELETE WHEN IT'S BACK UP /////////
-      } else {
-        //TODO: Fetching payment operation list will be component specific
+        await this.props.fetchAccountDetails()
         await this.props.fetchPaymentOperationList()
         await this.props.streamPayments()
-
+        await this.props.fetchAccountDetails()
+        /// ///// DELETE WHEN IT'S BACK UP /////////
+      } else {
+        const currentAccount = accounts[Object.keys(accounts)[0]]
+        const { pKey: publicKey, sKey: secretKey } = currentAccount
+        await this.props.setCurrentAccount(currentAccount)
+        await this.props.fetchAccountDetails()
+        //TODO: Fetching payment operation list will be component specific
+        await this.props.fetchPaymentOperationList()
+        await this.props.streamPayments() //TODO: Perhaps after streaming payments fetch account details within the same action?
+        await this.props.fetchAccountDetails()
+        await this.props.fetchPaymentOperationList()
+        new Notification('Payment Received',
+          { body: `You have received ${this.state.incomingPayment.amount} XLM from ${this.state.incomingPayment.from}`}
+        )
       }
     } catch (e) {
       console.log(e)
@@ -110,12 +121,16 @@ class Main extends Component {
     //   return
     // }
 
-    console.log(`Valid Form Input || Account : ${this.state.sendAddress}`)
-    console.log(`Valid Form Input || Amount : ${this.state.sendAmount}`)
-
     await this.props.sendPaymentToAddress({
       destination: this.state.sendAddress,
       amount: this.state.sendAmount
+    })
+
+    await this.props.fetchAccountDetails()
+    await this.props.fetchPaymentOperationList()
+
+    this.setState({
+      sendAmount: ''
     })
   }
 
@@ -155,10 +170,34 @@ class Main extends Component {
             <input type='text' className='form-control' placeholder='Amount in XLM'
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
-          <button className='btn btn-outline-success' type='submit'>Save</button>
+          <button className='btn btn-outline-success' type='submit'>Send</button>
         </form>
       </SendAssetFormContainer>
     )
+  }
+
+  //TODO: Create another component for this.
+  renderTableHeaders() {
+    const tableHeaders = [
+      'Date', 'Account', 'Amount'
+    ];
+    return tableHeaders.map((item, index) => {
+        return (
+            <th scope="col" key={ index }>{ item }</th>
+        )
+    });
+  }
+
+  renderTableData() {
+    return this.props.paymentTransactions.map((item, index) => {
+      return (
+          <tr key={ index }>
+          <td>{ item.created_at }</td>
+          <td>{ item.from }</td>
+          <td>{ item.amount }</td>
+          </tr>
+      )
+    });
   }
 
   render () {
@@ -171,6 +210,16 @@ class Main extends Component {
         <ContentContainer>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
           { this.renderSendMoneySection() }
+          <table className="table table-hover table-dark">
+            <thead className="thead-dark">
+              <tr>
+                { this.renderTableHeaders() }
+              </tr>
+            </thead>
+            <tbody>
+                { this.renderTableData() }
+            </tbody>
+          </table>
         </ContentContainer>
       </MainContainer>
     )
@@ -180,7 +229,9 @@ class Main extends Component {
 const mapStateToProps = (state) => {
   return {
     accounts: getAccounts(state),
-    currentAccount: getCurrentAccount(state)
+    currentAccount: getCurrentAccount(state),
+    incomingPaymentMessage: state.payment.incomingPaymentMessage,
+    paymentTransactions: state.payment.paymentTransactions
   }
 }
 

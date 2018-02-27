@@ -61,7 +61,7 @@ export const AccountBalanceLabel = styled.h5`
 export const SendAssetFormContainer = styled.div`
   width: 70%;
   margin-top: 3rem;
-  padding-bottom: 10rem;
+  padding-bottom: 2rem;
   padding-left: 2rem;
 `
 
