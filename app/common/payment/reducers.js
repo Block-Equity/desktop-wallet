@@ -7,7 +7,20 @@ export const INITIAL_STATE = {
   payments: {},
   isPaymentTransactionsFetching: false, //tooo long
   paymentTransactionsFailed: false,
-  paymentTransactions: [] //TODO: This is a duplication of payments
+  paymentTransactions: [], //TODO: This is a duplication of payments
+  incomingPaymentMessage: {}
+}
+
+function streamPaymentRequest (state) {
+
+}
+
+function streamPaymentSuccess (state, payload) {
+
+}
+
+function streamPaymentFailure (state, error) {
+
 }
 
 function paymentSendRequest (state) {

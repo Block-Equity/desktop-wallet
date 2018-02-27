@@ -63,7 +63,23 @@ export function fetchPaymentOperationList() {
 }
 
 export function streamPayments() {
+  return async (dispatch, getState) => {
+    let currentAccount = getCurrentAccount(getState())
 
+    const {
+      pKey: publicKey,
+    } = currentAccount
+
+    dispatch(streamPaymentRequest())
+
+    try {
+      let incomingPayment = await receivePaymentStream(publicKey)
+      return dispatch(streamPaymentSuccess(incomingPayment))
+    } catch (e) {
+      return dispatch(streamPaymentFailure(e))
+    }
+
+  }
 }
 
 export function paymentSendRequest () {
@@ -103,6 +119,27 @@ export function paymentOperationListSuccess (list) {
 export function paymentOperationListFailure (error) {
   return {
     type: Types.PAYMENT_OPERATION_LIST_FAILURE,
+    payload: error,
+    error: true
+  }
+}
+
+export function streamPaymentRequest () {
+  return {
+    type: Types.PAYMENT_STREAMING_REQUEST
+  }
+}
+
+export function streamPaymentSuccess (message) {
+  return {
+    type: Types.PAYMENT_STREAMING_SUCCESS,
+    payload: message
+  }
+}
+
+export function streamPaymentFailure (error) {
+  return {
+    type: Types.PAYMENT_STREAMING_FAILURE,
     payload: error,
     error: true
   }
