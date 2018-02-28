@@ -26,7 +26,7 @@ export function sendPaymentToAddress ({ destination, amount }) {
       })
 
       // 2. Fetch the account details to get the updated balance
-      await dispatch(fetchAccountDetails({ publicKey, secretKey }))
+      await dispatch(fetchAccountDetails())
 
       // 3. Update the current account (as this would not be automatically done otherwise)
       currentAccount = getAccountByPublicKey(getState(), publicKey)
@@ -72,6 +72,8 @@ export function streamPayments() {
 
     try {
       let incomingPayment = await receivePaymentStream(publicKey)
+      await dispatch(fetchAccountDetails())
+      await dispatch(fetchPaymentOperationList())
       return dispatch(streamPaymentSuccess(incomingPayment))
     } catch (e) {
       return dispatch(streamPaymentFailure(e))

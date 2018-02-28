@@ -65,23 +65,7 @@ class Main extends Component {
 
       const { accounts } = this.props
 
-      if (isEmpty(accounts)) {
-        // TODO: friend bot is broken, so comment the two lines below, and use harcoded keypair
-        // const { mnemonic, publicKey, secretKey } = horizon.createSeed()
-        // await this.props.createAccount({ publicKey, secretKey })
-
-        /// ///// DELETE WHEN IT'S BACK UP /////////
-        const publicKey = 'GBW74UVOXKGHO3WX6AV5ZGTB4JYBKCEJOUQAUSI25NRO3PKY5BC7WYZS'
-        const secretKey = 'SA3W53XXG64ITFFIYQSBIJDG26LMXYRIMEVMNQMFAQJOYCZACCYBA34L'
-        const { balance, sequence } = await horizon.getAccountDetail(publicKey)
-
-        await this.props.setCurrentAccount({ pKey: publicKey, sKey: secretKey, balance, sequence })
-        await this.props.fetchAccountDetails()
-        await this.props.fetchPaymentOperationList()
-        await this.props.streamPayments()
-        await this.props.fetchAccountDetails()
-        /// ///// DELETE WHEN IT'S BACK UP /////////
-      } else {
+      if (!isEmpty(accounts)) {
         const currentAccount = accounts[Object.keys(accounts)[0]]
         const { pKey: publicKey, sKey: secretKey } = currentAccount
         await this.props.setCurrentAccount(currentAccount)
@@ -89,10 +73,8 @@ class Main extends Component {
         //TODO: Fetching payment operation list will be component specific
         await this.props.fetchPaymentOperationList()
         await this.props.streamPayments() //TODO: Perhaps after streaming payments fetch account details within the same action?
-        await this.props.fetchAccountDetails()
-        await this.props.fetchPaymentOperationList()
         new Notification('Payment Received',
-          { body: `You have received ${this.state.incomingPayment.amount} XLM from ${this.state.incomingPayment.from}`}
+          { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
         )
       }
     } catch (e) {
@@ -132,6 +114,15 @@ class Main extends Component {
     this.setState({
       sendAmount: ''
     })
+  }
+
+  renderNavigationContainer() {
+    return (
+      <NavigationContainer>
+        <WalletIcon src={walletIcon} alt='' />
+        <SettingsIcon src={settingIcon} alt='' />
+      </NavigationContainer>
+    )
   }
 
   renderAccountInfoContent () {
@@ -203,15 +194,11 @@ class Main extends Component {
   render () {
     return (
       <MainContainer>
-        <NavigationContainer>
-          <WalletIcon src={walletIcon} alt='' />
-          <SettingsIcon src={settingIcon} alt='' />
-        </NavigationContainer>
         <ContentContainer>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
           { this.renderSendMoneySection() }
-          <table className="table table-hover table-dark">
-            <thead className="thead-dark">
+          <table className="table-hover table-dark">
+            <thead className="thead-light">
               <tr>
                 { this.renderTableHeaders() }
               </tr>
