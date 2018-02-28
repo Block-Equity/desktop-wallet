@@ -20,6 +20,11 @@ import {
   streamPayments
 } from '../../common/payment/actions'
 
+import {
+  getIncomingPayment,
+  getPaymentTransactions
+} from '../../common/payment/selectors'
+
 import isEmpty from 'lodash/isEmpty'
 import get from 'lodash/get'
 import QRCode from 'qrcode.react'
@@ -74,7 +79,7 @@ class Main extends Component {
         await this.props.fetchAccountDetails()
         //TODO: Fetching payment operation list will be component specific
         await this.props.fetchPaymentOperationList()
-        await this.props.streamPayments() //TODO: Perhaps after streaming payments fetch account details within the same action?
+        await this.props.streamPayments()
         if (this.props.incomingPayment.from !== publicKey) {
           new Notification('Payment Received',
             { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
@@ -223,8 +228,8 @@ const mapStateToProps = (state) => {
   return {
     accounts: getAccounts(state),
     currentAccount: getCurrentAccount(state),
-    incomingPayment: state.payment.incomingPaymentMessage,
-    paymentTransactions: state.payment.paymentTransactions
+    incomingPayment: getIncomingPayment(state),
+    paymentTransactions: getPaymentTransactions (state)
   }
 }
 
