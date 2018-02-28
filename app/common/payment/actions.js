@@ -72,8 +72,14 @@ export function streamPayments() {
 
     try {
       let incomingPayment = await receivePaymentStream(publicKey)
+
+      //Update Account Details
       await dispatch(fetchAccountDetails())
+
+      //Update Payment Operation list
       await dispatch(fetchPaymentOperationList())
+
+      //Finally, store incoming payment to local store
       return dispatch(streamPaymentSuccess(incomingPayment))
     } catch (e) {
       return dispatch(streamPaymentFailure(e))

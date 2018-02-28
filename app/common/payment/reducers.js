@@ -13,11 +13,10 @@ export const INITIAL_STATE = {
 }
 
 function streamPaymentSuccess (state, payload) {
-  const { paymentMessage } = payload
   return {
     ...state,
     incomingPaymentMessageFailed: false,
-    incomingPaymentMessage: paymentMessage
+    incomingPaymentMessage: payload
   }
 }
 

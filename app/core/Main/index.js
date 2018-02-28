@@ -26,6 +26,7 @@ import QRCode from 'qrcode.react'
 
 import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
+import logoIcon from '../Launch/logo-gray.png'
 
 import {
   MainContainer,
@@ -36,7 +37,8 @@ import {
   SendAssetFormContainer,
   SendAssetFormLabel,
   WalletIcon,
-  SettingsIcon
+  SettingsIcon,
+  LogoIcon
 } from './styledComponents'
 
 import * as horizon from '../../services/networking/horizon'
@@ -73,9 +75,11 @@ class Main extends Component {
         //TODO: Fetching payment operation list will be component specific
         await this.props.fetchPaymentOperationList()
         await this.props.streamPayments() //TODO: Perhaps after streaming payments fetch account details within the same action?
-        new Notification('Payment Received',
-          { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
-        )
+        if (this.props.incomingPayment.from !== publicKey) {
+          new Notification('Payment Received',
+            { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
+          )
+        }
       }
     } catch (e) {
       console.log(e)
@@ -95,13 +99,13 @@ class Main extends Component {
   async handleSubmit (event) {
     event.preventDefault()
 
-    // if (!event.target.checkValidity()) {
-    //   this.setState({
-    //     invalid: true,
-    //     displayErrors: true
-    //   })
-    //   return
-    // }
+    /*if (!event.target.checkValidity()) {
+       this.setState({
+         invalid: true,
+         displayErrors: true
+       })
+       return
+    }*/
 
     await this.props.sendPaymentToAddress({
       destination: this.state.sendAddress,
@@ -131,8 +135,9 @@ class Main extends Component {
 
     return (
       <ContentContainer>
+        <AccountBalanceLabel>Your Balance:
+          <b> {balance} </b> </AccountBalanceLabel>
         <AccountAddressLabel>{address}</AccountAddressLabel>
-        <AccountBalanceLabel>Balance: {balance}</AccountBalanceLabel>
         <QRCode value={address} size={100} />
       </ContentContainer>
     )
@@ -195,6 +200,7 @@ class Main extends Component {
     return (
       <MainContainer>
         <ContentContainer>
+          <LogoIcon src={logoIcon} alt=''></LogoIcon>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
           { this.renderSendMoneySection() }
           <table className="table-hover table-dark">
@@ -217,7 +223,7 @@ const mapStateToProps = (state) => {
   return {
     accounts: getAccounts(state),
     currentAccount: getCurrentAccount(state),
-    incomingPaymentMessage: state.payment.incomingPaymentMessage,
+    incomingPayment: state.payment.incomingPaymentMessage,
     paymentTransactions: state.payment.paymentTransactions
   }
 }

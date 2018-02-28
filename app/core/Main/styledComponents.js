@@ -40,7 +40,6 @@ export const ContentContainer = styled.div`
   -webkit-align-items: center;
   align-items: center;
   flex: 1 1 auto;
-  margin-left: 100px;
   overflow: auto;
 `
 
@@ -67,6 +66,13 @@ export const SendAssetFormContainer = styled.div`
 
 export const SendAssetFormLabel = styled.label`
   color: #000000;
+`
+
+export const LogoIcon = styled.img`
+  width: 150px;
+  height: 77px;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 `
 
 export const SettingsIcon = styled.img`
