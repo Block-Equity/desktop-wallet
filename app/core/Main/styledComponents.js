@@ -43,6 +43,13 @@ export const ContentContainer = styled.div`
   overflow: auto;
 `
 
+export const AccountBalanceContainer = styled.div`
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+`
+
 export const AccountAddressLabel = styled.h3`
   margin-top: 3rem;
   font-size: 1rem;
@@ -55,6 +62,14 @@ export const AccountBalanceLabel = styled.h5`
   font-size: 1.5rem;
   font-weight: 100;
   color: #000000;
+`
+
+export const AccountBalanceCurrencyLabel = styled.h6`
+  margin-top: 1.4rem;
+  margin-left: 0.25rem;
+  font-size: 1rem;
+  font-weight: 200;
+  color: #444444;
 `
 
 export const SendAssetFormContainer = styled.div`

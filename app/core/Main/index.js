@@ -27,6 +27,7 @@ import {
 
 import isEmpty from 'lodash/isEmpty'
 import get from 'lodash/get'
+import numeral from 'numeral'
 import QRCode from 'qrcode.react'
 
 import walletIcon from './images/icnWallet.png'
@@ -37,8 +38,10 @@ import {
   MainContainer,
   NavigationContainer,
   ContentContainer,
+  AccountBalanceContainer,
   AccountAddressLabel,
   AccountBalanceLabel,
+  AccountBalanceCurrencyLabel,
   SendAssetFormContainer,
   SendAssetFormLabel,
   WalletIcon,
@@ -140,8 +143,10 @@ class Main extends Component {
 
     return (
       <ContentContainer>
-        <AccountBalanceLabel>Your Balance:
-          <b> {balance} </b> </AccountBalanceLabel>
+        <AccountBalanceContainer>
+          <AccountBalanceLabel><b> {numeral(balance).format('0,0.0000')} </b> </AccountBalanceLabel>
+          <AccountBalanceCurrencyLabel> XLM </AccountBalanceCurrencyLabel>
+        </AccountBalanceContainer>
         <AccountAddressLabel>{address}</AccountAddressLabel>
         <QRCode value={address} size={100} />
       </ContentContainer>
@@ -229,7 +234,7 @@ const mapStateToProps = (state) => {
     accounts: getAccounts(state),
     currentAccount: getCurrentAccount(state),
     incomingPayment: getIncomingPayment(state),
-    paymentTransactions: getPaymentTransactions (state)
+    paymentTransactions: getPaymentTransactions(state)
   }
 }
 
