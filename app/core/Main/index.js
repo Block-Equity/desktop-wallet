@@ -34,10 +34,13 @@ import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
 import logoIcon from '../Launch/logo-gray.png'
 
+import styles from './style.css';
+
 import {
   MainContainer,
   NavigationContainer,
   ContentContainer,
+  ComponentContainer,
   TabContainer,
   AccountInfoContainer,
   AccountInfoTitle,
@@ -47,6 +50,8 @@ import {
   AccountBalanceCurrencyLabel,
   SendAssetFormContainer,
   SendAssetFormLabel,
+  SendAssetInput,
+  ReceiveAssetContainer,
   WalletIcon,
   SettingsIcon,
   LogoIcon
@@ -54,19 +59,23 @@ import {
 
 import * as horizon from '../../services/networking/horizon'
 
-const styles = {}
+const navigation = ['Transactions', 'Send', 'Receive']
+const INITIAL_NAVIGATION_INDEX = 'Transactions';
 
 class Main extends Component {
+
   constructor (props) {
     super()
     this.state = {
       // TODO: temporary here, cuz I'm tired of populating every time :p
       sendAddress: 'GACCYANIKFQPYJZ7VTWKR6DH3AWNOLO7ETVFBVWHLLZ62VPRIFNDZTJ2',
       sendAmount: '',
-      paymentTransactions: []
+      paymentTransactions: [],
+      selectedMenuItem: INITIAL_NAVIGATION_INDEX
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.navigationClickHandler = this.navigationClickHandler.bind(this)
   }
 
   async componentDidMount () {
@@ -96,6 +105,94 @@ class Main extends Component {
       console.log(e)
       // TODO: display something on the UI
     }
+  }
+
+  renderAccountInfoContent () {
+    const balance = this.props.currentAccount.balance.balance
+    return (
+      <AccountInfoContainer>
+        <ContentContainer>
+          <AccountInfoTitle> YOUR CURRENT XLM BALANCE </AccountInfoTitle>
+          <AccountBalanceContainer>
+            <AccountBalanceLabel><b> {numeral(balance).format('0,0.00')} </b> </AccountBalanceLabel>
+          </AccountBalanceContainer>
+        </ContentContainer>
+      </AccountInfoContainer>
+    )
+  }
+
+  //region Tabs
+  renderTabs() {
+    return (
+      <TabContainer>
+        <ul className="nav nav-pills nav-justified" id="pills-tab" role="tablist">
+          { this.renderNavigationItems() }
+        </ul>
+      </TabContainer>
+    )
+  }
+
+  renderNavigationItems() {
+    return navigation.map((item, index) => {
+        var idBuilder = `${item}-tab`;
+        var classNameBuilder = (this.state.selectedMenuItem === item) ? 'nav-link active' : 'nav-link';
+        return (
+          <li className="nav-item" key={ idBuilder }>
+              <a className={ classNameBuilder } href=''
+                  onClick={(e) => this.navigationClickHandler(e, item)}>{ item }</a>
+          </li>
+        )
+    });
+  }
+
+  navigationClickHandler(event, item) {
+    event.preventDefault();
+    this.setState({
+      selectedMenuItem: item
+    })
+  }
+  //endregion
+
+  //region Receive Money
+  renderReceiveMoneySection() {
+    const address = this.props.currentAccount.pKey
+    return (
+      <div>
+        <AccountAddressLabel>{address}</AccountAddressLabel>
+        <QRCode value={address} size={100} />
+      </div>
+    )
+  }
+  //endregion
+
+  //region Send Money
+  renderSendMoneySection () {
+    // TODO: handle form errors
+    const { invalid, displayErrors } = this.state
+
+    var formStyle = ''
+
+    if (displayErrors) {
+      formStyle = styles.sendAssetFormDisplayErrors
+    }
+
+    return (
+      <SendAssetFormContainer>
+        <form id='sendAssetForm' onSubmit={this.handleSubmit}>
+          <div className='form-group'>
+            <SendAssetFormLabel htmlFor='sendAddress'>Send to address: </SendAssetFormLabel>
+            <input type='text' className='form-control' placeholder='Send Address'
+              id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
+          </div>
+          <div className='form-group'>
+            <SendAssetFormLabel htmlFor='sendAmount'>Amount in XLM: </SendAssetFormLabel>
+            <input type='text' className='form-control' placeholder='Amount in XLM'
+              id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
+          </div>
+          <button className='btn btn-outline-success' type='submit'>Send</button>
+        </form>
+      </SendAssetFormContainer>
+    )
   }
 
   handleChange (event) {
@@ -130,62 +227,9 @@ class Main extends Component {
       sendAmount: ''
     })
   }
+  //endregion
 
-  renderAccountInfoContent () {
-    const balance = this.props.currentAccount.balance.balance
-
-    return (
-      <AccountInfoContainer>
-        <ContentContainer>
-          <AccountInfoTitle> YOUR CURRENT XLM BALANCE </AccountInfoTitle>
-          <AccountBalanceContainer>
-            <AccountBalanceLabel><b> {numeral(balance).format('0,0.00')} </b> </AccountBalanceLabel>
-          </AccountBalanceContainer>
-        </ContentContainer>
-      </AccountInfoContainer>
-    )
-  }
-
-  renderReceiveMoneySection() {
-    const address = this.props.currentAccount.pKey
-
-    return (
-      <div>
-        <AccountAddressLabel>{address}</AccountAddressLabel>
-        <QRCode value={address} size={100} />
-      </div>
-    )
-  }
-
-  renderSendMoneySection () {
-    // TODO: handle form errors
-    const { invalid, displayErrors } = this.state
-
-    var formStyle = ''
-
-    if (displayErrors) {
-      formStyle = styles.sendAssetFormDisplayErrors
-    }
-
-    return (
-      <SendAssetFormContainer>
-        <form id='sendAssetForm' onSubmit={this.handleSubmit} noValidate className={formStyle}>
-          <div className='form-group'>
-            <SendAssetFormLabel htmlFor='sendAddress'>Send to address: </SendAssetFormLabel>
-            <input type='text' className='form-control' placeholder='Send Address'
-              id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
-          </div>
-          <div className='form-group'>
-            <SendAssetFormLabel htmlFor='sendAmount'>Amount in XLM: </SendAssetFormLabel>
-            <input type='text' className='form-control' placeholder='Amount in XLM'
-              id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
-          </div>
-          <button className='btn btn-outline-success' type='submit'>Send</button>
-        </form>
-      </SendAssetFormContainer>
-    )
-  }
-
+  //region Transaction Table
   //TODO: Create another component for this.
   renderTableHeaders() {
     const tableHeaders = [
@@ -210,60 +254,62 @@ class Main extends Component {
     });
   }
 
-  renderTabs() {
+  renderTransactionTable() {
+    console.log(`Render Transaction Table`);
     return (
-      <TabContainer>
-        <ul className="nav nav-pills nav-justified" id="pills-tab" role="tablist">
-          <li className="nav-item">
-            <a className="nav-link" id="pills-home-tab" data-toggle="pill" href="#pills-home"
-                role="tab" aria-controls="pills-home" aria-selected="false">Transactions</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link active" id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
-                role="tab" aria-controls="pills-profile" aria-selected="true">Send</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact"
-                role="tab" aria-controls="pills-contact" aria-selected="false">Receive</a>
-          </li>
-        </ul>
-        <div className="tab-content" id="pills-tabContent">
-          <div className="tab-pane fade show active" id="pills-home" role="tabpanel"
-            aria-labelledby="pills-home-tab">
-            { !isEmpty(this.props.currentAccount) && this.renderReceiveMoneySection() }
-            <table className="table-hover table-dark">
-              <thead className="thead-light">
-                <tr>
-                  { this.renderTableHeaders() }
-                </tr>
-              </thead>
-              <tbody>
-                  { this.renderTableData() }
-              </tbody>
-            </table>
-          </div>
-          <div className="tab-pane fade" id="pills-profile" role="tabpanel"
-            aria-labelledby="pills-profile-tab">
-              { !isEmpty(this.props.currentAccount) && this.renderSendMoneySection() }
-          </div>
-          <div className="tab-pane fade" id="pills-contact" role="tabpanel"
-            aria-labelledby="pills-contact-tab">
-              { !isEmpty(this.props.currentAccount) && this.renderReceiveMoneySection() }
-          </div>
-        </div>
-      </TabContainer>
+      <table className="table-hover">
+        <thead className="thead-light">
+          <tr>
+            { this.renderTableHeaders() }
+          </tr>
+        </thead>
+        <tbody>
+            { this.renderTableData() }
+        </tbody>
+      </table>
     )
+  }
+  //endregion
+
+  renderContent() {
+    console.log(`Render content || state: ${this.state.selectedMenuItem}`)
+    switch(this.state.selectedMenuItem) {
+      case 'Transactions':
+        return (
+          <div>
+            { this.renderTransactionTable() }
+          </div>
+        )
+      break;
+      case 'Send':
+        return (
+          <div style={{width: '60%'}}>
+            { this.renderSendMoneySection() }
+          </div>
+        )
+      break;
+      case 'Receive':
+        return (
+          <ReceiveAssetContainer>
+            { this.renderReceiveMoneySection() }
+          </ReceiveAssetContainer>
+        )
+      break;
+    }
   }
 
   render () {
     return (
-      <MainContainer>
-        <ContentContainer>
+      <div className={styles.mainPageContainer}>
+        <div className={styles.mainPageContentContainer}>
           <LogoIcon src={logoIcon} alt=''></LogoIcon>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
           { this.renderTabs() }
-        </ContentContainer>
-      </MainContainer>
+          <div className={styles.mainPageComponentContainer}>
+            { this.renderContent() }
+          </div>
+        </div>
+      </div>
     )
   }
 }

@@ -1,5 +1,4 @@
 import styled from 'styled-components'
-//Reference: https://www.styled-components.com/docs/basics
 
 export const MainContainer = styled.div`
   display: -webkit-flex;
@@ -51,6 +50,17 @@ export const ContentContainer = styled.div`
   overflow: auto;
 `
 
+export const ComponentContainer = styled.div`
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  width: 100%;
+  height: 90%;
+`
+
 export const AccountInfoContainer = styled.div`
   width: 80%;
   background: #EAEFF2;
@@ -98,14 +108,25 @@ export const AccountBalanceCurrencyLabel = styled.h6`
 `
 
 export const SendAssetFormContainer = styled.div`
-  width: 70%;
-  margin-top: 3rem;
   padding-bottom: 2rem;
-  padding-left: 2rem;
 `
 
 export const SendAssetFormLabel = styled.label`
   color: #000000;
+`
+
+export const SendAssetInput = styled.input`
+  width: 100%;
+`
+
+export const ReceiveAssetContainer = styled.div`
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  width: 80%;
 `
 
 export const LogoIcon = styled.img`
