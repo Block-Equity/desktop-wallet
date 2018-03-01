@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+//Reference: https://www.styled-components.com/docs/basics
 
 export const MainContainer = styled.div`
   display: -webkit-flex;
@@ -6,6 +7,7 @@ export const MainContainer = styled.div`
   -webkit-flex-direction: row;
   flex-direction: row;
   height: 100%;
+  background: #FFFFFF;
 `
 
 export const NavigationContainer = styled.div`
@@ -32,6 +34,12 @@ export const NavigationSpacer = styled.div`
   height: 2.5rem;
 `
 
+export const TabContainer = styled.div`
+  width: 80%;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+`
+
 export const ContentContainer = styled.div`
   display: -webkit-flex;
   display: flex;
@@ -43,11 +51,27 @@ export const ContentContainer = styled.div`
   overflow: auto;
 `
 
+export const AccountInfoContainer = styled.div`
+  width: 80%;
+  background: #EAEFF2;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+`
+
+export const AccountInfoTitle = styled.text`
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #999999;
+  font-size: 0.7rem;
+  font-weight: 100;
+`
+
 export const AccountBalanceContainer = styled.div`
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: row;
   flex-direction: row;
+  margin-top: -1rem;
 `
 
 export const AccountAddressLabel = styled.h3`
@@ -59,15 +83,16 @@ export const AccountAddressLabel = styled.h3`
 
 export const AccountBalanceLabel = styled.h5`
   margin-top: 1rem;
+  margin-bottom: 1rem;
   font-size: 1.5rem;
   font-weight: 100;
   color: #000000;
 `
 
 export const AccountBalanceCurrencyLabel = styled.h6`
-  margin-top: 1.4rem;
+  margin-top: 1.5rem;
   margin-left: 0.25rem;
-  font-size: 1rem;
+  font-size: 0.75rem;
   font-weight: 200;
   color: #444444;
 `
@@ -84,8 +109,8 @@ export const SendAssetFormLabel = styled.label`
 `
 
 export const LogoIcon = styled.img`
-  width: 150px;
-  height: 77px;
+  width: 50px;
+  height: 26px;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 `

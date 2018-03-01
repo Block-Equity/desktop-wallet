@@ -38,6 +38,9 @@ import {
   MainContainer,
   NavigationContainer,
   ContentContainer,
+  TabContainer,
+  AccountInfoContainer,
+  AccountInfoTitle,
   AccountBalanceContainer,
   AccountAddressLabel,
   AccountBalanceLabel,
@@ -83,7 +86,7 @@ class Main extends Component {
         //TODO: Fetching payment operation list will be component specific
         await this.props.fetchPaymentOperationList()
         await this.props.streamPayments()
-        if (this.props.incomingPayment.from !== publicKey) {
+        if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
           new Notification('Payment Received',
             { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
           )
@@ -128,28 +131,29 @@ class Main extends Component {
     })
   }
 
-  renderNavigationContainer() {
-    return (
-      <NavigationContainer>
-        <WalletIcon src={walletIcon} alt='' />
-        <SettingsIcon src={settingIcon} alt='' />
-      </NavigationContainer>
-    )
-  }
-
   renderAccountInfoContent () {
-    const address = this.props.currentAccount.pKey
     const balance = this.props.currentAccount.balance.balance
 
     return (
-      <ContentContainer>
-        <AccountBalanceContainer>
-          <AccountBalanceLabel><b> {numeral(balance).format('0,0.0000')} </b> </AccountBalanceLabel>
-          <AccountBalanceCurrencyLabel> XLM </AccountBalanceCurrencyLabel>
-        </AccountBalanceContainer>
+      <AccountInfoContainer>
+        <ContentContainer>
+          <AccountInfoTitle> YOUR CURRENT XLM BALANCE </AccountInfoTitle>
+          <AccountBalanceContainer>
+            <AccountBalanceLabel><b> {numeral(balance).format('0,0.00')} </b> </AccountBalanceLabel>
+          </AccountBalanceContainer>
+        </ContentContainer>
+      </AccountInfoContainer>
+    )
+  }
+
+  renderReceiveMoneySection() {
+    const address = this.props.currentAccount.pKey
+
+    return (
+      <div>
         <AccountAddressLabel>{address}</AccountAddressLabel>
         <QRCode value={address} size={100} />
-      </ContentContainer>
+      </div>
     )
   }
 
@@ -206,23 +210,58 @@ class Main extends Component {
     });
   }
 
+  renderTabs() {
+    return (
+      <TabContainer>
+        <ul className="nav nav-pills nav-justified" id="pills-tab" role="tablist">
+          <li className="nav-item">
+            <a className="nav-link" id="pills-home-tab" data-toggle="pill" href="#pills-home"
+                role="tab" aria-controls="pills-home" aria-selected="false">Transactions</a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link active" id="pills-profile-tab" data-toggle="pill" href="#pills-profile"
+                role="tab" aria-controls="pills-profile" aria-selected="true">Send</a>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact"
+                role="tab" aria-controls="pills-contact" aria-selected="false">Receive</a>
+          </li>
+        </ul>
+        <div className="tab-content" id="pills-tabContent">
+          <div className="tab-pane fade show active" id="pills-home" role="tabpanel"
+            aria-labelledby="pills-home-tab">
+            { !isEmpty(this.props.currentAccount) && this.renderReceiveMoneySection() }
+            <table className="table-hover table-dark">
+              <thead className="thead-light">
+                <tr>
+                  { this.renderTableHeaders() }
+                </tr>
+              </thead>
+              <tbody>
+                  { this.renderTableData() }
+              </tbody>
+            </table>
+          </div>
+          <div className="tab-pane fade" id="pills-profile" role="tabpanel"
+            aria-labelledby="pills-profile-tab">
+              { !isEmpty(this.props.currentAccount) && this.renderSendMoneySection() }
+          </div>
+          <div className="tab-pane fade" id="pills-contact" role="tabpanel"
+            aria-labelledby="pills-contact-tab">
+              { !isEmpty(this.props.currentAccount) && this.renderReceiveMoneySection() }
+          </div>
+        </div>
+      </TabContainer>
+    )
+  }
+
   render () {
     return (
       <MainContainer>
         <ContentContainer>
           <LogoIcon src={logoIcon} alt=''></LogoIcon>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
-          { this.renderSendMoneySection() }
-          <table className="table-hover table-dark">
-            <thead className="thead-light">
-              <tr>
-                { this.renderTableHeaders() }
-              </tr>
-            </thead>
-            <tbody>
-                { this.renderTableData() }
-            </tbody>
-          </table>
+          { this.renderTabs() }
         </ContentContainer>
       </MainContainer>
     )
