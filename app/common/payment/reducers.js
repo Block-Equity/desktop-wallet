@@ -5,9 +5,27 @@ export const INITIAL_STATE = {
   isSending: false,
   paymentFailed: false,
   payments: {},
-  isPaymentTransactionsFetching: false, //tooo long
+  isPaymentTransactionsFetching: false,
   paymentTransactionsFailed: false,
-  paymentTransactions: [] //TODO: This is a duplication of payments
+  paymentTransactions: [], //TODO: This is a duplication of payments
+  incomingPaymentMessage: {},
+  incomingPaymentMessageFailed: false
+}
+
+function streamPaymentSuccess (state, payload) {
+  return {
+    ...state,
+    incomingPaymentMessageFailed: false,
+    incomingPaymentMessage: payload
+  }
+}
+
+function streamPaymentFailure (state, error) {
+  return {
+    ...state,
+    incomingPaymentMessageFailed: true,
+    error
+  }
 }
 
 function paymentSendRequest (state) {
@@ -81,4 +99,15 @@ const paymentOperationListReducers = {
   [Types.PAYMENT_OPERATION_LIST_FAILURE]: paymentOperationListFailure
 }
 
-export default createReducer(INITIAL_STATE, {...paymentSendReducers, ...paymentOperationListReducers})
+const paymentStreamReducers = {
+  [Types.PAYMENT_STREAMING_SUCCESS]: streamPaymentSuccess,
+  [Types.PAYMENT_STREAMING_FAILURE]: streamPaymentFailure
+}
+
+export default createReducer (
+  INITIAL_STATE, {
+    ...paymentSendReducers,
+    ...paymentOperationListReducers,
+    ...paymentStreamReducers
+  }
+)

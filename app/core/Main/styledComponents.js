@@ -40,8 +40,14 @@ export const ContentContainer = styled.div`
   -webkit-align-items: center;
   align-items: center;
   flex: 1 1 auto;
-  margin-left: 100px;
   overflow: auto;
+`
+
+export const AccountBalanceContainer = styled.div`
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
 `
 
 export const AccountAddressLabel = styled.h3`
@@ -58,15 +64,30 @@ export const AccountBalanceLabel = styled.h5`
   color: #000000;
 `
 
+export const AccountBalanceCurrencyLabel = styled.h6`
+  margin-top: 1.4rem;
+  margin-left: 0.25rem;
+  font-size: 1rem;
+  font-weight: 200;
+  color: #444444;
+`
+
 export const SendAssetFormContainer = styled.div`
   width: 70%;
   margin-top: 3rem;
-  padding-bottom: 10rem;
+  padding-bottom: 2rem;
   padding-left: 2rem;
 `
 
 export const SendAssetFormLabel = styled.label`
   color: #000000;
+`
+
+export const LogoIcon = styled.img`
+  width: 150px;
+  height: 77px;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 `
 
 export const SettingsIcon = styled.img`

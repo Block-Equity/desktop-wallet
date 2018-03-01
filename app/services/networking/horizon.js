@@ -71,7 +71,7 @@ export const getPaymentOperationList = async (publicKey) => {
   })
 }
 
-export const receivePaymentStream = (publicKey) => {
+export const receivePaymentStream = async (publicKey) => {
   return new Promise(resolve => {
     server.payments()
       .cursor('now')

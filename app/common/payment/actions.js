@@ -1,4 +1,4 @@
-import { sendPayment, getPaymentOperationList } from '../../services/networking/horizon'
+import { sendPayment, getPaymentOperationList, receivePaymentStream } from '../../services/networking/horizon'
 import { fetchAccountDetails, setCurrentAccount } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
 import * as Types from './types'
@@ -26,7 +26,7 @@ export function sendPaymentToAddress ({ destination, amount }) {
       })
 
       // 2. Fetch the account details to get the updated balance
-      await dispatch(fetchAccountDetails({ publicKey, secretKey }))
+      await dispatch(fetchAccountDetails())
 
       // 3. Update the current account (as this would not be automatically done otherwise)
       currentAccount = getAccountByPublicKey(getState(), publicKey)
@@ -58,6 +58,31 @@ export function fetchPaymentOperationList() {
       return dispatch(paymentOperationListSuccess(paymentList))
     } catch (e) {
       return dispatch(paymentOperationListFailure(e))
+    }
+  }
+}
+
+export function streamPayments() {
+  return async (dispatch, getState) => {
+    let currentAccount = getCurrentAccount(getState())
+
+    const {
+      pKey: publicKey,
+    } = currentAccount
+
+    try {
+      let incomingPayment = await receivePaymentStream(publicKey)
+
+      //Update Account Details
+      await dispatch(fetchAccountDetails())
+
+      //Update Payment Operation list
+      await dispatch(fetchPaymentOperationList())
+
+      //Finally, store incoming payment to local store
+      return dispatch(streamPaymentSuccess(incomingPayment))
+    } catch (e) {
+      return dispatch(streamPaymentFailure(e))
     }
   }
 }
@@ -101,6 +126,28 @@ export function paymentOperationListFailure (error) {
     type: Types.PAYMENT_OPERATION_LIST_FAILURE,
     payload: error,
     error: true
+  }
+}
+
+export function streamPaymentSuccess (message) {
+  return {
+    type: Types.PAYMENT_STREAMING_SUCCESS,
+    payload: message
+  }
+}
+
+export function streamPaymentFailure (error) {
+  return {
+    type: Types.PAYMENT_STREAMING_FAILURE,
+    payload: error,
+    error: true
+  }
+}
+
+export function clearStreamPaymentMessage() {
+  return {
+    type: Types.PAYMENT_OPERATION_LIST_SUCCESS,
+    payload: {}
   }
 }
 

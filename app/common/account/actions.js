@@ -1,4 +1,5 @@
 import * as db from '../../db'
+import { getCurrentAccount } from './selectors'
 import * as horizon from '../../services/networking/horizon'
 import * as Types from './types'
 
@@ -41,8 +42,10 @@ export function createAccount ({ publicKey, secretKey }) {
   }
 }
 
-export function fetchAccountDetails ({ publicKey, secretKey }) {
-  return async dispatch => {
+export function fetchAccountDetails () {
+  return async (dispatch, getState) => {
+    let currentAccount = getCurrentAccount(getState())
+    const { pKey: publicKey, sKey: secretKey } = currentAccount
     dispatch(accountDetailsRequest())
 
     let details
@@ -59,7 +62,9 @@ export function fetchAccountDetails ({ publicKey, secretKey }) {
         sequence: nextSequence
       })
 
+      const updatedCurrentAccount = accounts[Object.keys(accounts)[0]]
       dispatch(setAccounts(accounts))
+      dispatch(setCurrentAccount(updatedCurrentAccount))
     } catch (e) {
       return dispatch(accountDetailsFailure(e))
     }

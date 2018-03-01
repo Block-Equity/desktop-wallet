@@ -16,29 +16,37 @@ import {
 
 import {
   sendPaymentToAddress,
-  fetchPaymentOperationList
+  fetchPaymentOperationList,
+  streamPayments
 } from '../../common/payment/actions'
+
+import {
+  getIncomingPayment,
+  getPaymentTransactions
+} from '../../common/payment/selectors'
 
 import isEmpty from 'lodash/isEmpty'
 import get from 'lodash/get'
+import numeral from 'numeral'
 import QRCode from 'qrcode.react'
 
 import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
-
-// TODO: fix this
-//import { receivePaymentStream } from '../../services/networking/horizon'
+import logoIcon from '../Launch/logo-gray.png'
 
 import {
   MainContainer,
   NavigationContainer,
   ContentContainer,
+  AccountBalanceContainer,
   AccountAddressLabel,
   AccountBalanceLabel,
+  AccountBalanceCurrencyLabel,
   SendAssetFormContainer,
   SendAssetFormLabel,
   WalletIcon,
-  SettingsIcon
+  SettingsIcon,
+  LogoIcon
 } from './styledComponents'
 
 import * as horizon from '../../services/networking/horizon'
@@ -51,14 +59,14 @@ class Main extends Component {
     this.state = {
       // TODO: temporary here, cuz I'm tired of populating every time :p
       sendAddress: 'GACCYANIKFQPYJZ7VTWKR6DH3AWNOLO7ETVFBVWHLLZ62VPRIFNDZTJ2',
-      sendAmount: ''
+      sendAmount: '',
+      paymentTransactions: []
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   async componentDidMount () {
-    // debugger
     try {
       // TODO: this is temporarily here. It will be moved to the Login (or auth flow) once
       // it's done
@@ -67,27 +75,19 @@ class Main extends Component {
 
       const { accounts } = this.props
 
-      if (isEmpty(accounts)) {
-        // TODO: friend bot is broken, so comment the two lines below, and use harcoded keypair
-        // const { mnemonic, publicKey, secretKey } = horizon.createSeed()
-        // await this.props.createAccount({ publicKey, secretKey })
-
-        /// ///// DELETE WHEN IT'S BACK UP /////////
-        const publicKey = 'GBW74UVOXKGHO3WX6AV5ZGTB4JYBKCEJOUQAUSI25NRO3PKY5BC7WYZS'
-        const secretKey = 'SA3W53XXG64ITFFIYQSBIJDG26LMXYRIMEVMNQMFAQJOYCZACCYBA34L'
-        const { balance, sequence } = await horizon.getAccountDetail(publicKey)
-
-        await this.props.setCurrentAccount({ pKey: publicKey, sKey: secretKey, balance, sequence })
-        await this.props.fetchAccountDetails({ publicKey, secretKey })
-        /// ///// DELETE WHEN IT'S BACK UP /////////
-      } else {
-        // Make the first account in the list the current account
+      if (!isEmpty(accounts)) {
         const currentAccount = accounts[Object.keys(accounts)[0]]
         const { pKey: publicKey, sKey: secretKey } = currentAccount
-
         await this.props.setCurrentAccount(currentAccount)
-        await this.props.fetchAccountDetails({ publicKey, secretKey })
+        await this.props.fetchAccountDetails()
+        //TODO: Fetching payment operation list will be component specific
         await this.props.fetchPaymentOperationList()
+        await this.props.streamPayments()
+        if (this.props.incomingPayment.from !== publicKey) {
+          new Notification('Payment Received',
+            { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
+          )
+        }
       }
     } catch (e) {
       console.log(e)
@@ -107,21 +107,34 @@ class Main extends Component {
   async handleSubmit (event) {
     event.preventDefault()
 
-    // if (!event.target.checkValidity()) {
-    //   this.setState({
-    //     invalid: true,
-    //     displayErrors: true
-    //   })
-    //   return
-    // }
-
-    console.log(`Valid Form Input || Account : ${this.state.sendAddress}`)
-    console.log(`Valid Form Input || Amount : ${this.state.sendAmount}`)
+    /*if (!event.target.checkValidity()) {
+       this.setState({
+         invalid: true,
+         displayErrors: true
+       })
+       return
+    }*/
 
     await this.props.sendPaymentToAddress({
       destination: this.state.sendAddress,
       amount: this.state.sendAmount
     })
+
+    await this.props.fetchAccountDetails()
+    await this.props.fetchPaymentOperationList()
+
+    this.setState({
+      sendAmount: ''
+    })
+  }
+
+  renderNavigationContainer() {
+    return (
+      <NavigationContainer>
+        <WalletIcon src={walletIcon} alt='' />
+        <SettingsIcon src={settingIcon} alt='' />
+      </NavigationContainer>
+    )
   }
 
   renderAccountInfoContent () {
@@ -130,8 +143,11 @@ class Main extends Component {
 
     return (
       <ContentContainer>
+        <AccountBalanceContainer>
+          <AccountBalanceLabel><b> {numeral(balance).format('0,0.0000')} </b> </AccountBalanceLabel>
+          <AccountBalanceCurrencyLabel> XLM </AccountBalanceCurrencyLabel>
+        </AccountBalanceContainer>
         <AccountAddressLabel>{address}</AccountAddressLabel>
-        <AccountBalanceLabel>Balance: {balance}</AccountBalanceLabel>
         <QRCode value={address} size={100} />
       </ContentContainer>
     )
@@ -160,22 +176,53 @@ class Main extends Component {
             <input type='text' className='form-control' placeholder='Amount in XLM'
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
-          <button className='btn btn-outline-success' type='submit'>Save</button>
+          <button className='btn btn-outline-success' type='submit'>Send</button>
         </form>
       </SendAssetFormContainer>
     )
   }
 
+  //TODO: Create another component for this.
+  renderTableHeaders() {
+    const tableHeaders = [
+      'Date', 'Account', 'Amount'
+    ];
+    return tableHeaders.map((item, index) => {
+        return (
+            <th scope="col" key={ index }>{ item }</th>
+        )
+    });
+  }
+
+  renderTableData() {
+    return this.props.paymentTransactions.map((item, index) => {
+      return (
+          <tr key={ index }>
+          <td>{ item.created_at }</td>
+          <td>{ item.from }</td>
+          <td>{ item.amount }</td>
+          </tr>
+      )
+    });
+  }
+
   render () {
     return (
       <MainContainer>
-        <NavigationContainer>
-          <WalletIcon src={walletIcon} alt='' />
-          <SettingsIcon src={settingIcon} alt='' />
-        </NavigationContainer>
         <ContentContainer>
+          <LogoIcon src={logoIcon} alt=''></LogoIcon>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
           { this.renderSendMoneySection() }
+          <table className="table-hover table-dark">
+            <thead className="thead-light">
+              <tr>
+                { this.renderTableHeaders() }
+              </tr>
+            </thead>
+            <tbody>
+                { this.renderTableData() }
+            </tbody>
+          </table>
         </ContentContainer>
       </MainContainer>
     )
@@ -185,7 +232,9 @@ class Main extends Component {
 const mapStateToProps = (state) => {
   return {
     accounts: getAccounts(state),
-    currentAccount: getCurrentAccount(state)
+    currentAccount: getCurrentAccount(state),
+    incomingPayment: getIncomingPayment(state),
+    paymentTransactions: getPaymentTransactions(state)
   }
 }
 
@@ -196,5 +245,6 @@ export default connect(mapStateToProps, {
   fetchAccountDetails,
   setCurrentAccount,
   sendPaymentToAddress,
-  fetchPaymentOperationList
+  fetchPaymentOperationList,
+  streamPayments
 })(Main)
