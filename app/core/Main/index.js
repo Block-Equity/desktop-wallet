@@ -29,6 +29,7 @@ import isEmpty from 'lodash/isEmpty'
 import get from 'lodash/get'
 import numeral from 'numeral'
 import QRCode from 'qrcode.react'
+import moment from 'moment'
 
 import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
@@ -56,6 +57,21 @@ import {
   SettingsIcon,
   LogoIcon
 } from './styledComponents'
+
+import { withStyles } from 'material-ui/styles';
+import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
+import Paper from 'material-ui/Paper';
+
+const materialStyles = theme => ({
+  root: {
+    width: '80%',
+    marginTop: theme.spacing.unit * 3,
+    overflowX: 'auto',
+  },
+  table: {
+    minWidth: 700,
+  },
+});
 
 import * as horizon from '../../services/networking/horizon'
 
@@ -271,13 +287,52 @@ class Main extends Component {
   }
   //endregion
 
+  //region Material Design Table
+  renderMaterialTransactionTable() {
+    return (
+      <Paper className={materialStyles.root}>
+        <Table className={materialStyles.table}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Date</TableCell>
+              <TableCell>Address</TableCell>
+              <TableCell numeric>Amount</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {this.props.paymentTransactions.map(n => {
+              if (n.from !== undefined) {
+                const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow();
+                const formattedDate = moment(n.created_at).format('lll')
+                const displayDate = `${formattedNowTime}${formattedDate}`
+                return (
+                  <TableRow key={n.id}>
+                    <TableCell>
+                      <div className={styles.tableCellMultiLine}>
+                        <div><b>{formattedNowTime}</b></div>
+                        <div style={{marginTop: '0.5rem'}}>{formattedDate}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>{n.from}</TableCell>
+                    <TableCell>{numeral(n.amount).format('0,0.00')}</TableCell>
+                  </TableRow>
+                );
+              }
+            })}
+          </TableBody>
+        </Table>
+      </Paper>
+    );
+  }
+  //endregion
+
   renderContent() {
     console.log(`Render content || state: ${this.state.selectedMenuItem}`)
     switch(this.state.selectedMenuItem) {
       case 'Transactions':
         return (
           <div>
-            { this.renderTransactionTable() }
+            { this.renderMaterialTransactionTable() }
           </div>
         )
       break;

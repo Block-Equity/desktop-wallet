@@ -10,6 +10,7 @@ used with styled componets but right now it only supports Bootstrap 3.
   -webkit-flex-direction: row;
   flex-direction: row;
   height: 100%;
+  background: #FFFFFF;
 }
 
 .mainPageNavContainer {
@@ -44,7 +45,6 @@ used with styled componets but right now it only supports Bootstrap 3.
   -webkit-align-items: center;
   align-items: center;
   flex: 1 1 auto;
-  margin-left: 100px;
   overflow: auto;
 }
 
@@ -86,4 +86,13 @@ used with styled componets but right now it only supports Bootstrap 3.
 
 .sendAssetFormDisplayErrors input:invalid {
   border-color: #f73772;
+}
+
+.tableCellMultiLine {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
