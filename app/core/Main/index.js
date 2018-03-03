@@ -41,7 +41,6 @@ import {
   MainContainer,
   NavigationContainer,
   ContentContainer,
-  ComponentContainer,
   TabContainer,
   AccountInfoContainer,
   AccountInfoTitle,
@@ -61,6 +60,8 @@ import {
 import { withStyles } from 'material-ui/styles';
 import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
+import Button from 'material-ui/Button';
+import Snackbar from 'material-ui/Snackbar';
 
 const materialStyles = theme => ({
   root: {
@@ -69,14 +70,18 @@ const materialStyles = theme => ({
     overflowX: 'auto',
   },
   table: {
-    minWidth: 700,
+    minWidth: 600,
+  },
+  close: {
+    width: theme.spacing.unit * 4,
+    height: theme.spacing.unit * 4,
   },
 });
 
 import * as horizon from '../../services/networking/horizon'
 
-const navigation = ['Transactions', 'Send', 'Receive']
-const INITIAL_NAVIGATION_INDEX = 'Transactions';
+const navigation = ['TRANSACTIONS', 'SEND', 'RECEIVE']
+const INITIAL_NAVIGATION_INDEX = 'TRANSACTIONS';
 
 class Main extends Component {
 
@@ -84,10 +89,11 @@ class Main extends Component {
     super()
     this.state = {
       // TODO: temporary here, cuz I'm tired of populating every time :p
-      sendAddress: 'GACCYANIKFQPYJZ7VTWKR6DH3AWNOLO7ETVFBVWHLLZ62VPRIFNDZTJ2',
+      sendAddress: 'GANRFALPK2ZPRMD6G55QKSM25AN57J76JUHUNPZBFY3JRN6EMAPNSMYG',
       sendAmount: '',
       paymentTransactions: [],
-      selectedMenuItem: INITIAL_NAVIGATION_INDEX
+      selectedMenuItem: INITIAL_NAVIGATION_INDEX,
+      snackBarOpen: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -126,14 +132,11 @@ class Main extends Component {
   renderAccountInfoContent () {
     const balance = this.props.currentAccount.balance.balance
     return (
-      <AccountInfoContainer>
-        <ContentContainer>
-          <AccountInfoTitle> YOUR CURRENT XLM BALANCE </AccountInfoTitle>
-          <AccountBalanceContainer>
-            <AccountBalanceLabel><b> {numeral(balance).format('0,0.00')} </b> </AccountBalanceLabel>
-          </AccountBalanceContainer>
-        </ContentContainer>
-      </AccountInfoContainer>
+      <div className={styles.mainPageHeaderContainer} block>
+        <img className={styles.mainPageHeaderLogo} src={logoIcon} alt=''></img>
+        <div className={styles.mainPageHeaderBalanceTitle}> YOUR CURRENT XLM BALANCE </div>
+        <div className={styles.mainPageHeaderBalanceLabel}><b> {numeral(balance).format('0,0.00')} </b> </div>
+      </div>
     )
   }
 
@@ -173,7 +176,7 @@ class Main extends Component {
   renderReceiveMoneySection() {
     const address = this.props.currentAccount.pKey
     return (
-      <div>
+      <div className={styles.receiveContainer}>
         <AccountAddressLabel>{address}</AccountAddressLabel>
         <QRCode value={address} size={100} />
       </div>
@@ -240,8 +243,53 @@ class Main extends Component {
     await this.props.fetchPaymentOperationList()
 
     this.setState({
-      sendAmount: ''
+      sendAmount: '',
+      snackBarOpen: true,
+      selectedMenuItem: INITIAL_NAVIGATION_INDEX
     })
+  }
+
+  handleSnackBarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.setState({ snackBarOpen: false });
+  };
+
+  async refreshList() {
+    await this.props.fetchPaymentOperationList()
+    this.setState({ snackBarOpen: false });
+  }
+
+  renderSnackBar() {
+    return (
+      <div>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={this.state.snackBarOpen}
+          autoHideDuration={6000}
+          onClose={this.handleClose}
+          SnackbarContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">Payment Sent</span>}
+          action={[
+            <Button key="undo" color="secondary" size="small"
+              onClick={this.refreshList}>
+              REFRESH
+            </Button>,
+            <Button key="close" color="secondary" size="small"
+            onClick={this.handleSnackBarClose}>
+            CLOSE
+          </Button>
+          ]}
+        />
+      </div>
+    )
   }
   //endregion
 
@@ -329,25 +377,25 @@ class Main extends Component {
   renderContent() {
     console.log(`Render content || state: ${this.state.selectedMenuItem}`)
     switch(this.state.selectedMenuItem) {
-      case 'Transactions':
+      case 'TRANSACTIONS':
         return (
           <div>
             { this.renderMaterialTransactionTable() }
           </div>
         )
       break;
-      case 'Send':
+      case 'SEND':
         return (
           <div style={{width: '60%'}}>
             { this.renderSendMoneySection() }
           </div>
         )
       break;
-      case 'Receive':
+      case 'RECEIVE':
         return (
-          <ReceiveAssetContainer>
+          <div className={styles.receiveContainer}>
             { this.renderReceiveMoneySection() }
-          </ReceiveAssetContainer>
+          </div>
         )
       break;
     }
@@ -357,12 +405,12 @@ class Main extends Component {
     return (
       <div className={styles.mainPageContainer}>
         <div className={styles.mainPageContentContainer}>
-          <LogoIcon src={logoIcon} alt=''></LogoIcon>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
           { this.renderTabs() }
           <div className={styles.mainPageComponentContainer}>
             { this.renderContent() }
           </div>
+          { this.renderSnackBar() }
         </div>
       </div>
     )

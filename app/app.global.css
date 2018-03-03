@@ -9,7 +9,6 @@ body {
   position: relative;
   color: white;
   height: 100vh;
-  background-color: #EAEFF2;
   font: caption;
   overflow-y: hidden;
 }
@@ -31,7 +30,6 @@ li {
 
 a {
   color: #555555;
-  opacity: 0.50;
   text-decoration: none;
 }
 

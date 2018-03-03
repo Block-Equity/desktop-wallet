@@ -37,6 +37,7 @@ export const TabContainer = styled.div`
   width: 80%;
   margin-top: 2rem;
   margin-bottom: 2rem;
+  font-style: bold;
 `
 
 export const ContentContainer = styled.div`
@@ -48,17 +49,8 @@ export const ContentContainer = styled.div`
   align-items: center;
   flex: 1 1 auto;
   overflow: auto;
-`
-
-export const ComponentContainer = styled.div`
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-  -webkit-align-items: center;
-  align-items: center;
+  background: #EAEFF2;
   width: 100%;
-  height: 90%;
 `
 
 export const AccountInfoContainer = styled.div`
@@ -81,11 +73,9 @@ export const AccountBalanceContainer = styled.div`
   display: flex;
   -webkit-flex-direction: row;
   flex-direction: row;
-  margin-top: -1rem;
 `
 
 export const AccountAddressLabel = styled.h3`
-  margin-top: 3rem;
   font-size: 1rem;
   font-weight: 100;
   color: #000000;
