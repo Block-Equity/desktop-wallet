@@ -26,12 +26,12 @@ import {
 } from '../../common/payment/selectors'
 
 import History from '../History'
-import Navigation from '../Navigation'
+import Tabs from '../Tabs'
+import Receive from '../Receive'
 
 import isEmpty from 'lodash/isEmpty'
 import get from 'lodash/get'
 import numeral from 'numeral'
-import QRCode from 'qrcode.react'
 
 import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
@@ -60,7 +60,7 @@ const materialStyles = theme => ({
 
 import * as horizon from '../../services/networking/horizon'
 
-const navigation = {history: 0, send: 1, receive: 2}
+const navigation = { history: 0, send: 1, receive: 2 }
 const INITIAL_NAVIGATION_INDEX = navigation.history;
 
 class Main extends Component {
@@ -256,14 +256,14 @@ class Main extends Component {
       case navigation.send:
         return (
           <div style={{width: '60%'}}>
-            { this.renderSendMoneySection() }
+            <Receive currentAccount={ this.props.currentAccount } />
           </div>
         )
       break;
       case navigation.receive:
         return (
           <div className={styles.receiveContainer}>
-            { this.renderReceiveMoneySection() }
+            <Receive currentAccount={ this.props.currentAccount } />
           </div>
         )
       break;
@@ -275,7 +275,7 @@ class Main extends Component {
       <div className={styles.mainPageContainer}>
         <div className={styles.mainPageContentContainer}>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
-          <Navigation selectedItem={this.selectedItem}/>
+          <Tabs selectedItem={this.selectedItem}/>
           <div className={styles.mainPageComponentContainer}>
             { this.renderContent() }
           </div>
