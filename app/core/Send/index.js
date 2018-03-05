@@ -8,7 +8,6 @@ class Send extends Component {
     this.state = {
       sendAddress: '',
       sendAmount: '',
-      invalid: false,
       displayErrors: false
     }
     this.handleChange = this.handleChange.bind(this)
@@ -16,36 +15,30 @@ class Send extends Component {
   }
 
   render() {
-    const address = this.props.currentAccount.pKey
     return (
-      <div className={ styles.receiveContainer }>
-        <h3>{address}</h3>
-        <QRCode value={ address } size={ QR_CODE_CONTAINER_SIZE } />
+      <div>
+        { this.renderSendMoneySection() }
       </div>
     )
   }
 
   renderSendMoneySection () {
-    // Handle form errors
-    const { invalid, displayErrors } = this.state
-
-    var formStyle = ''
-
-    if (displayErrors) {
-      formStyle = styles.sendAssetFormDisplayErrors
+    var formStyle = 'form-control'
+    if (this.state.displayErrors) {
+      formStyle = `form-control sendAssetFormDisplayErrors`
     }
 
     return (
       <div className={styles.sendAssetFormContainer}>
         <form id='sendAssetForm' onSubmit={this.handleSubmit}>
           <div className='form-group'>
-            <label className={this.sendAssetFormLabel} htmlFor='sendAddress'>Send to address: </label>
-            <input type='text' className='form-control' placeholder='Send Address'
+            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>Send to address: </label>
+            <input type='text' className={formStyle} placeholder='Send Address'
               id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
           </div>
           <div className='form-group'>
-            <label className={this.sendAssetFormLabel} htmlFor='sendAmount'>Amount in XLM: </label>
-            <input type='text' className='form-control' placeholder='Amount in XLM'
+            <label className={styles.sendAssetFormLabel} htmlFor='sendAmount'>Amount in XLM: </label>
+            <input type='text' className={formStyle} placeholder='Amount in XLM'
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
           <button className='btn btn-outline-success' type='submit'>Send</button>
@@ -69,7 +62,6 @@ class Send extends Component {
     //Validation
     if (!event.target.checkValidity()) {
        this.setState({
-         invalid: true,
          displayErrors: true
        })
        return

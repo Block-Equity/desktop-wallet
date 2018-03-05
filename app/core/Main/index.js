@@ -191,6 +191,27 @@ class Main extends Component {
     })
   }
 
+  receiveSendPaymentInfo = (info) => {
+    (async () => {
+      await this.props.sendPaymentToAddress({
+        destination: info.destination,
+        amount: info.amount
+      })
+
+      await this.props.fetchAccountDetails()
+      await this.props.fetchPaymentOperationList()
+
+      this.setState({
+        sendAmount: '',
+        sendAddress: '',
+        snackBarOpen: true,
+        selectedMenuItem: INITIAL_NAVIGATION_INDEX
+      })
+    })().catch(err => {
+        console.error(err);
+    });
+  }
+
   handleSnackBarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -246,7 +267,7 @@ class Main extends Component {
       case navigation.send:
         return (
           <div style={{width: '60%'}}>
-            <Receive currentAccount={ this.props.currentAccount } />
+            <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } />
           </div>
         )
       break;
