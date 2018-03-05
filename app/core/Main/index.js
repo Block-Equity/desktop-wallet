@@ -28,6 +28,7 @@ import {
 import History from '../History'
 import Tabs from '../Tabs'
 import Receive from '../Receive'
+import Send from '../Send'
 
 import isEmpty from 'lodash/isEmpty'
 import get from 'lodash/get'
@@ -118,23 +119,12 @@ class Main extends Component {
     )
   }
 
+  //Tab Selection Callback from Tabs component
   selectedItem = (item) => {
     this.setState({
       selectedMenuItem: item
     })
   }
-
-  //region Receive Money
-  renderReceiveMoneySection() {
-    const address = this.props.currentAccount.pKey
-    return (
-      <div className={styles.receiveContainer}>
-        <h3>{address}</h3>
-        <QRCode value={address} size={120} />
-      </div>
-    )
-  }
-  //endregion
 
   //region Send Money
   renderSendMoneySection () {
