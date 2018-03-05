@@ -25,11 +25,13 @@ import {
   getPaymentTransactions
 } from '../../common/payment/selectors'
 
+import History from '../History'
+import Navigation from '../Navigation'
+
 import isEmpty from 'lodash/isEmpty'
 import get from 'lodash/get'
 import numeral from 'numeral'
 import QRCode from 'qrcode.react'
-import moment from 'moment'
 
 import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
@@ -37,29 +39,7 @@ import logoIcon from '../Launch/logo-gray.png'
 
 import styles from './style.css';
 
-import {
-  MainContainer,
-  NavigationContainer,
-  ContentContainer,
-  TabContainer,
-  AccountInfoContainer,
-  AccountInfoTitle,
-  AccountBalanceContainer,
-  AccountAddressLabel,
-  AccountBalanceLabel,
-  AccountBalanceCurrencyLabel,
-  SendAssetFormContainer,
-  SendAssetFormLabel,
-  SendAssetInput,
-  ReceiveAssetContainer,
-  WalletIcon,
-  SettingsIcon,
-  LogoIcon
-} from './styledComponents'
-
 import { withStyles } from 'material-ui/styles';
-import Table, { TableBody, TableCell, TableHead, TableRow } from 'material-ui/Table';
-import Paper from 'material-ui/Paper';
 import Button from 'material-ui/Button';
 import Snackbar from 'material-ui/Snackbar';
 
@@ -80,15 +60,14 @@ const materialStyles = theme => ({
 
 import * as horizon from '../../services/networking/horizon'
 
-const navigation = ['TRANSACTIONS', 'SEND', 'RECEIVE']
-const INITIAL_NAVIGATION_INDEX = 'TRANSACTIONS';
+const navigation = {history: 0, send: 1, receive: 2}
+const INITIAL_NAVIGATION_INDEX = navigation.history;
 
 class Main extends Component {
 
   constructor (props) {
     super()
     this.state = {
-      // TODO: temporary here, cuz I'm tired of populating every time :p
       sendAddress: 'GANRFALPK2ZPRMD6G55QKSM25AN57J76JUHUNPZBFY3JRN6EMAPNSMYG',
       sendAmount: '',
       paymentTransactions: [],
@@ -97,7 +76,6 @@ class Main extends Component {
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
-    this.navigationClickHandler = this.navigationClickHandler.bind(this)
   }
 
   async componentDidMount () {
@@ -140,45 +118,19 @@ class Main extends Component {
     )
   }
 
-  //region Tabs
-  renderTabs() {
-    return (
-      <TabContainer>
-        <ul className="nav nav-pills nav-justified" id="pills-tab" role="tablist">
-          { this.renderNavigationItems() }
-        </ul>
-      </TabContainer>
-    )
-  }
-
-  renderNavigationItems() {
-    return navigation.map((item, index) => {
-        var idBuilder = `${item}-tab`;
-        var classNameBuilder = (this.state.selectedMenuItem === item) ? 'nav-link active' : 'nav-link';
-        return (
-          <li className="nav-item" key={ idBuilder }>
-              <a className={ classNameBuilder } href=''
-                  onClick={(e) => this.navigationClickHandler(e, item)}>{ item }</a>
-          </li>
-        )
-    });
-  }
-
-  navigationClickHandler(event, item) {
-    event.preventDefault();
+  selectedItem = (item) => {
     this.setState({
       selectedMenuItem: item
     })
   }
-  //endregion
 
   //region Receive Money
   renderReceiveMoneySection() {
     const address = this.props.currentAccount.pKey
     return (
       <div className={styles.receiveContainer}>
-        <AccountAddressLabel>{address}</AccountAddressLabel>
-        <QRCode value={address} size={100} />
+        <h3>{address}</h3>
+        <QRCode value={address} size={120} />
       </div>
     )
   }
@@ -196,21 +148,21 @@ class Main extends Component {
     }
 
     return (
-      <SendAssetFormContainer>
+      <div className={styles.sendAssetFormContainer}>
         <form id='sendAssetForm' onSubmit={this.handleSubmit}>
           <div className='form-group'>
-            <SendAssetFormLabel htmlFor='sendAddress'>Send to address: </SendAssetFormLabel>
+            <label className={this.sendAssetFormLabel} htmlFor='sendAddress'>Send to address: </label>
             <input type='text' className='form-control' placeholder='Send Address'
               id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
           </div>
           <div className='form-group'>
-            <SendAssetFormLabel htmlFor='sendAmount'>Amount in XLM: </SendAssetFormLabel>
+            <label className={this.sendAssetFormLabel} htmlFor='sendAmount'>Amount in XLM: </label>
             <input type='text' className='form-control' placeholder='Amount in XLM'
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
           <button className='btn btn-outline-success' type='submit'>Send</button>
         </form>
-      </SendAssetFormContainer>
+      </div>
     )
   }
 
@@ -293,105 +245,22 @@ class Main extends Component {
   }
   //endregion
 
-  //region Transaction Table
-  //TODO: Create another component for this.
-  renderTableHeaders() {
-    const tableHeaders = [
-      'Date', 'Account', 'Amount'
-    ];
-    return tableHeaders.map((item, index) => {
-        return (
-            <th scope="col" key={ index }>{ item }</th>
-        )
-    });
-  }
-
-  renderTableData() {
-    return this.props.paymentTransactions.map((item, index) => {
-      return (
-          <tr key={ index }>
-          <td>{ item.created_at }</td>
-          <td>{ item.from }</td>
-          <td>{ item.amount }</td>
-          </tr>
-      )
-    });
-  }
-
-  renderTransactionTable() {
-    console.log(`Render Transaction Table`);
-    return (
-      <table className="table-hover">
-        <thead className="thead-light">
-          <tr>
-            { this.renderTableHeaders() }
-          </tr>
-        </thead>
-        <tbody>
-            { this.renderTableData() }
-        </tbody>
-      </table>
-    )
-  }
-  //endregion
-
-  //region Material Design Table
-  renderMaterialTransactionTable() {
-    return (
-      <Paper className={materialStyles.root}>
-        <Table className={materialStyles.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell numeric>Amount</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {this.props.paymentTransactions.map(n => {
-              if (n.from !== undefined) {
-                const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow();
-                const formattedDate = moment(n.created_at).format('lll')
-                const displayDate = `${formattedNowTime}${formattedDate}`
-                return (
-                  <TableRow key={n.id}>
-                    <TableCell>
-                      <div className={styles.tableCellMultiLine}>
-                        <div><b>{formattedNowTime}</b></div>
-                        <div style={{marginTop: '0.5rem'}}>{formattedDate}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{n.from}</TableCell>
-                    <TableCell>{numeral(n.amount).format('0,0.00')}</TableCell>
-                  </TableRow>
-                );
-              }
-            })}
-          </TableBody>
-        </Table>
-      </Paper>
-    );
-  }
-  //endregion
-
   renderContent() {
     console.log(`Render content || state: ${this.state.selectedMenuItem}`)
     switch(this.state.selectedMenuItem) {
-      case 'TRANSACTIONS':
+      case navigation.history:
         return (
-          <div>
-            { this.renderMaterialTransactionTable() }
-          </div>
+          <History paymentTransactions={this.props.paymentTransactions} />
         )
       break;
-      case 'SEND':
+      case navigation.send:
         return (
           <div style={{width: '60%'}}>
             { this.renderSendMoneySection() }
           </div>
         )
       break;
-      case 'RECEIVE':
+      case navigation.receive:
         return (
           <div className={styles.receiveContainer}>
             { this.renderReceiveMoneySection() }
@@ -406,7 +275,7 @@ class Main extends Component {
       <div className={styles.mainPageContainer}>
         <div className={styles.mainPageContentContainer}>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
-          { this.renderTabs() }
+          <Navigation selectedItem={this.selectedItem}/>
           <div className={styles.mainPageComponentContainer}>
             { this.renderContent() }
           </div>

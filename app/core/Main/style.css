@@ -10,6 +10,7 @@ used with styled componets but right now it only supports Bootstrap 3.
   -webkit-flex-direction: column;
   flex-direction: column;
   background: #FFFFFF;
+  overflow: auto;
 }
 
 .mainPageHeaderContainer {
@@ -50,13 +51,11 @@ used with styled componets but right now it only supports Bootstrap 3.
   flex-direction: column;
   -webkit-align-items: center;
   align-items: center;
-  flex: 1 1 auto;
   overflow: auto;
   width: 100%;
 }
 
 .mainPageContentContainer h3 {
-  margin-top: 3rem;
   font-size: 1rem;
   font-weight: 100;
   color: #000000;
@@ -76,15 +75,12 @@ used with styled componets but right now it only supports Bootstrap 3.
   flex-direction: column;
   -webkit-align-items: center;
   align-items: center;
+  overflow: auto;
   width: 100%;
-  height: 90%;
 }
 
 .sendAssetFormContainer {
-  width: 70%;
-  margin-top: 3rem;
-  padding-bottom: 10rem;
-  padding-left: 2rem;
+  padding-bottom: 2rem;
 }
 
 .sendAssetFormLabel {

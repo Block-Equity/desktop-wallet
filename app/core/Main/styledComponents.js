@@ -33,12 +33,6 @@ export const NavigationSpacer = styled.div`
   height: 2.5rem;
 `
 
-export const TabContainer = styled.div`
-  width: 80%;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
-  font-style: bold;
-`
 
 export const ContentContainer = styled.div`
   display: -webkit-flex;
