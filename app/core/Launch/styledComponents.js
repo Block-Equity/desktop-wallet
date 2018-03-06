@@ -18,6 +18,18 @@ export const Header = styled.h2`
   margin-top: 1rem;
 `
 
+export const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+`
+
 export const LaunchButton = styled.button`
-  margin-top: 3rem;
+  margin-right: 0.5rem;
+`
+
+export const CreationButton = styled.button`
+
 `

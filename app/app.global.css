@@ -8,7 +8,7 @@
 body {
   position: relative;
   color: white;
-  height: 100vh;
+  height: 100%;
   font: caption;
 }
 
@@ -33,7 +33,6 @@ a {
 }
 
 a:hover {
-  opacity: 1;
   text-decoration: none;
   cursor: pointer;
 }

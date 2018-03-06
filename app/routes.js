@@ -7,8 +7,8 @@ import Creation from './core/Creation'
 
 const Routes = ({ history }) => (
   <Switch>
+    <Route path='/login' component={Creation} />
     <Route path='/wallet' component={Main} />
-    <Route path='/creation' component={Creation} />
     <Route path='/' component={Launch} />
   </Switch>
 )
