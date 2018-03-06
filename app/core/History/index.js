@@ -19,18 +19,15 @@ const materialStyles = theme => ({
   }
 })
 
+const DATE_FORMAT = 'YYYY-MM-DDTHH:mm:ssZ'
+const NUMERICAL_FORMAT = 'lll'
+
 class History extends Component {
-
-  constructor (props) {
-    super()
-
-  }
-
   renderTableBody() {
     return this.props.paymentTransactions.map(n => {
       if (n.from !== undefined) {
-        const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow();
-        const formattedDate = moment(n.created_at).format('lll')
+        const formattedNowTime = moment(n.created_at, {DATE_FORMAT}).fromNow();
+        const formattedDate = moment(n.created_at).format({NUMERICAL_FORMAT})
         const displayDate = `${formattedNowTime}${formattedDate}`
         return (
           <TableRow key={n.id}>
