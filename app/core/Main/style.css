@@ -71,5 +71,5 @@ used with styled componets but right now it only supports Bootstrap 3.
   overflow-y: scroll;
   width: 100%;
   max-height: 700px;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
