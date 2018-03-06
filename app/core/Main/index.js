@@ -29,6 +29,8 @@ import History from '../History'
 import Tabs from '../Tabs'
 import Receive from '../Receive'
 import Send from '../Send'
+import Alert from '../Alert'
+import * as alertTypes from '../Alert/types'
 
 import isEmpty from 'lodash/isEmpty'
 import get from 'lodash/get'
@@ -44,23 +46,6 @@ import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
 import Snackbar from 'material-ui/Snackbar';
 
-const materialStyles = theme => ({
-  root: {
-    width: '80%',
-    marginTop: theme.spacing.unit * 3,
-    overflowX: 'auto',
-  },
-  table: {
-    minWidth: 600,
-  },
-  close: {
-    width: theme.spacing.unit * 4,
-    height: theme.spacing.unit * 4,
-  },
-});
-
-import * as horizon from '../../services/networking/horizon'
-
 const navigation = { history: 0, send: 1, receive: 2 }
 const INITIAL_NAVIGATION_INDEX = navigation.history;
 
@@ -69,14 +54,10 @@ class Main extends Component {
   constructor (props) {
     super()
     this.state = {
-      sendAddress: 'GANRFALPK2ZPRMD6G55QKSM25AN57J76JUHUNPZBFY3JRN6EMAPNSMYG',
-      sendAmount: '',
       paymentTransactions: [],
       selectedMenuItem: INITIAL_NAVIGATION_INDEX,
       snackBarOpen: false
     }
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   async componentDidMount () {
@@ -108,6 +89,23 @@ class Main extends Component {
     }
   }
 
+  render () {
+    return (
+      <div className={styles.mainPageContainer}>
+        <div className={styles.mainPageContentContainer}>
+          { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
+          <div style={{width: '50%'}}>
+            <Tabs selectedItem={this.selectedItem}/>
+          </div>
+          <div className={styles.mainPageComponentContainer}>
+            { this.renderContent() }
+          </div>
+          { this.renderSnackBar() }
+        </div>
+      </div>
+    )
+  }
+
   renderAccountInfoContent () {
     const balance = this.props.currentAccount.balance.balance
     return (
@@ -126,71 +124,7 @@ class Main extends Component {
     })
   }
 
-  //region Send Money
-  renderSendMoneySection () {
-    // TODO: handle form errors
-    const { invalid, displayErrors } = this.state
-
-    var formStyle = ''
-
-    if (displayErrors) {
-      formStyle = styles.sendAssetFormDisplayErrors
-    }
-
-    return (
-      <div className={styles.sendAssetFormContainer}>
-        <form id='sendAssetForm' onSubmit={this.handleSubmit}>
-          <div className='form-group'>
-            <label className={this.sendAssetFormLabel} htmlFor='sendAddress'>Send to address: </label>
-            <input type='text' className='form-control' placeholder='Send Address'
-              id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
-          </div>
-          <div className='form-group'>
-            <label className={this.sendAssetFormLabel} htmlFor='sendAmount'>Amount in XLM: </label>
-            <input type='text' className='form-control' placeholder='Amount in XLM'
-              id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
-          </div>
-          <button className='btn btn-outline-success' type='submit'>Send</button>
-        </form>
-      </div>
-    )
-  }
-
-  handleChange (event) {
-    const target = event.target
-    const value = target.value
-    const name = target.name
-    this.setState({
-      [name]: value
-    })
-  }
-
-  async handleSubmit (event) {
-    event.preventDefault()
-
-    /*if (!event.target.checkValidity()) {
-       this.setState({
-         invalid: true,
-         displayErrors: true
-       })
-       return
-    }*/
-
-    await this.props.sendPaymentToAddress({
-      destination: this.state.sendAddress,
-      amount: this.state.sendAmount
-    })
-
-    await this.props.fetchAccountDetails()
-    await this.props.fetchPaymentOperationList()
-
-    this.setState({
-      sendAmount: '',
-      snackBarOpen: true,
-      selectedMenuItem: INITIAL_NAVIGATION_INDEX
-    })
-  }
-
+  //Send Payment Call back
   receiveSendPaymentInfo = (info) => {
     (async () => {
       await this.props.sendPaymentToAddress({
@@ -212,19 +146,6 @@ class Main extends Component {
     });
   }
 
-  handleSnackBarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    this.setState({ snackBarOpen: false });
-  };
-
-  async refreshList() {
-    await this.props.fetchPaymentOperationList()
-    this.setState({ snackBarOpen: false });
-  }
-
   renderSnackBar() {
     return (
       <div>
@@ -235,26 +156,28 @@ class Main extends Component {
           }}
           open={this.state.snackBarOpen}
           autoHideDuration={6000}
-          onClose={this.handleClose}
+          onClose={this.handleSnackBarClose}
           SnackbarContentProps={{
             'aria-describedby': 'message-id',
           }}
           message={<span id="message-id">Payment Sent</span>}
           action={[
-            <Button key="undo" color="secondary" size="small"
-              onClick={this.refreshList}>
-              REFRESH
-            </Button>,
             <Button key="close" color="secondary" size="small"
-            onClick={this.handleSnackBarClose}>
-            CLOSE
-          </Button>
+              onClick={this.handleSnackBarClose}>
+              CLOSE
+            </Button>
           ]}
         />
       </div>
     )
   }
-  //endregion
+
+  handleSnackBarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    this.setState({ snackBarOpen: false });
+  };
 
   renderContent() {
     console.log(`Render content || state: ${this.state.selectedMenuItem}`)
@@ -266,34 +189,19 @@ class Main extends Component {
       break;
       case navigation.send:
         return (
-          <div style={{width: '60%'}}>
+          <div style={{width: '50%'}}>
             <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } />
           </div>
         )
       break;
       case navigation.receive:
         return (
-          <div className={styles.receiveContainer}>
+          <div style={{width: '80%'}}>
             <Receive currentAccount={ this.props.currentAccount } />
           </div>
         )
       break;
     }
-  }
-
-  render () {
-    return (
-      <div className={styles.mainPageContainer}>
-        <div className={styles.mainPageContentContainer}>
-          { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
-          <Tabs selectedItem={this.selectedItem}/>
-          <div className={styles.mainPageComponentContainer}>
-            { this.renderContent() }
-          </div>
-          { this.renderSnackBar() }
-        </div>
-      </div>
-    )
   }
 }
 
