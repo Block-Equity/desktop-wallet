@@ -45,7 +45,29 @@ const materialStyles = theme => ({
   },
 });
 
+const INITIAL_ACCOUNT_CREATION_STAGE = 0;
+
 class AccountCreation extends Component {
+
+  constructor (props) {
+    super()
+    this.state = {
+      accountCreationStage: {
+        mnemonic: {value: '', key: 0},
+        passphrase: {value: '', key: 1},
+        validation: {value: {
+          step1: false,
+          step2: false,
+          step3: false,
+          step4: false,
+          step5: false
+        }, key: 2},
+        pin: {value: '', key: 3},
+      },
+      currentStage: INITIAL_ACCOUNT_CREATION_STAGE
+    }
+  }
+
   render() {
     return (
       <div className={styles.container}>
@@ -56,31 +78,56 @@ class AccountCreation extends Component {
           </div>
         </nav>
         <div style={{margin: '1rem', textAlign: 'center'}}>
-          <Paper style={{padding: '2rem'}} elevation={2} square={false}>
-            <Typography style={{marginBottom: '0.75rem'}} variant='subheading' component='h2' align='center'> RECOVERY PHRASE </Typography>
-            <Typography component="p">
-              The phrase is case sensitive. Please make sure you <b>write down and save your recovery phrase</b>. You will need this phrase to use and restore your wallet.
-            </Typography>
-            <div className={styles.chipContainer}>
-              {sampleWords.map(data => {
-                return (
-                  <Chip
-                    key={data.key}
-                    label={`${data.key + 1}. ${data.label}`}
-                    className={materialStyles.chip}
-                    style={{marginLeft: '0.35rem', marginTop: '0.35rem', marginBottom: '0.35rem', backgroundColor:'#0F547E', color:'#FFFFFF'}}
-                  />
-                );
-              })}
-            </div>
-            <button style={{padding: '0.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem'}} type="button" className="btn btn-dark">
-              Yes, I have written it down.
-            </button>
-          </Paper>
+          { this.renderContent(this.state.currentStage) }
         </div>
       </div>
     )
   }
+
+  renderContent(key) {
+    switch(key) {
+      case this.state.accountCreationStage.mnemonic.key:
+        return (
+          this.renderMnemonicView()
+        )
+      break;
+      case this.state.accountCreationStage.passphrase.key:
+      break;
+      case this.state.accountCreationStage.validation.key:
+      break;
+      case this.state.accountCreationStage.pin.key:
+      break;
+    }
+  }
+
+  renderMnemonicView() {
+    return (
+      <div>
+        <Paper style={{padding: '2rem'}} elevation={2} square={false}>
+          <Typography style={{marginBottom: '0.75rem'}} variant='title' component='h2' align='center'> RECOVERY PHRASE </Typography>
+          <Typography component="p">
+            The phrase is case sensitive. Please make sure you <b>write down and save your recovery phrase</b>. You will need this phrase to use and restore your wallet.
+          </Typography>
+          <div className={styles.chipContainer}>
+            {sampleWords.map(data => {
+              return (
+                <Chip
+                  key={data.key}
+                  label={`${data.key + 1}. ${data.label}`}
+                  className={materialStyles.chip}
+                  style={{marginLeft: '0.35rem', marginTop: '0.35rem', marginBottom: '0.35rem', backgroundColor:'#0F547E', color:'#FFFFFF'}}
+                />
+              );
+            })}
+          </div>
+          <button style={{padding: '0.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem'}} type="button" className="btn btn-outline-dark">
+            Yes, I have written it down.
+          </button>
+        </Paper>
+      </div>
+    )
+  }
+
 }
 
 /*const mapStateToProps = (state) => {
