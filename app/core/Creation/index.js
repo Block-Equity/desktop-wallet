@@ -45,7 +45,8 @@ const materialStyles = theme => ({
   },
 });
 
-const INITIAL_ACCOUNT_CREATION_STAGE = 0;
+const INITIAL_ACCOUNT_CREATION_STAGE = 0
+const INITIAL_ACCOUNT_CREATION_VALIDATION_STEP = 0
 
 class AccountCreation extends Component {
 
@@ -53,16 +54,38 @@ class AccountCreation extends Component {
     super()
     this.state = {
       accountCreationStage: {
-        mnemonic: {value: '', key: 0},
-        passphrase: {value: '', key: 1},
-        validation: {value: {
-          step1: false,
-          step2: false,
-          step3: false,
-          step4: false,
-          step5: false
-        }, key: 2},
-        pin: {value: '', key: 3},
+        pin: {
+          valueInitial: undefined,
+          valueConfirm: undefined,
+          key: 0,
+          progressValue: 25,
+          progressTitle: 'Step 1 of 4'
+        },
+        mnemonic: {
+          value: undefined,
+          key: 1,
+          progressValue: 50,
+          progressTitle: 'Step 2 of 4'
+        },
+        passphrase: {
+          value: undefined,
+          key: 2,
+          progressValue: 75,
+          progressTitle: 'Step 3 of 4'
+        },
+        validation: {
+          value: {
+            step1: {isValidate: false, key: 0},
+            step2: {isValidate: false, key: 1},
+            step3: {isValidate: false, key: 2},
+            step4: {isValidate: false, key: 3},
+            step5: {isValidate: false, key: 4},
+          },
+          key: 3,
+          currentValidationStep: INITIAL_ACCOUNT_CREATION_VALIDATION_STEP,
+          progressValue: 100,
+          progressTitle: 'Step 4 of 4'
+        }
       },
       currentStage: INITIAL_ACCOUNT_CREATION_STAGE
     }
@@ -71,10 +94,9 @@ class AccountCreation extends Component {
   render() {
     return (
       <div className={styles.container}>
-        <nav className='navbar navbar-dark bg-dark'>
+        <nav className='navbar navbar-dark' style={{background: '#0F547E'}}>
           <div className={styles.navContentContainer}>
-            <img src={logoIcon} width='40' height='21' className="d-inline-block align-top" alt=""/>
-            <h5 style={{marginLeft: '0.75rem'}}>Account Creation</h5>
+            <img src={logoIcon} width='40' height='21' style={{marginBottom: '0.5rem'}} alt=""/>
           </div>
         </nav>
         <div style={{margin: '1rem', textAlign: 'center'}}>
@@ -86,6 +108,12 @@ class AccountCreation extends Component {
 
   renderContent(key) {
     switch(key) {
+      case this.state.accountCreationStage.pin.key:
+        return (
+          //this.renderPINView()
+          this.renderMnemonicView()
+        )
+      break;
       case this.state.accountCreationStage.mnemonic.key:
         return (
           this.renderMnemonicView()
@@ -95,35 +123,65 @@ class AccountCreation extends Component {
       break;
       case this.state.accountCreationStage.validation.key:
       break;
-      case this.state.accountCreationStage.pin.key:
-      break;
     }
   }
 
-  renderMnemonicView() {
+  renderPINView() {
+    const {progressValue, progressTitle} = this.state.accountCreationStage.pin;
     return (
-      <div>
-        <Paper style={{padding: '2rem'}} elevation={2} square={false}>
-          <Typography style={{marginBottom: '0.75rem'}} variant='title' component='h2' align='center'> RECOVERY PHRASE </Typography>
-          <Typography component="p">
-            The phrase is case sensitive. Please make sure you <b>write down and save your recovery phrase</b>. You will need this phrase to use and restore your wallet.
-          </Typography>
-          <div className={styles.chipContainer}>
-            {sampleWords.map(data => {
-              return (
-                <Chip
-                  key={data.key}
-                  label={`${data.key + 1}. ${data.label}`}
-                  className={materialStyles.chip}
-                  style={{marginLeft: '0.35rem', marginTop: '0.35rem', marginBottom: '0.35rem', backgroundColor:'#0F547E', color:'#FFFFFF'}}
-                />
-              );
-            })}
+      <div style={{padding: '2rem'}}>
+        { this.renderProgressView(progressValue, progressTitle)}
+        <Typography style={{marginBottom: '0.75rem'}} variant='title' component='h2' align='center'> Create a <b>4 digit</b> PIN </Typography>
+        <form id='sendAssetForm' onSubmit={this.handleSubmit}>
+          <div className='form-group input-group input-group-lg'>
+            <input type='text' style={{margin: '2rem'}} className="form-control" placeholder='Enter PIN e.g. 3194'
+              id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
           </div>
-          <button style={{padding: '0.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem'}} type="button" className="btn btn-outline-dark">
-            Yes, I have written it down.
+          <button style={{padding: '0.5rem', paddingLeft: '3.5rem', paddingRight: '3.5rem'}} type="submit" className="btn btn-outline-dark">
+            Done
           </button>
-        </Paper>
+        </form>
+      </div>
+    )
+  }
+
+  renderMnemonicView() {
+    const {progressValue, progressTitle} = this.state.accountCreationStage.mnemonic;
+    return (
+      <div style={{padding: '2rem'}}>
+        { this.renderProgressView(progressValue, progressTitle)}
+        <Typography style={{marginBottom: '0.75rem'}} variant='title' component='h2' align='center'> RECOVERY PHRASE </Typography>
+        <Typography component="p">
+          The phrase is case sensitive. Please make sure you <b>write down and save your recovery phrase</b>. You will need this phrase to use and restore your wallet.
+        </Typography>
+        <div className={styles.chipContainer}>
+          {sampleWords.map(data => {
+            return (
+              <Chip
+                key={data.key}
+                label={`${data.key + 1}. ${data.label}`}
+                className={materialStyles.chip}
+                style={{marginLeft: '0.35rem', marginTop: '0.35rem', marginBottom: '0.35rem', backgroundColor:'#0F547E', color:'#FFFFFF'}}
+              />
+            );
+          })}
+        </div>
+        <button style={{padding: '0.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem'}} type="button" className="btn btn-outline-dark">
+          Yes, I have written it down.
+        </button>
+      </div>
+    )
+  }
+
+  renderValidationView() {
+
+  }
+
+  renderProgressView(value, label) {
+    return (
+      <div className="progress" style={{height: '35px', marginBottom: '2rem'}}>
+        <div className="progress-bar bg-info" role="progressbar" style={{width: `${value}%`}}
+          aria-valuenow={value} aria-valuemin="0" aria-valuemax="100">{label}</div>
       </div>
     )
   }
