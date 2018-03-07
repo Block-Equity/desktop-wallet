@@ -1,0 +1,11 @@
+.sendAssetFormContainer {
+  padding-bottom: 2rem;
+}
+
+.sendAssetFormLabel {
+  color: #000000;
+}
+
+.sendAssetFormDisplayErrors input:invalid {
+  border-color: #f73772;
+}

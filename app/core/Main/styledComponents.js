@@ -6,6 +6,7 @@ export const MainContainer = styled.div`
   -webkit-flex-direction: row;
   flex-direction: row;
   height: 100%;
+  background: #FFFFFF;
 `
 
 export const NavigationContainer = styled.div`
@@ -32,6 +33,7 @@ export const NavigationSpacer = styled.div`
   height: 2.5rem;
 `
 
+
 export const ContentContainer = styled.div`
   display: -webkit-flex;
   display: flex;
@@ -41,6 +43,23 @@ export const ContentContainer = styled.div`
   align-items: center;
   flex: 1 1 auto;
   overflow: auto;
+  background: #EAEFF2;
+  width: 100%;
+`
+
+export const AccountInfoContainer = styled.div`
+  width: 80%;
+  background: #EAEFF2;
+  border-radius: 5px;
+  margin-bottom: 0.5rem;
+`
+
+export const AccountInfoTitle = styled.text`
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: #999999;
+  font-size: 0.7rem;
+  font-weight: 100;
 `
 
 export const AccountBalanceContainer = styled.div`
@@ -51,7 +70,6 @@ export const AccountBalanceContainer = styled.div`
 `
 
 export const AccountAddressLabel = styled.h3`
-  margin-top: 3rem;
   font-size: 1rem;
   font-weight: 100;
   color: #000000;
@@ -59,33 +77,45 @@ export const AccountAddressLabel = styled.h3`
 
 export const AccountBalanceLabel = styled.h5`
   margin-top: 1rem;
+  margin-bottom: 1rem;
   font-size: 1.5rem;
   font-weight: 100;
   color: #000000;
 `
 
 export const AccountBalanceCurrencyLabel = styled.h6`
-  margin-top: 1.4rem;
+  margin-top: 1.5rem;
   margin-left: 0.25rem;
-  font-size: 1rem;
+  font-size: 0.75rem;
   font-weight: 200;
   color: #444444;
 `
 
 export const SendAssetFormContainer = styled.div`
-  width: 70%;
-  margin-top: 3rem;
   padding-bottom: 2rem;
-  padding-left: 2rem;
 `
 
 export const SendAssetFormLabel = styled.label`
   color: #000000;
 `
 
+export const SendAssetInput = styled.input`
+  width: 100%;
+`
+
+export const ReceiveAssetContainer = styled.div`
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  -webkit-align-items: center;
+  align-items: center;
+  width: 80%;
+`
+
 export const LogoIcon = styled.img`
-  width: 150px;
-  height: 77px;
+  width: 50px;
+  height: 26px;
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 `

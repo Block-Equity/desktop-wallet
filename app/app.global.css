@@ -9,9 +9,7 @@ body {
   position: relative;
   color: white;
   height: 100vh;
-  background-color: #EAEFF2;
   font: caption;
-  overflow-y: hidden;
 }
 
 h2 {
@@ -30,8 +28,7 @@ li {
 }
 
 a {
-  color: white;
-  opacity: 0.75;
+  color: #555555;
   text-decoration: none;
 }
 

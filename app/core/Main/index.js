@@ -25,45 +25,39 @@ import {
   getPaymentTransactions
 } from '../../common/payment/selectors'
 
+import History from '../History'
+import Tabs from '../Tabs'
+import Receive from '../Receive'
+import Send from '../Send'
+import Alert from '../Alert'
+import * as alertTypes from '../Alert/types'
+
 import isEmpty from 'lodash/isEmpty'
 import get from 'lodash/get'
 import numeral from 'numeral'
-import QRCode from 'qrcode.react'
 
 import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
 import logoIcon from '../Launch/logo-gray.png'
 
-import {
-  MainContainer,
-  NavigationContainer,
-  ContentContainer,
-  AccountBalanceContainer,
-  AccountAddressLabel,
-  AccountBalanceLabel,
-  AccountBalanceCurrencyLabel,
-  SendAssetFormContainer,
-  SendAssetFormLabel,
-  WalletIcon,
-  SettingsIcon,
-  LogoIcon
-} from './styledComponents'
+import styles from './style.css';
 
-import * as horizon from '../../services/networking/horizon'
+import { withStyles } from 'material-ui/styles';
+import Button from 'material-ui/Button';
+import Snackbar from 'material-ui/Snackbar';
 
-const styles = {}
+const navigation = { history: 0, send: 1, receive: 2 }
+const INITIAL_NAVIGATION_INDEX = navigation.history;
 
 class Main extends Component {
+
   constructor (props) {
     super()
     this.state = {
-      // TODO: temporary here, cuz I'm tired of populating every time :p
-      sendAddress: 'GACCYANIKFQPYJZ7VTWKR6DH3AWNOLO7ETVFBVWHLLZ62VPRIFNDZTJ2',
-      sendAmount: '',
-      paymentTransactions: []
+      paymentTransactions: [],
+      selectedMenuItem: INITIAL_NAVIGATION_INDEX,
+      snackBarOpen: false
     }
-    this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   async componentDidMount () {
@@ -83,7 +77,7 @@ class Main extends Component {
         //TODO: Fetching payment operation list will be component specific
         await this.props.fetchPaymentOperationList()
         await this.props.streamPayments()
-        if (this.props.incomingPayment.from !== publicKey) {
+        if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
           new Notification('Payment Received',
             { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
           )
@@ -95,137 +89,119 @@ class Main extends Component {
     }
   }
 
-  handleChange (event) {
-    const target = event.target
-    const value = target.value
-    const name = target.name
-    this.setState({
-      [name]: value
-    })
-  }
-
-  async handleSubmit (event) {
-    event.preventDefault()
-
-    /*if (!event.target.checkValidity()) {
-       this.setState({
-         invalid: true,
-         displayErrors: true
-       })
-       return
-    }*/
-
-    await this.props.sendPaymentToAddress({
-      destination: this.state.sendAddress,
-      amount: this.state.sendAmount
-    })
-
-    await this.props.fetchAccountDetails()
-    await this.props.fetchPaymentOperationList()
-
-    this.setState({
-      sendAmount: ''
-    })
-  }
-
-  renderNavigationContainer() {
+  render () {
     return (
-      <NavigationContainer>
-        <WalletIcon src={walletIcon} alt='' />
-        <SettingsIcon src={settingIcon} alt='' />
-      </NavigationContainer>
+      <div className={styles.mainPageContainer}>
+        <div className={styles.mainPageContentContainer}>
+          { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
+          <div style={{width: '50%'}}>
+            <Tabs selectedItem={this.selectedItem}/>
+          </div>
+          <div className={styles.mainPageComponentContainer}>
+            { this.renderContent() }
+          </div>
+          { this.renderSnackBar() }
+        </div>
+      </div>
     )
   }
 
   renderAccountInfoContent () {
-    const address = this.props.currentAccount.pKey
     const balance = this.props.currentAccount.balance.balance
-
     return (
-      <ContentContainer>
-        <AccountBalanceContainer>
-          <AccountBalanceLabel><b> {numeral(balance).format('0,0.0000')} </b> </AccountBalanceLabel>
-          <AccountBalanceCurrencyLabel> XLM </AccountBalanceCurrencyLabel>
-        </AccountBalanceContainer>
-        <AccountAddressLabel>{address}</AccountAddressLabel>
-        <QRCode value={address} size={100} />
-      </ContentContainer>
+      <div className={styles.mainPageHeaderContainer} block>
+        <img className={styles.mainPageHeaderLogo} src={logoIcon} alt=''></img>
+        <div className={styles.mainPageHeaderBalanceTitle}> YOUR CURRENT XLM BALANCE </div>
+        <div className={styles.mainPageHeaderBalanceLabel}><b> {numeral(balance).format('0,0.00')} </b> </div>
+      </div>
     )
   }
 
-  renderSendMoneySection () {
-    // TODO: handle form errors
-    const { invalid, displayErrors } = this.state
+  //Tab Selection Callback from Tabs component
+  selectedItem = (item) => {
+    this.setState({
+      selectedMenuItem: item
+    })
+  }
 
-    var formStyle = ''
+  //Send Payment Call back
+  receiveSendPaymentInfo = (info) => {
+    (async () => {
+      await this.props.sendPaymentToAddress({
+        destination: info.destination,
+        amount: info.amount
+      })
 
-    if (displayErrors) {
-      formStyle = styles.sendAssetFormDisplayErrors
+      await this.props.fetchAccountDetails()
+      await this.props.fetchPaymentOperationList()
+
+      this.setState({
+        sendAmount: '',
+        sendAddress: '',
+        snackBarOpen: true,
+        selectedMenuItem: INITIAL_NAVIGATION_INDEX
+      })
+    })().catch(err => {
+        console.error(err);
+    });
+  }
+
+  renderSnackBar() {
+    return (
+      <div>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={this.state.snackBarOpen}
+          autoHideDuration={6000}
+          onClose={this.handleSnackBarClose}
+          SnackbarContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">Payment Sent</span>}
+          action={[
+            <Button key="close" color="secondary" size="small"
+              onClick={this.handleSnackBarClose}>
+              CLOSE
+            </Button>
+          ]}
+        />
+      </div>
+    )
+  }
+
+  handleSnackBarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
     }
+    this.setState({ snackBarOpen: false });
+  };
 
-    return (
-      <SendAssetFormContainer>
-        <form id='sendAssetForm' onSubmit={this.handleSubmit} noValidate className={formStyle}>
-          <div className='form-group'>
-            <SendAssetFormLabel htmlFor='sendAddress'>Send to address: </SendAssetFormLabel>
-            <input type='text' className='form-control' placeholder='Send Address'
-              id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
-          </div>
-          <div className='form-group'>
-            <SendAssetFormLabel htmlFor='sendAmount'>Amount in XLM: </SendAssetFormLabel>
-            <input type='text' className='form-control' placeholder='Amount in XLM'
-              id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
-          </div>
-          <button className='btn btn-outline-success' type='submit'>Send</button>
-        </form>
-      </SendAssetFormContainer>
-    )
-  }
-
-  //TODO: Create another component for this.
-  renderTableHeaders() {
-    const tableHeaders = [
-      'Date', 'Account', 'Amount'
-    ];
-    return tableHeaders.map((item, index) => {
+  renderContent() {
+    console.log(`Render content || state: ${this.state.selectedMenuItem}`)
+    switch(this.state.selectedMenuItem) {
+      case navigation.history:
         return (
-            <th scope="col" key={ index }>{ item }</th>
+          <History paymentTransactions={this.props.paymentTransactions} />
         )
-    });
-  }
-
-  renderTableData() {
-    return this.props.paymentTransactions.map((item, index) => {
-      return (
-          <tr key={ index }>
-          <td>{ item.created_at }</td>
-          <td>{ item.from }</td>
-          <td>{ item.amount }</td>
-          </tr>
-      )
-    });
-  }
-
-  render () {
-    return (
-      <MainContainer>
-        <ContentContainer>
-          <LogoIcon src={logoIcon} alt=''></LogoIcon>
-          { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
-          { this.renderSendMoneySection() }
-          <table className="table-hover table-dark">
-            <thead className="thead-light">
-              <tr>
-                { this.renderTableHeaders() }
-              </tr>
-            </thead>
-            <tbody>
-                { this.renderTableData() }
-            </tbody>
-          </table>
-        </ContentContainer>
-      </MainContainer>
-    )
+      break;
+      case navigation.send:
+        return (
+          <div style={{width: '50%'}}>
+            <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } />
+          </div>
+        )
+      break;
+      case navigation.receive:
+        return (
+          <div style={{width: '80%'}}>
+            <Receive currentAccount={ this.props.currentAccount } />
+          </div>
+        )
+      break;
+    }
   }
 }
 

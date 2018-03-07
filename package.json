@@ -201,6 +201,8 @@
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "keytar": "^4.1.0",
+    "material-ui": "^1.0.0-beta.35",
+    "moment": "^2.20.1",
     "nedb": "^1.8.0",
     "notp": "^2.0.3",
     "numeral": "^2.0.6",
