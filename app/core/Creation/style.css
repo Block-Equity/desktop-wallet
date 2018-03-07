@@ -25,7 +25,8 @@
 
 #contentContainer h4 {
   margin-bottom: 0.75rem;
-  font-weight: 400;
+  font-weight: 700;
+  letter-spacing: 0.02rem;
 }
 
 #contentContainer h6 {
@@ -48,4 +49,18 @@
   margin-left: 0.35rem;
   margin-top: 0.35rem;
   margin-bottom: 0.35rem;
+}
+
+#mnemonicActionContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#mnemonicActionContainer a {
+  color: #777777;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02rem;
 }
