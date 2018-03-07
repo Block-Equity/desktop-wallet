@@ -19,9 +19,33 @@
   margin-top: 0.5rem;
 }
 
+#contentContainer {
+  padding: 2rem;
+}
+
+#contentContainer h4 {
+  margin-bottom: 0.75rem;
+  font-weight: 400;
+}
+
+#contentContainer h6 {
+  font-weight: 300;
+  margin-left: 6rem;
+  margin-right: 6rem;
+}
+
 .chipContainer {
   padding: 1rem;
   margin: 2rem;
   background: #F5F8FA;
   border-radius: 5px;
+}
+
+.chip {
+  font-family: 'Lato', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1rem;
+  margin-left: 0.35rem;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
 }

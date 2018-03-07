@@ -38,6 +38,7 @@ const sampleWords = [
   { key: 23, label: 'upon' }
 ]
 
+const font = "'Lato', sans-serif";
 const materialStyles = theme => ({
   chip: {
     margin: theme.spacing.unit / 2,
@@ -89,6 +90,9 @@ class AccountCreation extends Component {
       },
       currentStage: INITIAL_ACCOUNT_CREATION_STAGE
     }
+    this.handleChange = this.handleChange.bind(this)
+    this.handlePINSubmit = this.handlePINSubmit.bind(this)
+    this.handleWriteMnemonicSubmit = this.handleWriteMnemonicSubmit.bind(this)
   }
 
   render() {
@@ -110,8 +114,7 @@ class AccountCreation extends Component {
     switch(key) {
       case this.state.accountCreationStage.pin.key:
         return (
-          //this.renderPINView()
-          this.renderMnemonicView()
+          this.renderPINView()
         )
       break;
       case this.state.accountCreationStage.mnemonic.key:
@@ -127,15 +130,18 @@ class AccountCreation extends Component {
   }
 
   renderPINView() {
-    const {progressValue, progressTitle} = this.state.accountCreationStage.pin;
+    const {progressValue, progressTitle, valueInitial} = this.state.accountCreationStage.pin;
     return (
-      <div style={{padding: '2rem'}}>
+      <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
-        <Typography style={{marginBottom: '0.75rem'}} variant='title' component='h2' align='center'> Create a <b>4 digit</b> PIN </Typography>
-        <form id='sendAssetForm' onSubmit={this.handleSubmit}>
+        <h4> Create a <b>4 digit</b> PIN </h4>
+        <h6>
+          PIN will used to encrypt your secret keys. Please make sure you choose a PIN that is difficult to guess for others.
+        </h6>
+        <form id='sendAssetForm' onSubmit={this.handlePINSubmit}>
           <div className='form-group input-group input-group-lg'>
-            <input type='text' style={{margin: '2rem'}} className="form-control" placeholder='Enter PIN e.g. 3194'
-              id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
+            <input type='password' maxLength='4' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}} className="form-control" placeholder='Enter PIN e.g. 3194'
+              id='sendAddress' name='sendAddress' value={valueInitial} onChange={this.handleChange} required />
           </div>
           <button style={{padding: '0.5rem', paddingLeft: '3.5rem', paddingRight: '3.5rem'}} type="submit" className="btn btn-outline-dark">
             Done
@@ -145,38 +151,64 @@ class AccountCreation extends Component {
     )
   }
 
+  handleChange (event) {
+    const target = event.target
+    const value = target.value
+    const name = target.name
+    this.setState({
+      [name]: value
+    })
+  }
+
+  handlePINSubmit (event) {
+    event.preventDefault()
+    this.setState({
+      currentStage: 1
+    })
+  }
+
   renderMnemonicView() {
     const {progressValue, progressTitle} = this.state.accountCreationStage.mnemonic;
     return (
-      <div style={{padding: '2rem'}}>
+      <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
-        <Typography style={{marginBottom: '0.75rem'}} variant='title' component='h2' align='center'> RECOVERY PHRASE </Typography>
-        <Typography component="p">
+        <h4> Recovery Phrase </h4>
+        <h6>
           The phrase is case sensitive. Please make sure you <b>write down and save your recovery phrase</b>. You will need this phrase to use and restore your wallet.
-        </Typography>
+        </h6>
         <div className={styles.chipContainer}>
           {sampleWords.map(data => {
             return (
               <Chip
                 key={data.key}
-                label={`${data.key + 1}. ${data.label}`}
+                label={`${data.label}`}
                 className={materialStyles.chip}
-                style={{marginLeft: '0.35rem', marginTop: '0.35rem', marginBottom: '0.35rem', backgroundColor:'#0F547E', color:'#FFFFFF'}}
+                style={{fontFamily: font, fontWeight:'400', fontSize:'0.75rem', letterSpacing: '0.1rem',
+                marginLeft: '0.35rem', marginTop: '0.35rem', marginBottom: '0.35rem',
+                backgroundColor:'#0F547E', color:'#FFFFFF'}}
               />
             );
           })}
         </div>
-        <button style={{padding: '0.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem'}} type="button" className="btn btn-outline-dark">
+        <button onClick={this.handleWriteMnemonicSubmit} style={{padding: '0.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem'}} type="button" className="btn btn-outline-dark">
           Yes, I have written it down.
         </button>
       </div>
     )
   }
 
+  handleWriteMnemonicSubmit (event) {
+    event.preventDefault()
+    this.setState({
+      currentStage: 0
+    })
+  }
+
   renderValidationView() {
 
   }
 
+  //Re-usable components - TODO - put them in their own class....but for now this will do.
   renderProgressView(value, label) {
     return (
       <div className="progress" style={{height: '35px', marginBottom: '2rem'}}>
