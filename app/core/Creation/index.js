@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
+import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 
 import styles from './style.css'
@@ -17,30 +18,30 @@ from 'reactstrap';
 import logoIcon from './images/logo-white.png'
 
 const sampleWords = [
-  { key: 0, label: 'travel' },
-  { key: 1, label: 'script' },
-  { key: 2, label: 'glass' },
-  { key: 3, label: 'tenant' },
-  { key: 4, label: 'hood' },
-  { key: 5, label: 'napkin' },
-  { key: 6, label: 'path' },
-  { key: 7, label: 'inform' },
-  { key: 8, label: 'ensure' },
-  { key: 9, label: 'tenant' },
-  { key: 10, label: 'interest' },
-  { key: 11, label: 'upon' },
-  { key: 12, label: 'travel' },
-  { key: 13, label: 'script' },
-  { key: 14, label: 'glass' },
-  { key: 15, label: 'tenant' },
-  { key: 16, label: 'hood' },
-  { key: 17, label: 'napkin' },
-  { key: 18, label: 'path' },
-  { key: 19, label: 'inform' },
-  { key: 20, label: 'ensure' },
-  { key: 21, label: 'tenant' },
-  { key: 22, label: 'interest' },
-  { key: 23, label: 'upon' }
+  { key: 0, label: 'travel', numeric: '1st' },
+  { key: 1, label: 'script', numeric: '2nd' },
+  { key: 2, label: 'glass', numeric: '3rd' },
+  { key: 3, label: 'tenant', numeric: '4th' },
+  { key: 4, label: 'hood', numeric: '5th' },
+  { key: 5, label: 'napkin', numeric: '6th' },
+  { key: 6, label: 'path', numeric: '7th' },
+  { key: 7, label: 'inform', numeric: '8th' },
+  { key: 8, label: 'ensure', numeric: '9th'},
+  { key: 9, label: 'tenant', numeric: '10th' },
+  { key: 10, label: 'interest', numeric: '11th' },
+  { key: 11, label: 'upon', numeric: '12th' },
+  { key: 12, label: 'travel', numeric: '13th' },
+  { key: 13, label: 'script', numeric: '14th' },
+  { key: 14, label: 'glass', numeric: '15th' },
+  { key: 15, label: 'tenant', numeric: '16th' },
+  { key: 16, label: 'hood', numeric: '17th' },
+  { key: 17, label: 'napkin', numeric: '18th' },
+  { key: 18, label: 'path', numeric: '19th' },
+  { key: 19, label: 'inform', numeric: '20th' },
+  { key: 20, label: 'ensure', numeric: '21st' },
+  { key: 21, label: 'tenant', numeric: '22nd' },
+  { key: 22, label: 'interest', numeric: '23rd' },
+  { key: 23, label: 'upon', numeric: '24th' }
 ]
 
 const font = "'Lato', sans-serif";
@@ -86,18 +87,20 @@ class AccountCreation extends Component {
       mnemonicValue: '',
       passphraseValue1: '',
       passphraiseValue2: '',
-      validationValue1: '',
-      validationValue2: '',
-      validationValue3: '',
-      validationValue4: '',
-      validationValue5: '',
+      validationValue1: {},
+      validationValue2: {},
+      validationValue3: {},
+      validationValue4: {},
+      validationValue5: {},
       currentValidationStage: 1,
-      validationPhrase: sampleWords
+      validationPhrase: sampleWords,
+      recoveryPhrase: sampleWords
     }
     this.handleChange = this.handleChange.bind(this)
     this.handlePINSubmit = this.handlePINSubmit.bind(this)
     this.handleWriteMnemonicSubmit = this.handleWriteMnemonicSubmit.bind(this)
     this.togglePassphraseModal = this.togglePassphraseModal.bind(this)
+    this.handleNextValidationStep = this.handleNextValidationStep.bind(this)
   }
 
   render() {
@@ -190,11 +193,15 @@ class AccountCreation extends Component {
             return (
               <Chip
                 key={data.key}
+                avatar={
+                  <Avatar style={{fontFamily: font, fontWeight:'300', fontSize:'0.75rem',
+                  backgroundColor:'#EFF5F9', color:'#777777'}}>{data.key + 1}</Avatar>
+                }
                 label={`${data.label}`}
                 className={materialStyles.chip}
                 style={{fontFamily: font, fontWeight:'400', fontSize:'0.75rem', letterSpacing: '0.03rem',
                   marginLeft: '0.35rem', marginTop: '0.35rem', marginBottom: '0.35rem',
-                  backgroundColor:'#D3DBE0', color:'#555555', borderColor: '#C3D0D9'}}
+                  backgroundColor:'#FFFFFF', color:'#555555'}}
               />
             );
           })}
@@ -210,8 +217,9 @@ class AccountCreation extends Component {
     )
   }
 
-  handleWriteMnemonicSubmit (event) {
+  async handleWriteMnemonicSubmit (event) {
     event.preventDefault()
+    await this.pickRandomIndex()
     this.setState({
       currentStage: 2
     })
@@ -248,8 +256,8 @@ class AccountCreation extends Component {
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
-        <h4> Enter the 7th word of the recovery phrase </h4>
-        <form id='sendAssetForm' onSubmit={this.handlePINSubmit}>
+        <h4> {`Enter the ${this.state.currentValidationValue.numeric} word of the recovery phrase`} </h4>
+        <form id='sendAssetForm' onSubmit={this.handleNextValidationStep}>
           <div className='form-group input-group input-group-lg'>
             <input type='text' minLength='6' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}}
               className="form-control" placeholder='Enter recovery word' value={valueInitial} onChange={this.handleChange} required />
@@ -260,6 +268,20 @@ class AccountCreation extends Component {
         </form>
       </div>
     )
+  }
+
+  handleNextValidationStep (event) {
+    event.preventDefault()
+    console.log('Next Called')
+    if (this.state.currentValidationStage < 6) {
+      console.log('Increment next stage')
+      this.setState({
+        currentValidationStage: this.state.currentValidationStage + 1
+      })
+      this.pickRandomIndex()
+    } else {
+      console.log('Validation stages done!')
+    }
   }
   //endregion
 
@@ -275,17 +297,21 @@ class AccountCreation extends Component {
 
   //Random index picker
   pickRandomIndex() {
-    var randomIndex = Math.floor(Math.random() * this.state.validationPhrase.length)
-    this.setState({
-      validationPhrase: updatedArray
-    })
-  }
-
-  getInitialMnemonicPhrase(index) {
-    var updatedArray = this.state.validationPhrase.splice(index, 1)
-    this.setState({
-      validationPhrase: updatedArray
-    })
+    if (this.state.currentValidationStage < 6) {
+      var index = Math.floor(Math.random() * this.state.validationPhrase.length)
+      var value = this.state.validationPhrase[index]
+      var updatedArray = this.state.validationPhrase.filter( (i) => {
+        return i != value
+      })
+      console.log(`Random Picker || Index: ${index}, Value: ${value.label},
+        UpdatedArray: ${JSON.stringify(updatedArray)}, OriginalArray: ${JSON.stringify(this.state.recoveryPhrase)}`)
+      this.setState({
+        [`validationValue${this.state.currentValidationStage}`]: value,
+        validationPhrase: updatedArray,
+        currentValidationValue: value
+        //currentValidationStage: this.state.currentValidationStage + 1 //After the user enters
+      })
+    }
   }
 }
 
