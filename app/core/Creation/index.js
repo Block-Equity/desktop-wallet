@@ -51,50 +51,48 @@ const materialStyles = theme => ({
   },
 });
 
-const INITIAL_ACCOUNT_CREATION_STAGE = 0
-const INITIAL_ACCOUNT_CREATION_VALIDATION_STEP = 0
+const accountCreationStages = {
+  pin: {
+    key: 0,
+    progressValue: 25,
+    progressTitle: 'Step 1 of 4'
+  },
+  mnemonic: {
+    key: 1,
+    progressValue: 50,
+    progressTitle: 'Step 2 of 4'
+  },
+  validation: {
+    key: 2,
+    progressValue: 75,
+    progressTitle: 'Step 3 of 4'
+  },
+  completion: {
+    key: 3,
+    progressValue: 100,
+    progressTitle: 'Step 4 of 4'
+  }
+}
 
 class AccountCreation extends Component {
 
   constructor (props) {
     super()
     this.state = {
-      accountCreationStage: {
-        pin: {
-          valueInitial: undefined,
-          valueConfirm: undefined,
-          key: 0,
-          progressValue: 25,
-          progressTitle: 'Step 1 of 4'
-        },
-        mnemonic: {
-          value: undefined,
-          key: 1,
-          progressValue: 50,
-          progressTitle: 'Step 2 of 4'
-        },
-        passphrase: {
-          value: undefined,
-          key: 2,
-          progressValue: 75,
-          progressTitle: 'Step 3 of 4'
-        },
-        validation: {
-          value: {
-            step1: {isValidate: false, key: 0},
-            step2: {isValidate: false, key: 1},
-            step3: {isValidate: false, key: 2},
-            step4: {isValidate: false, key: 3},
-            step5: {isValidate: false, key: 4},
-          },
-          key: 3,
-          currentValidationStep: INITIAL_ACCOUNT_CREATION_VALIDATION_STEP,
-          progressValue: 100,
-          progressTitle: 'Step 4 of 4'
-        }
-      },
-      currentStage: INITIAL_ACCOUNT_CREATION_STAGE,
-      showModal: false
+      currentStage: accountCreationStages.pin.key,
+      showModal: false,
+      pinValue1: '',
+      pinValue2: '',
+      mnemonicValue: '',
+      passphraseValue1: '',
+      passphraiseValue2: '',
+      validationValue1: '',
+      validationValue2: '',
+      validationValue3: '',
+      validationValue4: '',
+      validationValue5: '',
+      currentValidationStage: 1,
+      validationPhrase: sampleWords
     }
     this.handleChange = this.handleChange.bind(this)
     this.handlePINSubmit = this.handlePINSubmit.bind(this)
@@ -119,26 +117,27 @@ class AccountCreation extends Component {
 
   renderContent(key) {
     switch(key) {
-      case this.state.accountCreationStage.pin.key:
+      case accountCreationStages.pin.key:
         return (
           this.renderPINView()
         )
       break;
-      case this.state.accountCreationStage.mnemonic.key:
+      case accountCreationStages.mnemonic.key:
         return (
           this.renderMnemonicView()
         )
       break;
-      case this.state.accountCreationStage.passphrase.key:
-      break;
-      case this.state.accountCreationStage.validation.key:
+      case accountCreationStages.validation.key:
+        return (
+          this.renderValidationView()
+        )
       break;
     }
   }
 
   //region 1. PIN View
   renderPINView() {
-    const {progressValue, progressTitle, valueInitial} = this.state.accountCreationStage.pin;
+    const {progressValue, progressTitle, valueInitial} = accountCreationStages.pin;
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
@@ -178,7 +177,7 @@ class AccountCreation extends Component {
 
   //region 2. Mnemonic View
   renderMnemonicView() {
-    const {progressValue, progressTitle} = this.state.accountCreationStage.mnemonic;
+    const {progressValue, progressTitle} = accountCreationStages.mnemonic;
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
@@ -214,7 +213,7 @@ class AccountCreation extends Component {
   handleWriteMnemonicSubmit (event) {
     event.preventDefault()
     this.setState({
-      currentStage: 0
+      currentStage: 2
     })
   }
 
@@ -245,14 +244,14 @@ class AccountCreation extends Component {
 
   //region 3. Validation View
   renderValidationView() {
-    const {progressValue, progressTitle, valueInitial} = this.state.accountCreationStage.validation;
+    const {progressValue, progressTitle, valueInitial} = accountCreationStages.validation;
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
         <h4> Enter the 7th word of the recovery phrase </h4>
         <form id='sendAssetForm' onSubmit={this.handlePINSubmit}>
           <div className='form-group input-group input-group-lg'>
-            <input type='password' maxLength='4' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}}
+            <input type='text' minLength='6' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}}
               className="form-control" placeholder='Enter recovery word' value={valueInitial} onChange={this.handleChange} required />
           </div>
           <button style={{padding: '0.5rem', paddingLeft: '3.5rem', paddingRight: '3.5rem'}} type="submit" className="btn btn-outline-dark">
@@ -272,6 +271,21 @@ class AccountCreation extends Component {
           aria-valuenow={value} aria-valuemin="0" aria-valuemax="100">{label}</div>
       </div>
     )
+  }
+
+  //Random index picker
+  pickRandomIndex() {
+    var randomIndex = Math.floor(Math.random() * this.state.validationPhrase.length)
+    this.setState({
+      validationPhrase: updatedArray
+    })
+  }
+
+  getInitialMnemonicPhrase(index) {
+    var updatedArray = this.state.validationPhrase.splice(index, 1)
+    this.setState({
+      validationPhrase: updatedArray
+    })
   }
 }
 

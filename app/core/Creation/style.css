@@ -61,6 +61,11 @@
 #mnemonicActionContainer a {
   color: #777777;
   margin-top: 0.3rem;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   letter-spacing: 0.02rem;
+}
+
+#mnemonicActionContainer a:hover {
+  color: #229AB7;
+  text-decoration: underline;
 }
