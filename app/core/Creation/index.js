@@ -23,6 +23,7 @@ import logoIcon from './images/logo-white.png'
 const AUTO_HIDE_DURATION = 8000
 
 const sampleWords = [
+
   { key: 0, label: 'travel', numeric: '1st' },
   { key: 1, label: 'script', numeric: '2nd' },
   { key: 2, label: 'glass', numeric: '3rd' },
