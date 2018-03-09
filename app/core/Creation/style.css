@@ -30,6 +30,13 @@
   font-size: 1.8rem;
 }
 
+#contentContainer h5 {
+  margin-bottom: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02rem;
+  font-size: 1.5rem;
+}
+
 #contentContainer h6 {
   font-weight: 300;
   margin-left: 6rem;

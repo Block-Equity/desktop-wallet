@@ -39,7 +39,7 @@ class Alert extends Component {
         SnackbarContentProps={{
           'aria-describedby': 'message-id',
         }}
-        message={<span id="message-id">Payment Sent</span>}
+        message={<span id="message-id">{this.props.alertMessage}</span>}
         action={ this.renderActions() }
       />
     </div>

@@ -8,6 +8,8 @@ import Paper from 'material-ui/Paper';
 import Typography from 'material-ui/Typography';
 import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
+import MaterialButton from 'material-ui/Button';
+import Snackbar from 'material-ui/Snackbar';
 
 import styles from './style.css'
 import {
@@ -16,6 +18,8 @@ import {
 from 'reactstrap';
 
 import logoIcon from './images/logo-white.png'
+
+const AUTO_HIDE_DURATION = 30000
 
 const sampleWords = [
   { key: 0, label: 'travel', numeric: '1st' },
@@ -46,6 +50,13 @@ const sampleWords = [
 
 const font = "'Lato', sans-serif";
 const materialStyles = theme => ({
+  snackbar: {
+    fontFamily: font,
+    fontWeight:'400',
+    fontSize:'0.75rem',
+    backgroundColor:'#FFFFFF',
+    color:'#555555'
+  },
   chip: {
     margin: theme.spacing.unit / 2,
     padding: theme.spacing.unit
@@ -86,13 +97,13 @@ class AccountCreation extends Component {
       pinValue2: '',
       mnemonicValue: '',
       passphraseValue1: '',
-      passphraiseValue2: '',
-      validationValue1: {},
-      validationValue2: {},
-      validationValue3: {},
-      validationValue4: {},
-      validationValue5: {},
+      passphraseValue2: '',
+      validationValue: {},
+      userEnteredValidation: '',
       currentValidationStage: 1,
+      validationTrialCount: 1,
+      alertOpen: false,
+      alertMessage: '',
       validationPhrase: sampleWords,
       recoveryPhrase: sampleWords
     }
@@ -114,6 +125,7 @@ class AccountCreation extends Component {
         <div style={{margin: '1rem', textAlign: 'center'}}>
           { this.renderContent(this.state.currentStage) }
         </div>
+        { this.renderAlertView() }
       </div>
     )
   }
@@ -151,7 +163,7 @@ class AccountCreation extends Component {
         <form id='sendAssetForm' onSubmit={this.handlePINSubmit}>
           <div className='form-group input-group input-group-lg'>
             <input type='password' maxLength='4' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}} className="form-control" placeholder='Enter PIN e.g. 3194'
-              id='sendAddress' name='sendAddress' value={valueInitial} onChange={this.handleChange} required />
+              id='userEnteredPinValue' name='userEnteredPinValue' value={valueInitial} onChange={this.handlePINChange} required />
           </div>
           <button style={{padding: '0.5rem', paddingLeft: '3.5rem', paddingRight: '3.5rem'}} type="submit" className="btn btn-outline-dark">
             Done
@@ -159,15 +171,6 @@ class AccountCreation extends Component {
         </form>
       </div>
     )
-  }
-
-  handleChange (event) {
-    const target = event.target
-    const value = target.value
-    const name = target.name
-    this.setState({
-      [name]: value
-    })
   }
 
   handlePINSubmit (event) {
@@ -256,11 +259,12 @@ class AccountCreation extends Component {
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
-        <h4> {`Enter the ${this.state.currentValidationValue.numeric} word of the recovery phrase`} </h4>
-        <form id='sendAssetForm' onSubmit={this.handleNextValidationStep}>
+        <h5> {`Enter the ${this.state.currentValidationValue.numeric} word of the recovery phrase`} </h5>
+        <form id='validationForm' onSubmit={this.handleNextValidationStep}>
           <div className='form-group input-group input-group-lg'>
-            <input type='text' minLength='6' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}}
-              className="form-control" placeholder='Enter recovery word' value={valueInitial} onChange={this.handleChange} required />
+            <input type='text' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}}
+              name='userEnteredValidation' className="form-control" placeholder='Enter recovery word'
+              value={this.state.userEnteredValidation} onChange={this.handleChange} required />
           </div>
           <button style={{padding: '0.5rem', paddingLeft: '3.5rem', paddingRight: '3.5rem'}} type="submit" className="btn btn-outline-dark">
             Next
@@ -272,15 +276,55 @@ class AccountCreation extends Component {
 
   handleNextValidationStep (event) {
     event.preventDefault()
-    console.log('Next Called')
-    if (this.state.currentValidationStage < 6) {
-      console.log('Increment next stage')
-      this.setState({
-        currentValidationStage: this.state.currentValidationStage + 1
-      })
-      this.pickRandomIndex()
+    var value = this.state.userEnteredValidation
+    console.log(`Event Value: ${value}`)
+    if (this.state.currentValidationStage < 5) {
+      if (value === this.state.validationValue.label) {
+        console.log('Increment next stage')
+        this.setState({
+          currentValidationStage: this.state.currentValidationStage + 1,
+          userEnteredValidation: '',
+          validationTrialCount: 1,
+          validationValue: {},
+          alertOpen: false
+        })
+        this.pickRandomIndex()
+      } else {
+
+        //Inform User
+        var errorMessage
+        var count = 3 - this.state.validationTrialCount
+        if (count === 2) {
+          errorMessage = 'Passphrase word doesn\'t match. You have 2 more tries left.'
+        } else if (count === 1) {
+          errorMessage = 'Passphrase word doesn\'t match. You have 1 more try left.'
+        } else {
+          errorMessage = `Passphrase word doesn't match. Starting account creation process from beginning.`
+        }
+
+        this.showValidationErrorMessage(errorMessage)
+
+        if (this.state.validationTrialCount >= 1 && this.state.validationTrialCount <=2 ) {
+          console.log(`Clear Validation Value and carry on ${this.state.validationTrialCount}`)
+          this.setState({
+            userEnteredValidation: '',
+            validationTrialCount: this.state.validationTrialCount + 1
+          })
+        } else {
+          console.log(`Maximum tries achieved. Start over. ${this.state.validationTrialCount}`)
+          this.setState({
+            userEnteredValidation: '',
+            currentStage: 0
+          })
+        }
+      }
     } else {
       console.log('Validation stages done!')
+      this.setState({
+        userEnteredValidation: ''
+      })
+      //Proceed them to loading view
+      //setState to change content view
     }
   }
   //endregion
@@ -295,6 +339,17 @@ class AccountCreation extends Component {
     )
   }
 
+  handleChange (event) {
+    const target = event.target
+    const value = target.value
+    const name = target.name
+    console.log(`Text Change || ${value}`)
+    console.log(`Validation Value || ${this.state.validationValue.label}`)
+    this.setState({
+      [name]: value
+    })
+  }
+
   //Random index picker
   pickRandomIndex() {
     if (this.state.currentValidationStage < 6) {
@@ -304,14 +359,59 @@ class AccountCreation extends Component {
         return i != value
       })
       console.log(`Random Picker || Index: ${index}, Value: ${value.label},
-        UpdatedArray: ${JSON.stringify(updatedArray)}, OriginalArray: ${JSON.stringify(this.state.recoveryPhrase)}`)
+        UpdatedArray: ${JSON.stringify(updatedArray)}}`)
       this.setState({
-        [`validationValue${this.state.currentValidationStage}`]: value,
+        validationValue: value,
         validationPhrase: updatedArray,
         currentValidationValue: value
-        //currentValidationStage: this.state.currentValidationStage + 1 //After the user enters
       })
     }
+  }
+
+  //Alert View
+  renderAlertView() {
+    return (
+      <div>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={this.state.alertOpen}
+          autoHideDuration={AUTO_HIDE_DURATION}
+          onClose={this.handleSnackBarClose}
+          SnackbarContentProps={{
+            'aria-describedby': 'message-id',
+            style: { fontFamily: font,
+              fontWeight:'400',
+              fontSize:'1rem',
+              backgroundColor:'#4E6068',
+              color:'#FFFFFF'
+            },
+          }}
+          message={<span id="message-id">{this.state.alertMessage}</span>}
+          action={[
+            <MaterialButton key="close" color="default" size="small" onClick={this.handleSnackBarClose}>
+              CLOSE
+            </MaterialButton>
+          ]}
+        />
+      </div>
+    )
+  }
+
+  handleSnackBarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    this.setState({ alertOpen: false });
+  }
+
+  showValidationErrorMessage(message) {
+    this.setState({
+      alertOpen: true,
+      alertMessage: message
+    })
   }
 }
 
