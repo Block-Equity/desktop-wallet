@@ -19,7 +19,7 @@ from 'reactstrap';
 
 import logoIcon from './images/logo-white.png'
 
-const AUTO_HIDE_DURATION = 30000
+const AUTO_HIDE_DURATION = 8000
 
 const sampleWords = [
   { key: 0, label: 'travel', numeric: '1st' },
@@ -92,7 +92,9 @@ class AccountCreation extends Component {
       pinValueTrialCount: 1,
       mnemonicValue: '',
       passphraseValue1: '',
-      passphraseValue2: '',
+      passphraseValue: '',
+      initialPassphraseSet: false,
+      passphraseSetSuccess: false,
       passphraseTrialCount: 1,
       validationValue: {},
       userEnteredValidation: '',
@@ -108,6 +110,8 @@ class AccountCreation extends Component {
     this.handleWriteMnemonicSubmit = this.handleWriteMnemonicSubmit.bind(this)
     this.togglePassphraseModal = this.togglePassphraseModal.bind(this)
     this.handleNextValidationStep = this.handleNextValidationStep.bind(this)
+    this.handlePassphraseSubmit = this.handlePassphraseSubmit.bind(this)
+    this.handleResetPassphrase = this.handleResetPassphrase.bind(this)
   }
 
   render() {
@@ -148,8 +152,7 @@ class AccountCreation extends Component {
 
   //region 1. PIN View
   renderPINView() {
-    const {progressValue, progressTitle, valueInitial} = accountCreationStages.pin;
-    var name = !this.state.initialPINSet ? 'initialPinValue' : 'pinValue'
+    const {progressValue, progressTitle, valueInitial} = accountCreationStages.pin
     var header = this.state.initialPINSet ? 'Re-enter your 4 digit PIN' : 'Create a 4 digit PIN'
     return (
       <div id={styles.contentContainer}>
@@ -185,7 +188,8 @@ class AccountCreation extends Component {
       //Validate PIN Value
       if (this.state.pinValue1 === this.state.pinValue) {
         this.setState({
-          currentStage: 1
+          currentStage: 1,
+          alertOpen: false
         })
       } else {
         //Show user message that it's not the same
@@ -226,6 +230,8 @@ class AccountCreation extends Component {
   //region 2. Mnemonic View
   renderMnemonicView() {
     const {progressValue, progressTitle} = accountCreationStages.mnemonic;
+    var advancedSecurityLabel = this.state.passphraseSetSuccess ?
+      'Your passphrase has been set. Select here to reset >' : 'Advanced Security >'
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
@@ -255,7 +261,7 @@ class AccountCreation extends Component {
           <button onClick={this.handleWriteMnemonicSubmit} style={{padding: '0.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem'}} type="button" className="btn btn-outline-dark">
             Yes, I have written it down.
           </button>
-          <a onClick={this.togglePassphraseModal}>Advanced Security ></a>
+          <a onClick={this.handleResetPassphrase}>{advancedSecurityLabel}</a>
           { this.renderPassphraseModal() }
         </div>
       </div>
@@ -271,16 +277,18 @@ class AccountCreation extends Component {
   }
 
   renderPassphraseModal () {
+    var header = this.state.initialPassphraseSet ? 'Re-enter the passphrase' : 'Enter a passphrase'
     return (
       <Modal isOpen={this.state.showModal} toggle={this.togglePassphraseModal} className={this.props.className} centered={true}>
-        <ModalHeader toggle={this.togglePassphraseModal}>Enter a passphrase</ModalHeader>
+        <ModalHeader toggle={this.togglePassphraseModal}>{header}</ModalHeader>
         <ModalBody>
           <Form>
-            <Input type="password" name="password" id="passphrase" placeholder="Enter passphrase" />
+            <Input type="password" name="passphraseValue" id="passphraseValue"
+              value={this.state.passphraseValue} onChange={this.handleChange} placeholder="Enter passphrase" />
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button outline color="dark" onClick={this.togglePassphraseModal}>Submit</Button>{' '}
+          <Button outline color="dark" onClick={this.handlePassphraseSubmit}>Submit</Button>{' '}
           <Button outline color="danger" onClick={this.togglePassphraseModal}>Cancel</Button>
         </ModalFooter>
       </Modal>
@@ -291,6 +299,71 @@ class AccountCreation extends Component {
     this.setState({
       showModal: !this.state.showModal
     });
+  }
+
+  handlePassphraseSubmit (event) {
+    event.preventDefault()
+
+    if (!this.state.initialPassphraseSet) {
+      //Store pinValue 1
+      this.setState({
+        passphraseValue1: this.state.pinValue,
+        passphraseValue: '',
+        initialPassphraseSet: true
+      })
+    } else {
+      //Validate PIN Value
+      if (this.state.passphraseValue1 === this.state.passphraseValue) {
+        this.setState({
+          showModal: false,
+          passphraseSetSuccess: true,
+          alertOpen: false
+        })
+      } else {
+        //Show user message that it's not the same
+        var errorMessage
+        var count = 3 - this.state.passphraseTrialCount
+        if (count === 2) {
+          errorMessage = 'Passphrase doesn\'t match. You have 2 more tries left.'
+        } else if (count === 1) {
+          errorMessage = 'Passphrase doesn\'t match. You have 1 more try left.'
+        } else {
+          errorMessage = `Passphrase word doesn't match. Please choose a new passphrase.`
+        }
+
+        this.showValidationErrorMessage(errorMessage)
+
+        if (this.state.passphraseTrialCount >= 1 && this.state.passphraseTrialCount <=2 ) {
+          console.log(`Clear Validation Value and carry on ${this.state.passphraseTrialCount}`)
+          this.setState({
+            passphraseValue: '',
+            passphraseTrialCount: this.state.passphraseTrialCount + 1
+          })
+        } else {
+          console.log(`Maximum tries achieved. Start over. ${this.state.passphraseTrialCount}`)
+          this.setState({
+            passphraseValue: '',
+            passphraseValue1: '',
+            passphraseTrialCount: 1,
+            initialPassphraseSet: false,
+            passphraseSetSuccess: false
+          })
+        }
+
+      }
+    }
+  }
+
+  handleResetPassphrase() {
+    this.setState({
+      showModal: !this.state.showModal,
+      passphraseValue: '',
+      passphraseValue1: '',
+      passphraseTrialCount: 1,
+      initialPassphraseSet: false,
+      passphraseSetSuccess: false,
+      showModal: false
+    })
   }
 
   //endregion
@@ -360,14 +433,15 @@ class AccountCreation extends Component {
             pinValue: '',
             pinValue1: '',
             pinValueTrialCount: 1,
-            initialPINSet: false,
+            initialPINSet: false
           })
         }
       }
     } else {
       console.log('Validation stages done!')
       this.setState({
-        userEnteredValidation: ''
+        userEnteredValidation: '',
+        alertOpen: false
       })
       //Proceed them to loading view
       //setState to change content view
