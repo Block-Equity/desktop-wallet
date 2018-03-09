@@ -10,6 +10,7 @@ import Avatar from 'material-ui/Avatar';
 import Chip from 'material-ui/Chip';
 import MaterialButton from 'material-ui/Button';
 import Snackbar from 'material-ui/Snackbar';
+import { CircularProgress } from 'material-ui/Progress';
 
 import styles from './style.css'
 import {
@@ -115,7 +116,6 @@ class AccountCreation extends Component {
   }
 
   render() {
-    console.log(`Main Render || State Values: ${JSON.stringify(this.state)}`)
     return (
       <div className={styles.container}>
         <nav className='navbar navbar-dark' style={{background: '#0F547E'}}>
@@ -146,6 +146,11 @@ class AccountCreation extends Component {
       case accountCreationStages.validation.key:
         return (
           this.renderValidationView()
+        )
+      break;
+      case accountCreationStages.completion.key:
+        return (
+          this.renderCompletionView()
         )
       break;
     }
@@ -404,7 +409,6 @@ class AccountCreation extends Component {
         })
         this.pickRandomIndex()
       } else {
-
         //Inform User
         var errorMessage
         var count = 3 - this.state.validationTrialCount
@@ -428,7 +432,7 @@ class AccountCreation extends Component {
           console.log(`Maximum tries achieved. Start over. ${this.state.validationTrialCount}`)
           this.setState({
             userEnteredValidation: '',
-            currentStage: 0,
+            currentStage: accountCreationStages.pin.key,
             pinValue: '',
             pinValue1: '',
             pinValueTrialCount: 1,
@@ -440,13 +444,30 @@ class AccountCreation extends Component {
       console.log('Validation stages done!')
       this.setState({
         userEnteredValidation: '',
-        alertOpen: false
+        alertOpen: false,
+        currentStage: accountCreationStages.completion.key
       })
       //Proceed them to loading view
       //setState to change content view
     }
   }
   //endregion
+
+  //region 4. Completion View
+  renderCompletionView() {
+    const {progressValue, progressTitle, valueInitial} = accountCreationStages.completion
+    var header = 'Hooray!'
+    return (
+      <div id={styles.contentContainer}>
+        { this.renderProgressView(progressValue, progressTitle)}
+        <h4> {header} </h4>
+        <h6>
+          Please wait. Secure account creation in progress.
+        </h6>
+        <CircularProgress size={50} style={{ color: '#0F547E', marginTop: '2rem' }} thickness={3} />
+      </div>
+    )
+  }
 
   //Re-usable components - TODO - put them in their own class....but for now this will do.
   renderProgressView(value, label) {
