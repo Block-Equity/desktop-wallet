@@ -115,6 +115,7 @@ class AccountCreation extends Component {
   }
 
   render() {
+    console.log(`Main Render || State Values: ${JSON.stringify(this.state)}`)
     return (
       <div className={styles.container}>
         <nav className='navbar navbar-dark' style={{background: '#0F547E'}}>
@@ -231,7 +232,7 @@ class AccountCreation extends Component {
   renderMnemonicView() {
     const {progressValue, progressTitle} = accountCreationStages.mnemonic;
     var advancedSecurityLabel = this.state.passphraseSetSuccess ?
-      'Your passphrase has been set. Select here to reset >' : 'Advanced Security >'
+      'Your passphrase has been set.' : 'Advanced Security >'
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
@@ -282,20 +283,18 @@ class AccountCreation extends Component {
       <Modal isOpen={this.state.showModal} toggle={this.togglePassphraseModal} className={this.props.className} centered={true}>
         <ModalHeader toggle={this.togglePassphraseModal}>{header}</ModalHeader>
         <ModalBody>
-          <Form>
-            <Input type="password" name="passphraseValue" id="passphraseValue"
-              value={this.state.passphraseValue} onChange={this.handleChange} placeholder="Enter passphrase" />
-          </Form>
+          <Input type="password" name="passphraseValue" id="passphraseValue"
+            value={this.state.passphraseValue} onChange={this.handleChange} placeholder="Enter passphrase" />
         </ModalBody>
         <ModalFooter>
-          <Button outline color="dark" onClick={this.handlePassphraseSubmit}>Submit</Button>{' '}
-          <Button outline color="danger" onClick={this.togglePassphraseModal}>Cancel</Button>
+          <Button outline color="dark" onClick={this.handlePassphraseSubmit}>Submit</Button>
         </ModalFooter>
       </Modal>
     )
   }
 
-  togglePassphraseModal() {
+  togglePassphraseModal(event) {
+    event.preventDefault()
     this.setState({
       showModal: !this.state.showModal
     });
@@ -305,14 +304,14 @@ class AccountCreation extends Component {
     event.preventDefault()
 
     if (!this.state.initialPassphraseSet) {
-      //Store pinValue 1
+      //Store passphrase value 1
       this.setState({
-        passphraseValue1: this.state.pinValue,
+        passphraseValue1: this.state.passphraseValue,
         passphraseValue: '',
         initialPassphraseSet: true
       })
     } else {
-      //Validate PIN Value
+      //Validate Passphrase Value
       if (this.state.passphraseValue1 === this.state.passphraseValue) {
         this.setState({
           showModal: false,
@@ -354,15 +353,15 @@ class AccountCreation extends Component {
     }
   }
 
-  handleResetPassphrase() {
+  handleResetPassphrase(event) {
+    event.preventDefault()
     this.setState({
-      showModal: !this.state.showModal,
+      showModal: true,
       passphraseValue: '',
       passphraseValue1: '',
       passphraseTrialCount: 1,
       initialPassphraseSet: false,
       passphraseSetSuccess: false,
-      showModal: false
     })
   }
 
