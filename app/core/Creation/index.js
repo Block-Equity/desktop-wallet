@@ -50,13 +50,6 @@ const sampleWords = [
 
 const font = "'Lato', sans-serif";
 const materialStyles = theme => ({
-  snackbar: {
-    fontFamily: font,
-    fontWeight:'400',
-    fontSize:'0.75rem',
-    backgroundColor:'#FFFFFF',
-    color:'#555555'
-  },
   chip: {
     margin: theme.spacing.unit / 2,
     padding: theme.spacing.unit
@@ -94,10 +87,13 @@ class AccountCreation extends Component {
       currentStage: accountCreationStages.pin.key,
       showModal: false,
       pinValue1: '',
-      pinValue2: '',
+      pinValue: '',
+      initialPINSet: false,
+      pinValueTrialCount: 1,
       mnemonicValue: '',
       passphraseValue1: '',
       passphraseValue2: '',
+      passphraseTrialCount: 1,
       validationValue: {},
       userEnteredValidation: '',
       currentValidationStage: 1,
@@ -153,17 +149,19 @@ class AccountCreation extends Component {
   //region 1. PIN View
   renderPINView() {
     const {progressValue, progressTitle, valueInitial} = accountCreationStages.pin;
+    var name = !this.state.initialPINSet ? 'initialPinValue' : 'pinValue'
+    var header = this.state.initialPINSet ? 'Re-enter your 4 digit PIN' : 'Create a 4 digit PIN'
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
-        <h4> Create a 4 digit PIN </h4>
+        <h4> {header} </h4>
         <h6>
           PIN will used to encrypt your secret keys. Please make sure you choose a PIN that is difficult to guess for others.
         </h6>
-        <form id='sendAssetForm' onSubmit={this.handlePINSubmit}>
+        <form id='setPINForm' onSubmit={this.handlePINSubmit}>
           <div className='form-group input-group input-group-lg'>
             <input type='password' maxLength='4' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}} className="form-control" placeholder='Enter PIN e.g. 3194'
-              id='userEnteredPinValue' name='userEnteredPinValue' value={valueInitial} onChange={this.handlePINChange} required />
+              id='userEnteredPinValue' name='pinValue' value={this.state.pinValue} onChange={this.handleChange} required />
           </div>
           <button style={{padding: '0.5rem', paddingLeft: '3.5rem', paddingRight: '3.5rem'}} type="submit" className="btn btn-outline-dark">
             Done
@@ -175,9 +173,53 @@ class AccountCreation extends Component {
 
   handlePINSubmit (event) {
     event.preventDefault()
-    this.setState({
-      currentStage: 1
-    })
+
+    if (!this.state.initialPINSet) {
+      //Store pinValue 1
+      this.setState({
+        pinValue1: this.state.pinValue,
+        pinValue: '',
+        initialPINSet: true
+      })
+    } else {
+      //Validate PIN Value
+      if (this.state.pinValue1 === this.state.pinValue) {
+        this.setState({
+          currentStage: 1
+        })
+      } else {
+        //Show user message that it's not the same
+        var errorMessage
+        var count = 3 - this.state.pinValueTrialCount
+        if (count === 2) {
+          errorMessage = 'PIN doesn\'t match. You have 2 more tries left.'
+        } else if (count === 1) {
+          errorMessage = 'PIN doesn\'t match. You have 1 more try left.'
+        } else {
+          errorMessage = `PIN word doesn't match. Starting account creation process from beginning.`
+        }
+
+        this.showValidationErrorMessage(errorMessage)
+
+        if (this.state.pinValueTrialCount >= 1 && this.state.pinValueTrialCount <=2 ) {
+          console.log(`Clear Validation Value and carry on ${this.state.pinValueTrialCount}`)
+          this.setState({
+            pinValue: '',
+            pinValueTrialCount: this.state.pinValueTrialCount + 1
+          })
+        } else {
+          console.log(`Maximum tries achieved. Start over. ${this.state.pinValueTrialCount}`)
+          this.setState({
+            pinValue: '',
+            pinValue1: '',
+            pinValueTrialCount: 1,
+            initialPINSet: false,
+            currentStage: 0
+          })
+        }
+
+      }
+    }
   }
   //endregion
 
@@ -314,7 +356,11 @@ class AccountCreation extends Component {
           console.log(`Maximum tries achieved. Start over. ${this.state.validationTrialCount}`)
           this.setState({
             userEnteredValidation: '',
-            currentStage: 0
+            currentStage: 0,
+            pinValue: '',
+            pinValue1: '',
+            pinValueTrialCount: 1,
+            initialPINSet: false,
           })
         }
       }
@@ -368,6 +414,7 @@ class AccountCreation extends Component {
     }
   }
 
+  //region Alert View
   //Alert View
   renderAlertView() {
     return (
@@ -391,7 +438,7 @@ class AccountCreation extends Component {
           }}
           message={<span id="message-id">{this.state.alertMessage}</span>}
           action={[
-            <MaterialButton key="close" color="default" size="small" onClick={this.handleSnackBarClose}>
+            <MaterialButton key="close" color="default" size="small" onClick={this.handleSnackBarClose} style={{fontFamily: font, fontWeight:'700', color: '#FFFFFF'}}>
               CLOSE
             </MaterialButton>
           ]}
@@ -413,6 +460,7 @@ class AccountCreation extends Component {
       alertMessage: message
     })
   }
+  //endregion
 }
 
 export default connect(null, null)(AccountCreation)
