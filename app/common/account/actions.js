@@ -8,7 +8,12 @@ export function initializeAccount () {
     dispatch(accountInitializationRequest())
 
     try {
-      let { accounts } = await db.initialize()
+      let { accounts, exists } = await db.initialize()
+
+      //If account doesn't exist, then create account
+      if (!exists) {
+
+      }
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
       return dispatch(accountInitializationFailure(e))
