@@ -216,7 +216,7 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
   unlock,
-  initializeAccount,
+  initializeDB,
   createAccount,
   fetchAccountDetails,
   setCurrentAccount,

@@ -3,11 +3,22 @@ import { generate as generateMnemonic } from '../security/mnemonic'
 
 export const getMnemonic = () => {
   const mnemonic = generateMnemonic()
-  console.log('Mnemonic', mnemonic)
+  const mnemonicArray = mnemonic.split(' ')
+  var mnemonicModel = []
+  for (var i = 0; i < mnemonicArray.length; i++) {
+    var obj = {key: i, label: mnemonicArray[i], numeric: getGetOrdinal(i + 1)}
+    mnemonicModel.push(obj)
+  }
 
   return {
-    mnemonic
+    mnemonicModel
   }
+}
+
+const getGetOrdinal = (n) => {
+  var s=["th","st","nd","rd"],
+  v=n%100;
+  return n+(s[(v-20)%10]||s[v]||s[0]);
 }
 
 export const createWallet = (mnemonic, passphrase, index) => {

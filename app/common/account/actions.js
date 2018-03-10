@@ -1,6 +1,7 @@
 import * as db from '../../db'
 import { getCurrentAccount } from './selectors'
 import * as horizon from '../../services/networking/horizon'
+import * as mnemonic from '../../services/security/mnemonic'
 import * as Types from './types'
 
 export function initializeDB () {

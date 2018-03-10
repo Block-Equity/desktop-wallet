@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 
+//Account Creation Dependencies
+import * as accountCreation from '../../services/security/createAccount'
 import { unlock } from '../../common/auth/actions'
 import {
   initializeDB,
@@ -29,31 +31,31 @@ import logoIcon from './images/logo-white.png'
 
 const AUTO_HIDE_DURATION = 8000
 
-const sampleWords = [
-  { key: 0, label: 'travel', numeric: '1st' },
-  { key: 1, label: 'script', numeric: '2nd' },
-  { key: 2, label: 'glass', numeric: '3rd' },
-  { key: 3, label: 'tenant', numeric: '4th' },
-  { key: 4, label: 'hood', numeric: '5th' },
-  { key: 5, label: 'napkin', numeric: '6th' },
-  { key: 6, label: 'path', numeric: '7th' },
-  { key: 7, label: 'inform', numeric: '8th' },
-  { key: 8, label: 'ensure', numeric: '9th'},
-  { key: 9, label: 'tenant', numeric: '10th' },
-  { key: 10, label: 'interest', numeric: '11th' },
-  { key: 11, label: 'upon', numeric: '12th' },
-  { key: 12, label: 'travel', numeric: '13th' },
-  { key: 13, label: 'script', numeric: '14th' },
-  { key: 14, label: 'glass', numeric: '15th' },
-  { key: 15, label: 'tenant', numeric: '16th' },
-  { key: 16, label: 'hood', numeric: '17th' },
-  { key: 17, label: 'napkin', numeric: '18th' },
-  { key: 18, label: 'path', numeric: '19th' },
-  { key: 19, label: 'inform', numeric: '20th' },
-  { key: 20, label: 'ensure', numeric: '21st' },
-  { key: 21, label: 'tenant', numeric: '22nd' },
-  { key: 22, label: 'interest', numeric: '23rd' },
-  { key: 23, label: 'upon', numeric: '24th' }
+var mnemonicModel = [
+  { key: 0, label: '', numeric: '1st' },
+  { key: 1, label: '', numeric: '2nd' },
+  { key: 2, label: '', numeric: '3rd' },
+  { key: 3, label: '', numeric: '4th' },
+  { key: 4, label: '', numeric: '5th' },
+  { key: 5, label: '', numeric: '6th' },
+  { key: 6, label: '', numeric: '7th' },
+  { key: 7, label: '', numeric: '8th' },
+  { key: 8, label: '', numeric: '9th'},
+  { key: 9, label: '', numeric: '10th' },
+  { key: 10, label: '', numeric: '11th' },
+  { key: 11, label: '', numeric: '12th' },
+  { key: 12, label: '', numeric: '13th' },
+  { key: 13, label: '', numeric: '14th' },
+  { key: 14, label: '', numeric: '15th' },
+  { key: 15, label: '', numeric: '16th' },
+  { key: 16, label: '', numeric: '17th' },
+  { key: 17, label: '', numeric: '18th' },
+  { key: 18, label: '', numeric: '19th' },
+  { key: 19, label: '', numeric: '20th' },
+  { key: 20, label: '', numeric: '21st' },
+  { key: 21, label: '', numeric: '22nd' },
+  { key: 22, label: '', numeric: '23rd' },
+  { key: 23, label: '', numeric: '24th' }
 ]
 
 const font = "'Lato', sans-serif";
@@ -110,8 +112,8 @@ class AccountCreation extends Component {
       validationTrialCount: 1,
       alertOpen: false,
       alertMessage: '',
-      validationPhrase: sampleWords,
-      recoveryPhrase: sampleWords
+      validationPhrase: [],
+      recoveryPhrase: []
     }
     this.handleChange = this.handleChange.bind(this)
     this.handlePINSubmit = this.handlePINSubmit.bind(this)
@@ -120,6 +122,19 @@ class AccountCreation extends Component {
     this.handleNextValidationStep = this.handleNextValidationStep.bind(this)
     this.handlePassphraseSubmit = this.handlePassphraseSubmit.bind(this)
     this.handleResetPassphrase = this.handleResetPassphrase.bind(this)
+  }
+
+  componentDidMount () {
+    this.generateMnemonic()
+  }
+
+  generateMnemonic() {
+    const mnemonic = accountCreation.getMnemonic()
+    console.log('Mnemonic', mnemonic)
+    this.setState({
+      validationPhrase: mnemonic.mnemonicModel,
+      recoveryPhrase: mnemonic.mnemonicModel
+    })
   }
 
   render() {
@@ -253,7 +268,7 @@ class AccountCreation extends Component {
           The phrase is case sensitive. Please make sure you <b>write down and save your recovery phrase</b>. You will need this phrase to use and restore your wallet.
         </h6>
         <div className={styles.chipContainer}>
-          {sampleWords.map(data => {
+          {this.state.recoveryPhrase.map(data => {
             return (
               <Chip
                 key={data.key}
@@ -567,7 +582,7 @@ class AccountCreation extends Component {
 
 export default connect(null, {
   unlock,
-  initializeAccount,
+  initializeDB,
   createAccount,
   setCurrentAccount
 })(AccountCreation)
