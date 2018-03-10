@@ -2,6 +2,13 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 
+import { unlock } from '../../common/auth/actions'
+import {
+  initializeDB,
+  createAccount,
+  setCurrentAccount
+} from '../../common/account/actions'
+
 //Material Design
 import { withStyles } from 'material-ui/styles';
 import Paper from 'material-ui/Paper';
@@ -558,4 +565,9 @@ class AccountCreation extends Component {
   //endregion
 }
 
-export default connect(null, null)(AccountCreation)
+export default connect(null, {
+  unlock,
+  initializeAccount,
+  createAccount,
+  setCurrentAccount
+})(AccountCreation)

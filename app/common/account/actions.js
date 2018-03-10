@@ -3,17 +3,13 @@ import { getCurrentAccount } from './selectors'
 import * as horizon from '../../services/networking/horizon'
 import * as Types from './types'
 
-export function initializeAccount () {
+export function initializeDB () {
   return async dispatch => {
     dispatch(accountInitializationRequest())
 
     try {
-      let { accounts, exists } = await db.initialize()
+      let { accounts } = await db.initialize()
 
-      //If account doesn't exist, then create account
-      if (!exists) {
-
-      }
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
       return dispatch(accountInitializationFailure(e))
@@ -28,7 +24,7 @@ export function createAccount ({ publicKey, secretKey }) {
     let accounts = null
 
     try {
-      accounts = await horizon.createAccount(publicKey)
+      accounts = await horizon.fundAccount(publicKey)
       const { balance, sequence } = accounts
 
       await db.addUserAccount({

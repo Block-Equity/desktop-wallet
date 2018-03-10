@@ -54,7 +54,8 @@ export const addUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
   }
 
   return new Promise((resolve, reject) => {
-    db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: accountCreated } }, { returnUpdatedDocs: true, multi: false }, (err, numReplaced, affectedDocuments) => {
+    db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: accountCreated } },
+      { returnUpdatedDocs: true, multi: false }, (err, numReplaced, affectedDocuments) => {
       if (err) {
         reject(err)
         return

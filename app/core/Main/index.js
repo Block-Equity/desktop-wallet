@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import { unlock } from '../../common/auth/actions'
 import {
-  initializeAccount,
+  initializeDB,
   createAccount,
   fetchAccountDetails,
   setCurrentAccount
@@ -65,7 +65,7 @@ class Main extends Component {
       // TODO: this is temporarily here. It will be moved to the Login (or auth flow) once
       // it's done
       await this.props.unlock()
-      await this.props.initializeAccount()
+      await this.props.initializeDB()
 
       const { accounts } = this.props
 
