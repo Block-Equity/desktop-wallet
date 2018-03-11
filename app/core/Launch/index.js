@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import mainLogo from './logo-gray.png'
+import mainLogo from './logo-white.png'
 
 import {
   Container,
+  ContentContainer,
   Header,
   ButtonContainer,
   LaunchButton,
@@ -14,16 +15,21 @@ class Launch extends Component {
   render () {
     return (
       <Container data-id='container'>
-        <img src={mainLogo} width='150' height='77' alt='' />
-        <Header>BlockEQ</Header>
-        <ButtonContainer>
-          <Link to='/wallet'>
-            <LaunchButton type='button' className='btn btn-outline-success'>Wallet</LaunchButton>
-          </Link>
-          <Link to='/login'>
-            <CreationButton type='button' className='btn btn-outline-secondary'>Create Account</CreationButton>
-          </Link>
-        </ButtonContainer>
+        <ContentContainer>
+          <img src={mainLogo} width='120' height='62' style={{ marginTop: '10rem' }} alt='' />
+          <Header>BlockEQ</Header>
+          <ButtonContainer>
+            <Link to='/wallet'>
+              <LaunchButton type='button' className='btn btn-outline-light'>Wallet</LaunchButton>
+            </Link>
+            <Link to='/login'>
+              <CreationButton type='button' className='btn btn-outline-light'>Create Wallet</CreationButton>
+            </Link>
+            <Link to='/login'>
+              <CreationButton type='button' className='btn btn-outline-light'>Restore Wallet</CreationButton>
+            </Link>
+          </ButtonContainer>
+        </ContentContainer>
       </Container>
     )
   }

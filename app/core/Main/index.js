@@ -73,7 +73,6 @@ class Main extends Component {
         await this.props.setCurrentAccount(currentAccount)
         if (currentAccount.balance !== 0) {
           await this.props.fetchAccountDetails()
-          //TODO: Fetching payment operation list will be component specific
           await this.props.fetchPaymentOperationList()
           await this.props.streamPayments()
           if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
@@ -109,7 +108,7 @@ class Main extends Component {
   renderAccountInfoContent () {
     const balance = this.props.currentAccount.balance.balance
     return (
-      <div className={styles.mainPageHeaderContainer} block>
+      <div className={styles.mainPageHeaderContainer}>
         <img className={styles.mainPageHeaderLogo} src={logoIcon} alt=''></img>
         <div className={styles.mainPageHeaderBalanceTitle}> YOUR CURRENT XLM BALANCE </div>
         <div className={styles.mainPageHeaderBalanceLabel}><b> {numeral(balance).format('0,0.00')} </b> </div>
