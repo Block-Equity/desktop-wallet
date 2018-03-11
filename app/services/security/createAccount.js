@@ -30,7 +30,6 @@ export const createWallet = (mnemonic, passphrase, index) => {
 
   console.log(`Secret: ${secretKey} || Public: ${publicKey}`)
   return {
-    mnemonic,
     publicKey,
     secretKey
   }

@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 
+import keytar from 'keytar'
+
 //Account Creation Dependencies
 import * as accountCreation from '../../services/security/createAccount'
 import { unlock } from '../../common/auth/actions'
@@ -10,6 +12,10 @@ import {
   createAccount,
   setCurrentAccount
 } from '../../common/account/actions'
+
+import {
+  getAccounts
+} from '../../common/account/selectors'
 
 //Material Design
 import { withStyles } from 'material-ui/styles';
@@ -30,33 +36,6 @@ from 'reactstrap';
 import logoIcon from './images/logo-white.png'
 
 const AUTO_HIDE_DURATION = 8000
-
-var mnemonicModel = [
-  { key: 0, label: '', numeric: '1st' },
-  { key: 1, label: '', numeric: '2nd' },
-  { key: 2, label: '', numeric: '3rd' },
-  { key: 3, label: '', numeric: '4th' },
-  { key: 4, label: '', numeric: '5th' },
-  { key: 5, label: '', numeric: '6th' },
-  { key: 6, label: '', numeric: '7th' },
-  { key: 7, label: '', numeric: '8th' },
-  { key: 8, label: '', numeric: '9th'},
-  { key: 9, label: '', numeric: '10th' },
-  { key: 10, label: '', numeric: '11th' },
-  { key: 11, label: '', numeric: '12th' },
-  { key: 12, label: '', numeric: '13th' },
-  { key: 13, label: '', numeric: '14th' },
-  { key: 14, label: '', numeric: '15th' },
-  { key: 15, label: '', numeric: '16th' },
-  { key: 16, label: '', numeric: '17th' },
-  { key: 17, label: '', numeric: '18th' },
-  { key: 18, label: '', numeric: '19th' },
-  { key: 19, label: '', numeric: '20th' },
-  { key: 20, label: '', numeric: '21st' },
-  { key: 21, label: '', numeric: '22nd' },
-  { key: 22, label: '', numeric: '23rd' },
-  { key: 23, label: '', numeric: '24th' }
-]
 
 const font = "'Lato', sans-serif";
 const materialStyles = theme => ({
@@ -492,10 +471,45 @@ class AccountCreation extends Component {
   }
   //endregion
 
+
+  //region Completion Operations
+
+  //1. Add password to KeyChain
+  addPinToKeyChain() {
+    keytar.addPassword('BlockEQ', 'PIN', this.state.pinValue)
+  }
+
+  //2. Initialize DB
+  async initializeDB() {
+    await this.props.unlock()
+    await this.props.initializeDB()
+  }
+
+  //3. Generate Stellar Wallet
+  generateStellarWallet() {
+    const { accounts, recoveryPhrase, passphraseValue } = this.state
+    const index = accounts.length
+    const wallet = accountCreation.createWallet(recoveryPhrase, passphraseValue, index)
+    this.setState({
+      wallet: wallet
+    })
+  }
+
+  //4. Add user account
+  addWalletToDB() {
+
+  }
+
+  //5. Fund user account (Development Purposes only)
+  fundWallet() {
+
+  }
+  //endregion
+
   //Re-usable components - TODO - put them in their own class....but for now this will do.
   renderProgressView(value, label) {
     return (
-      <div className="progress" style={{height: '35px', marginBottom: '2rem'}}>
+      <div className="progress" style={{height: '30px', marginBottom: '2rem'}}>
         <div className="progress-bar bg-info" role="progressbar" style={{width: `${value}%`}}
           aria-valuenow={value} aria-valuemin="0" aria-valuemax="100">{label}</div>
       </div>
@@ -580,7 +594,13 @@ class AccountCreation extends Component {
   //endregion
 }
 
-export default connect(null, {
+const mapStateToProps = (state) => {
+  return {
+    accounts: getAccounts(state)
+  }
+}
+
+export default connect(mapStateToProps, {
   unlock,
   initializeDB,
   createAccount,
