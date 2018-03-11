@@ -6,10 +6,12 @@ import keytar from 'keytar'
 
 //Account Creation Dependencies
 import * as accountCreation from '../../services/security/createAccount'
+import * as encryption from '../../services/security/encryption'
 import { unlock } from '../../common/auth/actions'
 import {
   initializeDB,
-  createAccount,
+  addWalletToDB,
+  fundAccount,
   setCurrentAccount
 } from '../../common/account/actions'
 
@@ -495,9 +497,24 @@ class AccountCreation extends Component {
     })
   }
 
-  //4. Add user account
-  addWalletToDB() {
+  //6. Encrypt Secret Key using PIN
+  encryptSecretKey() {
+    const { wallet, pinValue } = this.state
+    var encryptedWallet = {}
+    const secretKey = wallet.secretKey
+    const encrypted = encryption.encryptText(secretKey, pinValue)
+    encryptedWallet.secretKey = encrypted
+    encryptedWallet.publicKey = wallet.publicKey
+    console.log('EncryptedWallet', encryptedWallet)
+    this.setState({
+      wallet: encryptedWallet
+    })
+  }
 
+  //7. Add user account
+  async addWalletToDB() {
+    const { wallet } = this.state
+    await this.props.addWalletToDB(wallet.publicKey, wallet.secretKey)
   }
 
   //5. Fund user account (Development Purposes only)
@@ -603,6 +620,7 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   unlock,
   initializeDB,
-  createAccount,
+  addWalletToDB,
+  fundAccount,
   setCurrentAccount
 })(AccountCreation)

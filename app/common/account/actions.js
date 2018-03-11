@@ -18,7 +18,21 @@ export function initializeDB () {
   }
 }
 
-export function createAccount ({ publicKey, secretKey }) {
+export function addWalletToDB ({ publicKey, secretKey, balance = 0, sequence = 0 }) {
+  return async dispatch => {
+    dispatch(accountInitializationRequest())
+
+    try {
+      let { accounts } = await db.addUserAccount(publicKey, secretKey, balance, sequence)
+
+      return dispatch(accountInitializationSuccess(accounts))
+    } catch (e) {
+      return dispatch(accountInitializationFailure(e))
+    }
+  }
+}
+
+export function fundAccount ({ publicKey, secretKey }) {
   return async dispatch => {
     dispatch(accountCreationRequest())
 
