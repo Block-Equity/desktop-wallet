@@ -62,25 +62,25 @@ class Main extends Component {
 
   async componentDidMount () {
     try {
-      // TODO: this is temporarily here. It will be moved to the Login (or auth flow) once
-      // it's done
-     //await this.props.unlock()
-      //await this.props.initializeDB()
-
+      await this.props.unlock()
+      await this.props.initializeDB()
       const { accounts } = this.props
-
       if (!isEmpty(accounts)) {
-        const currentAccount = accounts[Object.keys(accounts)[0]]
+        console.log(`Length of accounts || ${Object.keys(accounts).length}`)
+        const size = Object.keys(accounts).length
+        const currentAccount = accounts[Object.keys(accounts)[size-1]]
         const { pKey: publicKey, sKey: secretKey } = currentAccount
         await this.props.setCurrentAccount(currentAccount)
-        await this.props.fetchAccountDetails()
-        //TODO: Fetching payment operation list will be component specific
-        await this.props.fetchPaymentOperationList()
-        await this.props.streamPayments()
-        if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
-          new Notification('Payment Received',
-            { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
-          )
+        if (currentAccount.balance !== 0) {
+          await this.props.fetchAccountDetails()
+          //TODO: Fetching payment operation list will be component specific
+          await this.props.fetchPaymentOperationList()
+          await this.props.streamPayments()
+          if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
+            new Notification('Payment Received',
+              { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
+            )
+          }
         }
       }
     } catch (e) {

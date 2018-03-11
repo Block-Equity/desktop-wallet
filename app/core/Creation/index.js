@@ -504,10 +504,8 @@ class AccountCreation extends Component {
 
   //3. Generate Stellar Wallet
   generateStellarWallet() {
-    const { accounts, mnemonicString, passphraseValue } = this.state
-    const index = isEmpty(accounts) ? 0 : accounts.length
-
-    const wallet = accountCreation.createWallet(mnemonicString, passphraseValue, index)
+    const { mnemonicString, passphraseValue } = this.state
+    const wallet = accountCreation.createWallet(mnemonicString, passphraseValue, 0)
     this.setState({
       wallet: wallet
     })

@@ -34,6 +34,7 @@ export const initialize = async () => {
           })
         })
       } else {
+        console.log('Document exists')
         resolve({
           accounts: doc.accounts,
           exists: true
@@ -45,7 +46,7 @@ export const initialize = async () => {
 
 export const addUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
   const accountCreated = {
-    [publicKey]: {
+    [`accounts.${publicKey}`]: {
       pKey: publicKey,
       sKey: secretKey,
       balance,
@@ -53,18 +54,14 @@ export const addUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
     }
   }
 
-  console.log(`Account to be saved || ${JSON.stringify(accountCreated)}`)
-
   return new Promise((resolve, reject) => {
-    db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: accountCreated } },
+    db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: accountCreated },
       { returnUpdatedDocs: true, multi: false }, (err, numReplaced, affectedDocuments) => {
-        console.log(`Update function || ${DOCUMENT_TYPE_USER_INFO}`)
       if (err) {
-        console.log(`Account Addition Error || ${JSON.stringify(err)}`)
         reject(err)
         return
       }
-      console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments.accounts)}`)
+      console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`)
       resolve(affectedDocuments.accounts)
     })
   })
