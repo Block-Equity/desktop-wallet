@@ -18,12 +18,12 @@ export function initializeDB () {
   }
 }
 
-export function addWalletToDB ({ publicKey, secretKey, balance = 0, sequence = 0 }) {
+export function addWalletToDB (wallet) {
   return async dispatch => {
     dispatch(accountInitializationRequest())
 
     try {
-      let { accounts } = await db.addUserAccount(publicKey, secretKey, balance, sequence)
+      let accounts = await db.addUserAccount(wallet)
 
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {

@@ -11,6 +11,7 @@ export const getMnemonic = () => {
   }
 
   return {
+    mnemonic,
     mnemonicModel
   }
 }
@@ -21,7 +22,7 @@ const getGetOrdinal = (n) => {
   return n+(s[(v-20)%10]||s[v]||s[0]);
 }
 
-export const createWallet = (mnemonic, passphrase, index) => {
+export const createWallet = (mnemonic, passphrase = undefined, index) => {
   const wallet = StellarWallet.createFromMnemonic(mnemonic, passphrase)
   console.log(`Stellar Wallet Creation || ${JSON.stringify(wallet)}`)
 

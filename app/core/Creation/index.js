@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router'
 
 import keytar from 'keytar'
+import isEmpty from 'lodash/isEmpty'
 
 //Account Creation Dependencies
 import * as accountCreation from '../../services/security/createAccount'
@@ -94,7 +96,9 @@ class AccountCreation extends Component {
       alertOpen: false,
       alertMessage: '',
       validationPhrase: [],
-      recoveryPhrase: []
+      recoveryPhrase: [],
+      accountCreationComplete: false,
+      mnemonicString: ''
     }
     this.handleChange = this.handleChange.bind(this)
     this.handlePINSubmit = this.handlePINSubmit.bind(this)
@@ -110,15 +114,20 @@ class AccountCreation extends Component {
   }
 
   generateMnemonic() {
-    const mnemonic = accountCreation.getMnemonic()
-    console.log('Mnemonic', mnemonic)
+    const {mnemonic, mnemonicModel} = accountCreation.getMnemonic()
+    console.log('Mnemonic', mnemonicModel)
     this.setState({
-      validationPhrase: mnemonic.mnemonicModel,
-      recoveryPhrase: mnemonic.mnemonicModel
+      validationPhrase: mnemonicModel,
+      recoveryPhrase: mnemonicModel,
+      mnemonicString: mnemonic
     })
   }
 
   render() {
+    if (this.state.accountCreationComplete === true) {
+      return <Redirect to='/wallet' />
+    }
+
     return (
       <div className={styles.container}>
         <nav className='navbar navbar-dark' style={{background: '#0F547E'}}>
@@ -451,7 +460,7 @@ class AccountCreation extends Component {
         currentStage: accountCreationStages.completion.key
       })
       //Proceed them to loading view
-      //setState to change content view
+      this.completionOperations()
     }
   }
   //endregion
@@ -473,25 +482,32 @@ class AccountCreation extends Component {
   }
   //endregion
 
-
   //region Completion Operations
+  async completionOperations() {
+    await this.addPinToKeyChain()
+    await this.initializeDatabase()
+    await this.generateStellarWallet()
+    await this.encryptSecretKey()
+    await this.addWalletToDB()
+  }
 
   //1. Add password to KeyChain
   addPinToKeyChain() {
-    keytar.addPassword('BlockEQ', 'PIN', this.state.pinValue)
+    keytar.setPassword('BlockEQ', 'PIN', this.state.pinValue)
   }
 
   //2. Initialize DB
-  async initializeDB() {
+  async initializeDatabase() {
     await this.props.unlock()
     await this.props.initializeDB()
   }
 
   //3. Generate Stellar Wallet
   generateStellarWallet() {
-    const { accounts, recoveryPhrase, passphraseValue } = this.state
-    const index = accounts.length
-    const wallet = accountCreation.createWallet(recoveryPhrase, passphraseValue, index)
+    const { accounts, mnemonicString, passphraseValue } = this.state
+    const index = isEmpty(accounts) ? 0 : accounts.length
+
+    const wallet = accountCreation.createWallet(mnemonicString, passphraseValue, index)
     this.setState({
       wallet: wallet
     })
@@ -505,7 +521,8 @@ class AccountCreation extends Component {
     const encrypted = encryption.encryptText(secretKey, pinValue)
     encryptedWallet.secretKey = encrypted
     encryptedWallet.publicKey = wallet.publicKey
-    console.log('EncryptedWallet', encryptedWallet)
+    encryptedWallet.balance = 0
+    encryptedWallet.sequence = 0
     this.setState({
       wallet: encryptedWallet
     })
@@ -514,7 +531,11 @@ class AccountCreation extends Component {
   //7. Add user account
   async addWalletToDB() {
     const { wallet } = this.state
-    await this.props.addWalletToDB(wallet.publicKey, wallet.secretKey)
+    console.log('EncryptedWallet', wallet)
+    await this.props.addWalletToDB(wallet)
+    this.setState({
+      accountCreationComplete: true
+    })
   }
 
   //5. Fund user account (Development Purposes only)

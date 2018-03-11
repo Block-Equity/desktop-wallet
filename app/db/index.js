@@ -53,14 +53,18 @@ export const addUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
     }
   }
 
+  console.log(`Account to be saved || ${JSON.stringify(accountCreated)}`)
+
   return new Promise((resolve, reject) => {
     db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: accountCreated } },
       { returnUpdatedDocs: true, multi: false }, (err, numReplaced, affectedDocuments) => {
+        console.log(`Update function || ${DOCUMENT_TYPE_USER_INFO}`)
       if (err) {
+        console.log(`Account Addition Error || ${JSON.stringify(err)}`)
         reject(err)
         return
       }
-      console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`)
+      console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments.accounts)}`)
       resolve(affectedDocuments.accounts)
     })
   })
