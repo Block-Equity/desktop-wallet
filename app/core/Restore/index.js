@@ -10,12 +10,16 @@ import MaterialButton from 'material-ui/Button';
 import Snackbar from 'material-ui/Snackbar';
 import { CircularProgress } from 'material-ui/Progress';
 
+const font = "'Lato', sans-serif";
+const AUTO_HIDE_DURATION = 8000
+
 class Restore extends Component {
 
   constructor (props) {
     super()
     this.state = {
-      restorationComplete: false
+      restorationComplete: false,
+      alertOpen: false
     }
   }
 

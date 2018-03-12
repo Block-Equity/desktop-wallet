@@ -20,7 +20,7 @@ class Launch extends Component {
           <img src={mainLogo} width='120' height='62' style={{ marginTop: '10rem' }} alt='' />
           <Header>BlockEQ</Header>
           <ButtonContainer>
-            <Link to='/login'>
+            <Link to='/create'>
               <CreationButton type='button' className='btn btn-light'>Create Wallet</CreationButton>
             </Link>
             <Link to='/restore'>
