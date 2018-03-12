@@ -24,17 +24,17 @@ const materialStyles = theme => ({
 
 const tableHeaderStyle = {
   fontFamily: font,
-  fontWeight:'400',
-  fontSize:'0.8rem',
-  backgroundColor:'#EFF5F9',
-  color:'#777777'
+  backgroundColor: '#EFF5F9',
+  color: '#777777',
+  fontSize: '0.8rem',
+  fontWeight: '400'
 }
 
 const tableRowStyle = {
   fontFamily: font,
-  fontWeight:'400',
-  fontSize:'0.75rem',
-  color:'#111111'
+  fontSize: '0.8rem',
+  fontWeight: '400',
+  color: '#111111'
 }
 
 class History extends Component {

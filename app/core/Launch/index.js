@@ -23,7 +23,7 @@ class Launch extends Component {
             <Link to='/login'>
               <CreationButton type='button' className='btn btn-light'>Create Wallet</CreationButton>
             </Link>
-            <Link to='/login'>
+            <Link to='/restore'>
               <CreationButton type='button' className='btn btn-outline-light'>Restore Wallet</CreationButton>
             </Link>
             <Link to='/wallet'>

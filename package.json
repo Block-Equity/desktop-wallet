@@ -173,7 +173,7 @@
     "react-test-renderer": "^16.2.0",
     "redux-logger": "^3.0.6",
     "rimraf": "^2.6.2",
-    "sass-loader": "^6.0.6",
+    "sass-loader": "^6.0.7",
     "sinon": "^4.2.2",
     "spectron": "^3.8.0",
     "style-loader": "^0.20.1",
@@ -182,7 +182,7 @@
     "stylelint-config-standard": "^18.0.0",
     "uglifyjs-webpack-plugin": "1.1.8",
     "url-loader": "^0.6.2",
-    "webpack": "^3.10.0",
+    "webpack": "^3.11.0",
     "webpack-bundle-analyzer": "^2.9.2",
     "webpack-dev-server": "^2.11.1",
     "webpack-merge": "^4.1.1"
