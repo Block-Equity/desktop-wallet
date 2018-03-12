@@ -1,6 +1,10 @@
 import React, { Component } from 'react'
-
 import styles from './style.css'
+import {
+  Nav,
+  NavItem,
+  NavLink }
+from 'reactstrap';
 
 const navigation = [
   {title: 'HISTORY'},
@@ -20,9 +24,9 @@ class Navigation extends Component {
   renderTabs() {
     return (
       <div className={styles.tabContainer}>
-        <ul className="nav nav-pills nav-justified" id="pills-tab" role="tablist">
+        <Nav pills justified={true}>
           { this.renderNavigationItems() }
-        </ul>
+        </Nav>
       </div>
     )
   }
@@ -30,12 +34,12 @@ class Navigation extends Component {
   renderNavigationItems() {
     return navigation.map((item, index) => {
         var idBuilder = `${item.title}-tab`;
-        var classNameBuilder = (this.state.itemSelected === index) ? 'nav-link active' : 'nav-link';
+        var classNameBuilder = (this.state.itemSelected === index) ? 'bg-secondary' : '';
         return (
-          <li className="nav-item" key={ idBuilder }>
-              <a className={ classNameBuilder } href=''
-                  onClick={(e) => this.navigationClickHandler(e, index)}>{ item.title }</a>
-          </li>
+          <NavItem key={ idBuilder }>
+              <NavLink className={classNameBuilder} active={this.state.itemSelected === index} href=''
+                  onClick={(e) => this.navigationClickHandler(e, index)}>{ item.title }</NavLink>
+          </NavItem>
         )
     });
   }

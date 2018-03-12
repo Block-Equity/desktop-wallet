@@ -1,5 +1,43 @@
-.receiveContainer {
+#receiveContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.addressLabelContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #EFF5F9;
+  padding-top: 1.2rem;
+  padding-left: 3rem;
+  padding-right: 3rem;
+  padding-bottom: 0.75rem;
+  border-radius: 40px;
+}
+
+#receiveContainer a {
+  color: #1E8BBA;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.02rem;
+  font-style: italic;
+}
+
+#receiveContainer a:hover {
+  color: #1E8BBA;
+  text-decoration: underline;
+}
+
+.addressLabelHeader {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #777777;
+  text-align: center;
+  margin-bottom: 0.3rem;
+}
+
+.addressLabel {
+  font-size: 0.8rem;
+  font-weight: 400;
 }

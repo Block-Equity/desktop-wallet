@@ -3,11 +3,6 @@ import { Link } from 'react-router-dom'
 import mainLogo from './logo-white.png'
 
 import {
-  ListGroup,
-  ListGroupItem
-} from 'reactstrap';
-
-import {
   Container,
   ContentContainer,
   Header,

@@ -38,7 +38,7 @@ import numeral from 'numeral'
 
 import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
-import logoIcon from '../Launch/logo-gray.png'
+import logoIcon from '../Launch/logo-white.png'
 
 import styles from './style.css';
 
@@ -71,15 +71,13 @@ class Main extends Component {
         const currentAccount = accounts[Object.keys(accounts)[size-1]]
         const { pKey: publicKey, sKey: secretKey } = currentAccount
         await this.props.setCurrentAccount(currentAccount)
-        if (currentAccount.balance !== 0) {
-          await this.props.fetchAccountDetails()
-          await this.props.fetchPaymentOperationList()
-          await this.props.streamPayments()
-          if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
-            new Notification('Payment Received',
-              { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
-            )
-          }
+        await this.props.fetchAccountDetails()
+        await this.props.fetchPaymentOperationList()
+        await this.props.streamPayments()
+        if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
+          new Notification('Payment Received',
+            { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
+          )
         }
       }
     } catch (e) {
