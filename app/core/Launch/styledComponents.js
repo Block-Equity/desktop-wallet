@@ -20,15 +20,18 @@ export const Header = styled.h2`
 
 export const ButtonContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   margin-top: 3rem;
 `
 
 export const LaunchButton = styled.button`
+  width: 20rem;
+  margin-top: 1rem;
 `
 
 export const CreationButton = styled.button`
-  margin-left: 0.5rem;
+  margin-top: 1rem;
+  width: 20rem;
 `

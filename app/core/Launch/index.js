@@ -3,6 +3,11 @@ import { Link } from 'react-router-dom'
 import mainLogo from './logo-white.png'
 
 import {
+  ListGroup,
+  ListGroupItem
+} from 'reactstrap';
+
+import {
   Container,
   ContentContainer,
   Header,
@@ -12,6 +17,7 @@ import {
 } from './styledComponents'
 
 class Launch extends Component {
+
   render () {
     return (
       <Container data-id='container'>
@@ -19,20 +25,21 @@ class Launch extends Component {
           <img src={mainLogo} width='120' height='62' style={{ marginTop: '10rem' }} alt='' />
           <Header>BlockEQ</Header>
           <ButtonContainer>
-            <Link to='/wallet'>
-              <LaunchButton type='button' className='btn btn-outline-light'>Wallet</LaunchButton>
-            </Link>
             <Link to='/login'>
-              <CreationButton type='button' className='btn btn-outline-light'>Create Wallet</CreationButton>
+              <CreationButton type='button' className='btn btn-light'>Create Wallet</CreationButton>
             </Link>
             <Link to='/login'>
               <CreationButton type='button' className='btn btn-outline-light'>Restore Wallet</CreationButton>
+            </Link>
+            <Link to='/wallet'>
+              <LaunchButton type='button' className='btn btn-outline-light'>Wallet</LaunchButton>
             </Link>
           </ButtonContainer>
         </ContentContainer>
       </Container>
     )
   }
+
 }
 
 export default Launch
