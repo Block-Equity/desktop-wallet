@@ -76,6 +76,7 @@ class Restore extends Component {
       <h6>
         Mnemonic phrase will be used to derive your Stellar address.
       </h6>
+      { this.renderSuggestionsView() }
       <div id={styles.formContainer}>
         <form id='sendAssetForm' onSubmit={this.handleSubmit}>
           <div className='form-group'>
@@ -84,19 +85,19 @@ class Restore extends Component {
               placeholder='e.g. smoke ocean cake chair bike water upon toast' id='mnemonic' name='mnemonicInput'
               value={this.state.mnemonicInput} onChange={this.handleChange} required />
           </div>
-          <button style={{width: '15rem', marginTop:'3rem'}}
+          <button style={{width: '15rem', marginTop:'0.5rem'}}
             className='btn btn-outline-dark' type='submit'>Recover Wallet</button>
         </form>
       </div>
-      { this.renderSuggestionsView() }
     </div>
     )
   }
 
   renderSuggestionsView() {
     var checkedSuggestions = this.state.suggestions===true ? [] : this.state.suggestions
+    var conditionalStyling = checkedSuggestions.length === 0 ? {marginTop: '6rem', padding: '0.5rem'} : {marginTop: '6rem', padding: '0rem'}
     return (
-      <Paper className={materialStyles.root}>
+      <div style={{position:'absolute', zIndex: '2', marginTop: '15rem'}}>
         {checkedSuggestions.map(data => {
           return (
             <Chip
@@ -105,12 +106,12 @@ class Restore extends Component {
               onClick={this.handleDelete(data)}
               className={materialStyles.chip}
               style={{fontFamily: font, fontWeight:'400', fontSize:'0.75rem', letterSpacing: '0.03rem',
-                  marginLeft: '0.35rem', marginTop: '0.35rem', marginBottom: '0.35rem',
-                  backgroundColor:'#FFFFFF', color:'#555555'}}
+                  marginLeft: '0.45rem', marginTop: '0.35rem', marginBottom: '0.35rem',
+                  backgroundColor:'#EFF5F9', color:'#444444'}}
             />
           );
         })}
-      </Paper>
+      </div>
     );
   }
 
