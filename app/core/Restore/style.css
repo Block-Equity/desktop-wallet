@@ -47,9 +47,45 @@
   font-size: 1.2rem;
 }
 
-#formContainer {
+.formContainer {
   display: flex;
   flex-direction: column;
   width: 65%;
   margin-top: 1.5rem;
+}
+
+.mnemonicText {
+
+}
+
+textarea.mnemonicText:focus {
+    outline: none;
+}
+
+#passphraseContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#passphraseContainer a {
+  color: #777777;
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.02rem;
+}
+
+#passphraseContainer a:hover {
+  color: #229AB7;
+  text-decoration: underline;
+}
+
+.passphraseModalBody {
+  font-weight: 400;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  margin-bottom: 1.2rem;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
 }

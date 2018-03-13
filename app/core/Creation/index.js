@@ -404,7 +404,7 @@ class AccountCreation extends Component {
     event.preventDefault()
     var value = this.state.userEnteredValidation
     console.log(`Event Value: ${value}`)
-    if (this.state.currentValidationStage < 5) {
+    if (this.state.currentValidationStage <= 5) {
       if (value === this.state.validationValue.label) {
         console.log('Increment next stage')
         this.setState({
@@ -594,7 +594,7 @@ class AccountCreation extends Component {
             style: { fontFamily: font,
               fontWeight:'400',
               fontSize:'1rem',
-              backgroundColor:'#4E6068',
+              backgroundColor:'#962411',
               color:'#FFFFFF'
             },
           }}
