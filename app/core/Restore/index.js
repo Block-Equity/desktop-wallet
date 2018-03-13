@@ -14,6 +14,22 @@ import MaterialButton from 'material-ui/Button';
 import Snackbar from 'material-ui/Snackbar';
 import { CircularProgress } from 'material-ui/Progress';
 
+import { withStyles } from 'material-ui/styles';
+import Chip from 'material-ui/Chip';
+import Paper from 'material-ui/Paper';
+
+const materialStyles = theme => ({
+  root: {
+    display: 'flex',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    padding: theme.spacing.unit / 2,
+  },
+  chip: {
+    margin: theme.spacing.unit / 2,
+  },
+});
+
 //Constants
 const font = "'Lato', sans-serif";
 const AUTO_HIDE_DURATION = 8000
@@ -27,10 +43,12 @@ class Restore extends Component {
       alertOpen: false,
       mnemonicInput: '',
       passphraseInput: '',
-      mnemonicInputLength: 0
+      mnemonicInputLength: 0,
+      suggestions: []
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleDelete = this.handleDelete.bind(this)
   }
 
   render() {
@@ -65,12 +83,37 @@ class Restore extends Component {
               placeholder='e.g. smoke ocean cake chair bike water upon toast' id='mnemonic' name='mnemonicInput'
               value={this.state.mnemonicInput} onChange={this.handleChange} required />
           </div>
-          <button style={{width: '15rem', marginTop:'1rem'}}
+          <button style={{width: '15rem', marginTop:'3rem'}}
             className='btn btn-outline-dark' type='submit'>Recover Wallet</button>
         </form>
       </div>
+      { this.renderSuggestionsView() }
     </div>
     )
+  }
+
+  renderSuggestionsView() {
+    return (
+      <Paper className={materialStyles.root}>
+        {this.state.suggestions.map(data => {
+          return (
+            <Chip
+              key={data}
+              label={data}
+              onDelete={this.handleDelete(data)}
+              className={materialStyles.chip}
+            />
+          );
+        })}
+      </Paper>
+    );
+  }
+
+  handleDelete = data => () => {
+    const suggestions = [...this.state.suggestions];
+    const chipToDelete = suggestions.indexOf(data);
+    suggestions.splice(chipToDelete, 1);
+    this.setState({ suggestions });
   }
 
   handleSubmit(event) {
@@ -111,11 +154,12 @@ class Restore extends Component {
     const name = target.name
     var wordLength = value !== '' ? value.match(/\S+/g).length : 0
     const mnemonicArray = value.split(' ')
-    const suggestions = mnemonic.suggest(mnemonicArray[0])
+    const suggestions = mnemonic.suggest(mnemonicArray[mnemonicArray.length - 1])
     console.log(`Word Suggestions || ${JSON.stringify(suggestions)}`)
     this.setState({
       [name]: value,
-      mnemonicInputLength: wordLength
+      mnemonicInputLength: wordLength,
+      suggestions: suggestions
     })
   }
 
