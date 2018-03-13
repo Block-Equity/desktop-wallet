@@ -23,11 +23,12 @@ const materialStyles = theme => ({
     display: 'flex',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    padding: theme.spacing.unit / 2,
+    padding: theme.spacing.unit,
   },
   chip: {
     margin: theme.spacing.unit / 2,
-  },
+    padding: theme.spacing.unit
+  }
 });
 
 //Constants
@@ -93,15 +94,19 @@ class Restore extends Component {
   }
 
   renderSuggestionsView() {
+    var checkedSuggestions = this.state.suggestions===true ? [] : this.state.suggestions
     return (
       <Paper className={materialStyles.root}>
-        {this.state.suggestions.map(data => {
+        {checkedSuggestions.map(data => {
           return (
             <Chip
               key={data}
               label={data}
-              onDelete={this.handleDelete(data)}
+              onClick={this.handleDelete(data)}
               className={materialStyles.chip}
+              style={{fontFamily: font, fontWeight:'400', fontSize:'0.75rem', letterSpacing: '0.03rem',
+                  marginLeft: '0.35rem', marginTop: '0.35rem', marginBottom: '0.35rem',
+                  backgroundColor:'#FFFFFF', color:'#555555'}}
             />
           );
         })}
