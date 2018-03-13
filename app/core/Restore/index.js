@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 
-import logoIcon from '../Creation/images/logo-white.png'
+//Styles & UI
 import styles from './style.css'
-
+import NavBar from '../NavBar'
 import MaterialButton from 'material-ui/Button';
 import Snackbar from 'material-ui/Snackbar';
 import { CircularProgress } from 'material-ui/Progress';
 
+//Constants
 const font = "'Lato', sans-serif";
 const AUTO_HIDE_DURATION = 8000
 
@@ -19,8 +20,13 @@ class Restore extends Component {
     super()
     this.state = {
       restorationComplete: false,
-      alertOpen: false
+      alertOpen: false,
+      mnemonicInput: '',
+      passphraseInput: '',
+      mnemonicInputLength: 0
     }
+    this.handleChange = this.handleChange.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   render() {
@@ -30,17 +36,58 @@ class Restore extends Component {
 
     return (
       <div className={styles.container}>
-        <nav className='navbar navbar-dark' style={{background: '#0F547E'}}>
-          <div className={styles.navContentContainer}>
-            <img src={logoIcon} width='40' height='21' style={{marginBottom: '0.5rem'}} alt=""/>
-          </div>
-        </nav>
+        <NavBar/>
         <div style={{margin: '1rem', textAlign: 'center'}}>
-
+        { this.renderContent() }
         </div>
         { this.renderAlertView() }
       </div>
     )
+  }
+
+  renderContent() {
+    var wordCountLabel = `Word Count: ${this.state.mnemonicInputLength}`
+    return (
+      <div id={styles.contentContainer}>
+      <h4> Enter your Mnemonic Phrase </h4>
+      <h6>
+        Mnemonic phrase will be used to derive your Stellar address.
+      </h6>
+      <div id={styles.formContainer}>
+        <form id='sendAssetForm' onSubmit={this.handleSubmit}>
+          <div className='form-group'>
+            <label htmlFor='mnemonic'>{ wordCountLabel }</label>
+            <textarea style={{lineHeight:'1.75rem'}} rows="5" className='form-control' type='text'
+              placeholder='e.g. smoke ocean cake chair bike water upon toast' id='mnemonic' name='mnemonicInput'
+              value={this.state.mnemonicInput} onChange={this.handleChange} required />
+          </div>
+          <button style={{width: '15rem', marginTop:'1rem'}}
+            className='btn btn-outline-dark' type='submit'>Recover Wallet</button>
+        </form>
+      </div>
+    </div>
+    )
+  }
+
+  handleSubmit(event) {
+    event.preventDefault()
+
+    const target = event.target
+    const value = target.value
+  }
+
+  handleChange(event) {
+    event.preventDefault()
+
+    const target = event.target
+    const value = target.value
+    const name = target.name
+    var wordLength = value !== '' ? value.match(/\S+/g).length : 0
+    console.log(`Word Length || ${wordLength}`)
+    this.setState({
+      [name]: value,
+      mnemonicInputLength: wordLength
+    })
   }
 
   //region Alert View

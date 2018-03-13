@@ -31,6 +31,7 @@ import MaterialButton from 'material-ui/Button';
 import Snackbar from 'material-ui/Snackbar';
 import { CircularProgress } from 'material-ui/Progress';
 
+import NavBar from '../NavBar'
 import styles from './style.css'
 import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter,
@@ -130,11 +131,7 @@ class AccountCreation extends Component {
 
     return (
       <div className={styles.container}>
-        <nav className='navbar navbar-dark' style={{background: '#0F547E'}}>
-          <div className={styles.navContentContainer}>
-            <img src={logoIcon} width='40' height='21' style={{marginBottom: '0.5rem'}} alt=""/>
-          </div>
-        </nav>
+        <NavBar/>
         <div style={{margin: '1rem', textAlign: 'center'}}>
           { this.renderContent(this.state.currentStage) }
         </div>

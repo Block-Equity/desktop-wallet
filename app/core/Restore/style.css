@@ -16,5 +16,40 @@
   justify-content: center;
   width: 100%;
   padding: 0.5rem;
-  margin-top: 0.5rem;
+  margin-top: -1.8rem;
+}
+
+#contentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+#contentContainer h4 {
+  margin-bottom: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02rem;
+  font-size: 1.8rem;
+}
+
+#contentContainer h5 {
+  margin-bottom: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02rem;
+  font-size: 1.5rem;
+}
+
+#contentContainer h6 {
+  font-weight: 300;
+  margin-left: 6rem;
+  margin-right: 6rem;
+  font-size: 1.2rem;
+}
+
+#formContainer {
+  display: flex;
+  flex-direction: column;
+  width: 65%;
+  margin-top: 1.5rem;
 }
