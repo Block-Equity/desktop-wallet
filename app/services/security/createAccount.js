@@ -22,6 +22,7 @@ const getGetOrdinal = (n) => {
   return n+(s[(v-20)%10]||s[v]||s[0]);
 }
 
+//TODO: Make index a range from 0 to 9
 export const createWallet = (mnemonic, passphrase = undefined, index) => {
   const wallet = StellarWallet.createFromMnemonic(mnemonic, passphrase)
   console.log(`Stellar Wallet Creation || ${JSON.stringify(wallet)}`)

@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 
+//helpers
+import * as accountCreation from '../../services/security/createAccount'
+import * as mnemonic from '../../services/security/mnemonic'
+
 //Styles & UI
 import styles from './style.css'
 import NavBar from '../NavBar'
@@ -71,9 +75,32 @@ class Restore extends Component {
 
   handleSubmit(event) {
     event.preventDefault()
-
-    const target = event.target
-    const value = target.value
+    console.log(`Submitted Mnemonic: ${this.state.mnemonicInput}`)
+    const { valid, error } = mnemonic.validSeed(this.state.mnemonicInput)
+    if (valid) {
+      try {
+        const wallet = accountCreation.createWallet(this.state.mnemonicInput,'', 0)
+        console.log(`Wallet Keys: ${JSON.stringify(wallet)}`)
+        this.setState({
+          alertOpen: false,
+          restorationComplete: true,
+          mnemonicInput: '',
+          mnemonicInputLength: 0
+        })
+      } catch(error) {
+        this.setState({
+          alertOpen: true,
+          alertMessage: 'Incorrect Mnemonic Phrase. Please try again.',
+          mnemonicInputLength: 0
+        })
+      }
+    } else {
+      this.setState({
+        alertOpen: true,
+        alertMessage: 'Incorrect Mnemonic Phrase. Please try again.',
+        mnemonicInputLength: 0
+      })
+    }
   }
 
   handleChange(event) {
@@ -83,7 +110,9 @@ class Restore extends Component {
     const value = target.value
     const name = target.name
     var wordLength = value !== '' ? value.match(/\S+/g).length : 0
-    console.log(`Word Length || ${wordLength}`)
+    const mnemonicArray = value.split(' ')
+    const suggestions = mnemonic.suggest(mnemonicArray[0])
+    console.log(`Word Suggestions || ${JSON.stringify(suggestions)}`)
     this.setState({
       [name]: value,
       mnemonicInputLength: wordLength
@@ -108,7 +137,7 @@ class Restore extends Component {
             style: { fontFamily: font,
               fontWeight:'400',
               fontSize:'1rem',
-              backgroundColor:'#4E6068',
+              backgroundColor:'#962411',
               color:'#FFFFFF'
             },
           }}

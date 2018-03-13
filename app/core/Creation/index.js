@@ -38,8 +38,6 @@ import {
   Form, FormGroup, Label, Input }
 from 'reactstrap';
 
-import logoIcon from './images/logo-white.png'
-
 const AUTO_HIDE_DURATION = 8000
 
 const font = "'Lato', sans-serif";
@@ -116,7 +114,7 @@ class AccountCreation extends Component {
 
   generateMnemonic() {
     const {mnemonic, mnemonicModel} = accountCreation.getMnemonic()
-    console.log('Mnemonic', mnemonicModel)
+    console.log('Mnemonic', mnemonic)
     this.setState({
       validationPhrase: mnemonicModel,
       recoveryPhrase: mnemonicModel,
