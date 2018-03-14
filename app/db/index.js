@@ -1,4 +1,5 @@
 import NeDB from 'nedb'
+import * as encryption from '../services/security/encryption'
 
 import {
   DATABASE_PATH,
@@ -26,7 +27,8 @@ export const databaseExists = async () => {
       } else {
         console.log('Document exists')
         resolve({
-          exists: true
+          exists: true,
+          pin: doc.pin
         })
       }
     })
@@ -47,7 +49,7 @@ export const initialize = async () => {
 
       if (!doc) {
         console.log('Create New Document')
-        const newDoc = { type: DOCUMENT_TYPE_USER_INFO, accounts: {} }
+        const newDoc = { type: DOCUMENT_TYPE_USER_INFO, accounts: {}, pin: '' }
         db.insert(newDoc, (err, newDocument) => {
           if (err) {
             reject(err)
@@ -64,6 +66,47 @@ export const initialize = async () => {
         resolve({
           accounts: doc.accounts,
           exists: true
+        })
+      }
+    })
+  })
+}
+
+export const setUserPIN = (value) => {
+  const encrypted = encryption.encryptText(value, DATABASE_PATH)
+  const pinCreated = {
+    pin: encrypted
+  }
+  return new Promise((resolve, reject) => {
+    db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: pinCreated },
+      { returnUpdatedDocs: true, multi: false }, (err, numReplaced, affectedDocuments) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`)
+      resolve(affectedDocuments.pin)
+    })
+  })
+}
+
+export const getUserPIN = () => {
+  return new Promise((resolve, reject) => {
+    db.findOne({ type: DOCUMENT_TYPE_USER_INFO }, (err, doc) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      if (doc) {
+        console.log(`Encrypted PIN: ${doc.pin}`)
+        const decrypt = encryption.decryptText(doc.pin, DATABASE_PATH)
+        resolve({
+          pin: decrypt,
+          exists: true
+        })
+      } else {
+        resolve({
+          exists: false
         })
       }
     })

@@ -10,9 +10,10 @@
  *
  * @flow
  */
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow } from 'electron'
 import MenuBuilder from './menu'
-const keytar = ipcMain.require('keytar')
+const { ipcMain } = require('electron');
+//import keytar from 'keytar'
 
 let mainWindow = null
 
@@ -67,18 +68,6 @@ app.on('ready', async () => {
 
   mainWindow.loadURL(`file://${__dirname}/app.html`)
 
-  ipcMain.on('get-password', (event, serviceName, user) => {
-    event.returnValue = keytar.getPassword(serviceName, user);
-  })
-
-  ipcMain.on('set-password', (event, serviceName, user, pass) => {
-    event.returnValue = keytar.setPassword(serviceName, user, pass);
-  })
-
-  ipcMain.on('delete-password', (event, serviceName, user) => {
-    event.returnValue = keytar.deletePassword(serviceName, user);
-  })
-
   // @TODO: Use 'ready-to-show' event
   //        https://github.com/electron/electron/blob/master/docs/api/browser-window.md#using-ready-to-show-event
   mainWindow.webContents.on('did-finish-load', () => {
@@ -96,3 +85,19 @@ app.on('ready', async () => {
   const menuBuilder = new MenuBuilder(mainWindow)
   menuBuilder.buildMenu()
 })
+
+/*
+//TODO: Figure out how to do Production Build with C binding library
+//Moved Keytar to Main IPC
+ipcMain.on('get-password', (event, serviceName, user) => {
+  event.returnValue = keytar.getPassword(serviceName, user);
+})
+
+ipcMain.on('set-password', (event, serviceName, user, pass) => {
+  event.returnValue = keytar.setPassword(serviceName, user, pass);
+})
+
+ipcMain.on('delete-password', (event, serviceName, user) => {
+  event.returnValue = keytar.deletePassword(serviceName, user);
+})
+*/

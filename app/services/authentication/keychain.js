@@ -1,14 +1,13 @@
-import { ipcRenderer } from 'electron'
-const keytar = ipcRenderer.require('keytar')
+const { ipcRenderer } = require('electron');
 
-const setPassword = (service, user, password) => {
-  return ipcRenderer.sendSync('set-password', service, user, pass)
+export const setPassword = (service, user, password) => {
+  return ipcRenderer.sendSync('set-password', service, user, password)
 }
 
-const getPassword = (service, user) => {
+export const getPassword = (service, user) => {
   return ipcRenderer.sendSync('get-password', service, user)
 }
 
-const deletePassword = (service, user) => {
+export const deletePassword = (service, user) => {
   return ipcRenderer.sendSync('delete-password', service, user)
 }

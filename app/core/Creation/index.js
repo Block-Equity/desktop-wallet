@@ -3,13 +3,14 @@ import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 
-import keychain from '../../services/authentication/keychain'
+import { setPassword } from '../../services/authentication/keychain'
 import isEmpty from 'lodash/isEmpty'
 
 //Account Creation Dependencies
 import * as accountCreation from '../../services/security/createAccount'
 import * as encryption from '../../services/security/encryption'
 import { unlock } from '../../common/auth/actions'
+import { setUserPIN } from '../../db'
 import {
   initializeDB,
   addWalletToDB,
@@ -479,8 +480,8 @@ class AccountCreation extends Component {
 
   //region Completion Operations
   async completionOperations() {
-    await this.addPinToKeyChain()
     await this.initializeDatabase()
+    await this.addPinToKeyChain()
     await this.generateStellarWallet()
     await this.encryptSecretKey()
     await this.addWalletToDB()
@@ -488,7 +489,7 @@ class AccountCreation extends Component {
 
   //1. Add password to KeyChain
   addPinToKeyChain() {
-    keychain.setPassword('BlockEQ', 'PIN', this.state.pinValue)
+    setUserPIN(this.state.pinValue)
   }
 
   //2. Initialize DB

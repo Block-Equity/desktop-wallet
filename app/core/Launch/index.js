@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Redirect } from 'react-router'
 import { connect } from 'react-redux'
 
-import keychain from '../authentication/keychain'
+import { getPassword } from '../../services/authentication/keychain'
 import { databaseExists } from '../../db'
 
 import {
@@ -37,45 +37,17 @@ class Launch extends Component {
   }
 
   async componentDidMount () {
-    var pin;
-    try {
-      pin = await keychain.getPassword('BlockEQ', 'PIN')
-      var exists = pin.length === 0 ? false : true
-      if (exists) {
-        this.setState({
-          pinExists: exists
-        })
-      } else {
-        this.showAlertMessage('PIN does not exist in your keychain. Please restore your account. You will be asked to set a new PIN.')
-      }
-    } catch (e) {
-
-    }
-
-    var dbexists
     try {
       const { exists } = await databaseExists()
-      dbexists = exists
-      if (dbexists) {
+      if (exists) {
         this.setState({
-          databaseExists: dbexists
+          databaseExists: exists,
+          authenticated: exists
         })
-      } else {
-        console.log('Show message')
-        this.showAlertMessage('Local database does not exist for the application. Please restore your account. You will be asked to set a new PIN.')
       }
     } catch (e) {
 
     }
-
-    console.log(`PIN Value: ${pin.length} || DB Value: ${dbexists}`)
-
-    if (pin && dbexists) {
-      this.setState({
-        authenticated: true
-      })
-    }
-
   }
 
   render () {

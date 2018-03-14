@@ -2,6 +2,8 @@ import { sendPayment, getPaymentOperationList, receivePaymentStream } from '../.
 import { fetchAccountDetails, setCurrentAccount } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
 import * as Types from './types'
+import { getUserPIN } from '../../db'
+import * as encryption from '../../services/security/encryption'
 
 export function sendPaymentToAddress ({ destination, amount }) {
   return async (dispatch, getState) => {
@@ -13,13 +15,16 @@ export function sendPaymentToAddress ({ destination, amount }) {
       sequence
     } = currentAccount
 
+    const { pin } = await getUserPIN()
+    const decryptSK = encryption.decryptText(secretKey, pin)
+
     dispatch(paymentSendRequest())
 
     try {
       // 1. Start the payment process
       await sendPayment({
         publicKey,
-        secretKey,
+        decryptSK,
         sequence,
         destinationId: destination,
         amount

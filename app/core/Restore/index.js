@@ -6,10 +6,11 @@ import { Redirect } from 'react-router'
 //Helpers
 import * as accountCreation from '../../services/security/createAccount'
 import * as mnemonic from '../../services/security/mnemonic'
-import keychain from '../authentication/keychain'
+import { setPassword } from '../../services/authentication/keychain'
 import * as encryption from '../../services/security/encryption'
 
 //Redux Actions/States/Reducers
+import { setUserPIN } from '../../db'
 import { unlock } from '../../common/auth/actions'
 import {
   initializeDB,
@@ -407,15 +408,15 @@ class Restore extends Component {
 
   //region Completion Operation
   async completionOperations() {
-    await this.addPinToKeyChain()
     await this.initializeDatabase()
+    await this.addPinToKeyChain()
     await this.encryptSecretKey()
     await this.addWalletToDB()
   }
 
   //1. Add password to KeyChain
   async addPinToKeyChain() {
-    await keychain.setPassword('BlockEQ', 'PIN', this.state.pinValue)
+    await setUserPIN(this.state.pinValue)
   }
 
   //2. Initialize DB
