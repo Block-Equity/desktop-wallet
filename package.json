@@ -1,6 +1,6 @@
 {
   "name": "electron-react-boilerplate",
-  "productName": "ElectronReact",
+  "productName": "BlockEQ",
   "version": "0.13.2",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
   "scripts": {
@@ -32,8 +32,8 @@
   },
   "browserslist": "electron 1.6",
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.develar.ElectronReact",
+    "productName": "BlockEQ",
+    "appId": "org.develar.BlockEQ",
     "files": [
       "dist/",
       "node_modules/",
