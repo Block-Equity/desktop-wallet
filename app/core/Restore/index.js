@@ -6,7 +6,7 @@ import { Redirect } from 'react-router'
 //Helpers
 import * as accountCreation from '../../services/security/createAccount'
 import * as mnemonic from '../../services/security/mnemonic'
-import keytar from 'keytar'
+import keychain from '../authentication/keychain'
 import * as encryption from '../../services/security/encryption'
 
 //Redux Actions/States/Reducers
@@ -415,7 +415,7 @@ class Restore extends Component {
 
   //1. Add password to KeyChain
   async addPinToKeyChain() {
-    await keytar.setPassword('BlockEQ', 'PIN', this.state.pinValue)
+    await keychain.setPassword('BlockEQ', 'PIN', this.state.pinValue)
   }
 
   //2. Initialize DB

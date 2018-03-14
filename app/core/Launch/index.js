@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Redirect } from 'react-router'
 import { connect } from 'react-redux'
 
-import keytar from 'keytar'
+import keychain from '../authentication/keychain'
 import { databaseExists } from '../../db'
 
 import {
@@ -39,7 +39,7 @@ class Launch extends Component {
   async componentDidMount () {
     var pin;
     try {
-      pin = await keytar.getPassword('BlockEQ', 'PIN')
+      pin = await keychain.getPassword('BlockEQ', 'PIN')
       var exists = pin.length === 0 ? false : true
       if (exists) {
         this.setState({

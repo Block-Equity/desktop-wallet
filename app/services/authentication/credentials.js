@@ -1,4 +1,4 @@
-import keytar from 'keytar'
+import keychain from '../authentication/keychain'
 import { create as createHash } from '../security/password'
 //import config from '../../../config'
 
@@ -8,7 +8,7 @@ const APP_NAME = 'BlockEQ'
 const ACCOUNT = `${APP_NAME}.verification`
 
 const get = async () => {
-  return keytar.getPassword(APP_IDENTIFIER, ACCOUNT)
+  return keychain.getPassword(APP_IDENTIFIER, ACCOUNT)
 }
 
 export const verify = async (username, password) => {
@@ -37,7 +37,7 @@ export const update = async (username, password) => {
     salt: APP_NAME
   })
 
-  return keytar.setPassword(APP_IDENTIFIER, ACCOUNT, hash)
+  return keychain.setPassword(APP_IDENTIFIER, ACCOUNT, hash)
 }
 
 export const logout = async () => {

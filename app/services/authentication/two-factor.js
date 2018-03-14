@@ -1,4 +1,4 @@
-import keytar from 'keytar'
+import keychain from '../authentication/keychain'
 import authenticator from 'authenticator'
 import { decryptText, encryptText } from '../security/encryption'
 //mport config from 'config'
@@ -8,17 +8,17 @@ const APP_IDENTIFIER = 'com.blockeq'
 const ACCOUNT = `BlockEQ.2fa`
 
 const get = async (password) => {
-  let result = await keytar.getPassword(APP_IDENTIFIER, ACCOUNT)
+  let result = await keychain.getPassword(APP_IDENTIFIER, ACCOUNT)
   return decryptText(result, password)
 }
 
 const update = async ({ secret, password }) => {
   let result = await encryptText(secret, password)
-  return keytar.setPassword(APP_IDENTIFIER, ACCOUNT, result)
+  return keychain.setPassword(APP_IDENTIFIER, ACCOUNT, result)
 }
 
 export const remove = async () => {
-  return keytar.deletePassword(APP_IDENTIFIER, ACCOUNT)
+  return keychain.deletePassword(APP_IDENTIFIER, ACCOUNT)
 }
 
 export const verify = async ({ password, code }) => {

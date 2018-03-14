@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 
-import keytar from 'keytar'
+import keychain from '../../services/authentication/keychain'
 import isEmpty from 'lodash/isEmpty'
 
 //Account Creation Dependencies
@@ -488,7 +488,7 @@ class AccountCreation extends Component {
 
   //1. Add password to KeyChain
   addPinToKeyChain() {
-    keytar.setPassword('BlockEQ', 'PIN', this.state.pinValue)
+    keychain.setPassword('BlockEQ', 'PIN', this.state.pinValue)
   }
 
   //2. Initialize DB

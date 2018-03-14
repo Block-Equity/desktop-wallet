@@ -12,5 +12,3 @@ const getPassword = (service, user) => {
 const deletePassword = (service, user) => {
   return ipcRenderer.sendSync('delete-password', service, user)
 }
-
-
