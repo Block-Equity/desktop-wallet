@@ -1,5 +1,5 @@
 import StellarSdk, { Config } from 'stellar-sdk'
-import config from 'config'
+//import config from '../../../config' //TODO: Issues with getting production config variable in production build
 import { StellarWallet } from '../security/wallet'
 import { generate as generateMnemonic } from '../security/mnemonic'
 
@@ -10,8 +10,8 @@ import axios from 'axios'
 Config.setAllowHttp(true)
 StellarSdk.Network.useTestNetwork()
 
-const BASE_URL_TEST_NET = config.get('app.testNetUrl')
-const BASE_URL_HORIZON_TEST_NET = config.get('horizon.testNetUrl')
+const BASE_URL_TEST_NET = 'http://ec2co-ecsel-1x5ev4f9g6tjf-1450006510.us-east-1.elb.amazonaws.com/'
+const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
 const BASE_URL = BASE_URL_HORIZON_TEST_NET
 const server = new StellarSdk.Server(BASE_URL)
 

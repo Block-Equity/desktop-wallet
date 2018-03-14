@@ -1,10 +1,11 @@
 import keytar from 'keytar'
 import authenticator from 'authenticator'
 import { decryptText, encryptText } from '../security/encryption'
-import config from 'config'
+//mport config from 'config'
 
-const APP_IDENTIFIER = config.get('app.identifier')
-const ACCOUNT = `${config.get('app.name')}.2fa`
+//TODO: Issues with getting production config variable in production build
+const APP_IDENTIFIER = 'com.blockeq'
+const ACCOUNT = `BlockEQ.2fa`
 
 const get = async (password) => {
   let result = await keytar.getPassword(APP_IDENTIFIER, ACCOUNT)

@@ -1,9 +1,10 @@
 import keytar from 'keytar'
 import { create as createHash } from '../security/password'
-import config from 'config'
+//import config from '../../../config'
 
-const APP_IDENTIFIER = config.get('app.identifier')
-const APP_NAME = config.get('app.name')
+//TODO: Issues with getting production config variable in production build
+const APP_IDENTIFIER = 'com.blockeq'
+const APP_NAME = 'BlockEQ'
 const ACCOUNT = `${APP_NAME}.verification`
 
 const get = async () => {
@@ -40,6 +41,5 @@ export const update = async (username, password) => {
 }
 
 export const logout = async () => {
-  // TODO: implement
   return true
 }
