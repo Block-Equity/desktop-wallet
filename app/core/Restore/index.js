@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 
-//helpers
+//Helpers
 import * as accountCreation from '../../services/security/createAccount'
 import * as mnemonic from '../../services/security/mnemonic'
 import keytar from 'keytar'
@@ -25,9 +25,9 @@ import {
 //Styles & UI
 import styles from './style.css'
 import NavBar from '../NavBar'
-import MaterialButton from 'material-ui/Button';
-import Snackbar from 'material-ui/Snackbar';
-import { CircularProgress } from 'material-ui/Progress';
+import MaterialButton from 'material-ui/Button'
+import Snackbar from 'material-ui/Snackbar'
+import { CircularProgress } from 'material-ui/Progress'
 import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter,
   Form, FormGroup, Label, Input }
@@ -52,7 +52,7 @@ const materialStyles = theme => ({
 
 //Constants
 const font = "'Lato', sans-serif";
-const AUTO_HIDE_DURATION = 8000
+const AUTO_HIDE_DURATION = 6000
 
 const accountRestoreStages = {
   mnemonic: {
@@ -414,8 +414,8 @@ class Restore extends Component {
   }
 
   //1. Add password to KeyChain
-  addPinToKeyChain() {
-    keytar.setPassword('BlockEQ', 'PIN', this.state.pinValue)
+  async addPinToKeyChain() {
+    await keytar.setPassword('BlockEQ', 'PIN', this.state.pinValue)
   }
 
   //2. Initialize DB
@@ -463,7 +463,6 @@ class Restore extends Component {
         console.log(`Wallet Keys: ${JSON.stringify(wallet)}`)
         this.setState({
           alertOpen: false,
-          restorationComplete: true,
           mnemonicInput: '',
           mnemonicInputLength: 0,
           wallet: wallet,

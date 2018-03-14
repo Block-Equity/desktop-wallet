@@ -7,6 +7,32 @@ import {
 
 let db = null
 
+export const databaseExists = async () => {
+  db = new NeDB({ filename: DATABASE_PATH, autoload: true })
+  console.log('DATABASE_PATH', DATABASE_PATH)
+
+  return new Promise((resolve, reject) => {
+    db.findOne({ type: DOCUMENT_TYPE_USER_INFO }, (err, doc) => {
+      if (err) {
+        reject(err)
+        return
+      }
+
+      if (!doc) {
+        console.log('Document does not exist')
+        resolve({
+          exists: false
+        })
+      } else {
+        console.log('Document exists')
+        resolve({
+          exists: true
+        })
+      }
+    })
+  })
+}
+
 export const initialize = async () => {
   db = new NeDB({ filename: DATABASE_PATH, autoload: true })
   console.log('DATABASE_PATH', DATABASE_PATH)
