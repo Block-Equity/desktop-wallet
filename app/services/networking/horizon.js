@@ -63,16 +63,19 @@ export const receivePaymentStream = async (publicKey) => {
   })
 }
 
-export const sendPayment = ({ publicKey, secretKey, sequence, destinationId, amount }) => {
-  let sourceKeys = StellarSdk.Keypair.fromSecret(secretKey)
+export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount }) => {
+  let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   let transaction
 
-  // TODO: let's clean this up so it's more step driven
   return new Promise((resolve, reject) => {
     server.loadAccount(destinationId)
-      // If the account is not found, surface a nicer error message for logging.
-      .catch(StellarSdk.NotFoundError, error => {
-        reject(error)
+      // If the account is not found, then create a transaction for creating an account
+      .then(StellarSdk.NotFoundError, error => {
+        console.log(error)
+        resolve({
+          exists: false,
+          payload: result
+        })
       })
       // If there was no error, load up-to-date information on your account.
       .then(() => server.loadAccount(publicKey))
@@ -97,7 +100,10 @@ export const sendPayment = ({ publicKey, secretKey, sequence, destinationId, amo
         return server.submitTransaction(transaction)
       })
       .then(result => {
-        resolve(result)
+        resolve({
+          exists:true,
+          payload: result
+        })
       })
       .catch(error => {
         reject(error)
@@ -105,5 +111,30 @@ export const sendPayment = ({ publicKey, secretKey, sequence, destinationId, amo
         // already built transaction:
         // server.submitTransaction(transaction);
       })
+  })
+}
+
+export const createDestinationAccount = ({ decryptSK, publicKey, destinationId, amount }) => {
+  let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
+  return new Promise((resolve, reject) => {
+    var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
+    .addOperation(StellarSdk.Operation.createAccount({
+      destination: destinationId,
+      amount: amount
+    }))
+    .build()
+    transaction.sign(sourceKeys)
+    server.submitTransaction(transaction)
+      .then( transactionResult => {
+        console.log(JSON.stringify(transactionResult, null, 2));
+        console.log('\nSuccess! View the transaction at: ');
+        console.log(transactionResult._links.transaction.href);
+        resolve(transactionResult._links.transaction.href)
+      })
+      .catch( err => {
+        console.log('An error has occured:');
+        console.log(err);
+        reject(err)
+      });
   })
 }

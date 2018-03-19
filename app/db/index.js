@@ -98,7 +98,6 @@ export const getUserPIN = () => {
         return
       }
       if (doc) {
-        console.log(`Encrypted PIN: ${doc.pin}`)
         const decrypt = encryption.decryptText(doc.pin, DATABASE_PATH)
         resolve({
           pin: decrypt,
