@@ -12,6 +12,8 @@
  */
 import { app, BrowserWindow } from 'electron'
 import MenuBuilder from './menu'
+const { ipcMain } = require('electron');
+//import keytar from 'keytar'
 
 let mainWindow = null
 
@@ -59,9 +61,9 @@ app.on('ready', async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1100,
+    width: 800,
     height: 728,
-    //resizable: false
+    resizable: false
   })
 
   mainWindow.loadURL(`file://${__dirname}/app.html`)
@@ -83,3 +85,19 @@ app.on('ready', async () => {
   const menuBuilder = new MenuBuilder(mainWindow)
   menuBuilder.buildMenu()
 })
+
+/*
+//TODO: Figure out how to do Production Build with C binding library
+//Moved Keytar to Main IPC
+ipcMain.on('get-password', (event, serviceName, user) => {
+  event.returnValue = keytar.getPassword(serviceName, user);
+})
+
+ipcMain.on('set-password', (event, serviceName, user, pass) => {
+  event.returnValue = keytar.setPassword(serviceName, user, pass);
+})
+
+ipcMain.on('delete-password', (event, serviceName, user) => {
+  event.returnValue = keytar.deletePassword(serviceName, user);
+})
+*/

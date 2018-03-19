@@ -1,0 +1,91 @@
+.container {
+  height: 100%;
+  background: #FFFFFF;
+  overflow: auto;
+}
+
+.navLogo {
+  width: 40px;
+  height: 21px;
+}
+
+.navContentContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: -1.8rem;
+}
+
+#contentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+}
+
+#contentContainer h4 {
+  margin-bottom: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02rem;
+  font-size: 1.8rem;
+}
+
+#contentContainer h5 {
+  margin-bottom: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.02rem;
+  font-size: 1.5rem;
+}
+
+#contentContainer h6 {
+  font-weight: 300;
+  margin-left: 6rem;
+  margin-right: 6rem;
+  font-size: 1.2rem;
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  width: 65%;
+  margin-top: 1.5rem;
+}
+
+.mnemonicText {
+
+}
+
+textarea.mnemonicText:focus {
+    outline: none;
+}
+
+#passphraseContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#passphraseContainer a {
+  color: #777777;
+  margin-top: 0.3rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.02rem;
+}
+
+#passphraseContainer a:hover {
+  color: #229AB7;
+  text-decoration: underline;
+}
+
+.passphraseModalBody {
+  font-weight: 400;
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
+  margin-bottom: 1.2rem;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
+}

@@ -7,7 +7,7 @@ import { isAuthenticated } from './selectors'
 
 // Where to redirect not logged in users to try to access app
 // TODO: obviously, remove the `/wallet` one as soon as the login flow is implemented
-const openRoutes = ['/', '/login', '/wallet']
+const openRoutes = ['/', '/login', '/wallet', '/restore', '/create']
 
 export const AuthRoute = ({ component, ...props }) => {
   if (props.path === undefined) {

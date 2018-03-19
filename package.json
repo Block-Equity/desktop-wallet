@@ -1,6 +1,6 @@
 {
   "name": "electron-react-boilerplate",
-  "productName": "ElectronReact",
+  "productName": "BlockEQ",
   "version": "0.13.2",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
   "scripts": {
@@ -32,8 +32,8 @@
   },
   "browserslist": "electron 1.6",
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.develar.ElectronReact",
+    "productName": "BlockEQ",
+    "appId": "org.develar.BlockEQ",
     "files": [
       "dist/",
       "node_modules/",
@@ -173,7 +173,7 @@
     "react-test-renderer": "^16.2.0",
     "redux-logger": "^3.0.6",
     "rimraf": "^2.6.2",
-    "sass-loader": "^6.0.6",
+    "sass-loader": "^6.0.7",
     "sinon": "^4.2.2",
     "spectron": "^3.8.0",
     "style-loader": "^0.20.1",
@@ -182,7 +182,7 @@
     "stylelint-config-standard": "^18.0.0",
     "uglifyjs-webpack-plugin": "1.1.8",
     "url-loader": "^0.6.2",
-    "webpack": "^3.10.0",
+    "webpack": "^3.11.0",
     "webpack-bundle-analyzer": "^2.9.2",
     "webpack-dev-server": "^2.11.1",
     "webpack-merge": "^4.1.1"
@@ -201,6 +201,7 @@
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
     "keytar": "^4.1.0",
+    "keytar-prebuild": "^4.1.1",
     "material-ui": "^1.0.0-beta.35",
     "moment": "^2.20.1",
     "nedb": "^1.8.0",
@@ -214,6 +215,7 @@
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^5.0.0-alpha.6",
+    "reactstrap": "^5.0.0-beta.2",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
     "source-map-support": "^0.5.3",

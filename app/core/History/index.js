@@ -8,17 +8,34 @@ import Paper from 'material-ui/Paper'
 import numeral from 'numeral'
 import moment from 'moment'
 
+const font = "'Lato', sans-serif";
+
 const materialStyles = theme => ({
   root: {
-    width: '80%',
+    width: '70%',
     height: '90%',
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing.unit * 2,
     overflowY: undefined
   },
   table: {
-    minWidth: 600,
+    minWidth: 850
   }
 })
+
+const tableHeaderStyle = {
+  fontFamily: font,
+  backgroundColor: '#EFF5F9',
+  color: '#777777',
+  fontSize: '0.8rem',
+  fontWeight: '400'
+}
+
+const tableRowStyle = {
+  fontFamily: font,
+  fontSize: '0.8rem',
+  fontWeight: '400',
+  color: '#111111'
+}
 
 class History extends Component {
   renderTableBody() {
@@ -29,14 +46,14 @@ class History extends Component {
         const displayDate = `${formattedNowTime}${formattedDate}`
         return (
           <TableRow key={n.id}>
-            <TableCell>
+            <TableCell style={tableRowStyle}>
               <div className={styles.tableCellMultiLine}>
                 <div><b>{formattedNowTime}</b></div>
                 <div style={{marginTop: '0.5rem'}}>{formattedDate}</div>
               </div>
             </TableCell>
-            <TableCell>{n.from}</TableCell>
-            <TableCell>{numeral(n.amount).format('0,0.00')}</TableCell>
+            <TableCell style={tableRowStyle}>{n.from}</TableCell>
+            <TableCell style={tableRowStyle}>{numeral(n.amount).format('0,0.00')}</TableCell>
           </TableRow>
         );
       }
@@ -49,9 +66,9 @@ class History extends Component {
         <Table className={materialStyles.table}>
           <TableHead>
             <TableRow>
-              <TableCell>Date</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell numeric>Amount</TableCell>
+              <TableCell style={tableHeaderStyle}>Date</TableCell>
+              <TableCell style={tableHeaderStyle}>Address</TableCell>
+              <TableCell numeric style={tableHeaderStyle}>Amount</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

@@ -1,14 +1,16 @@
 import * as db from '../../db'
 import { getCurrentAccount } from './selectors'
 import * as horizon from '../../services/networking/horizon'
+import * as mnemonic from '../../services/security/mnemonic'
 import * as Types from './types'
 
-export function initializeAccount () {
+export function initializeDB () {
   return async dispatch => {
     dispatch(accountInitializationRequest())
 
     try {
       let { accounts } = await db.initialize()
+
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
       return dispatch(accountInitializationFailure(e))
@@ -16,14 +18,28 @@ export function initializeAccount () {
   }
 }
 
-export function createAccount ({ publicKey, secretKey }) {
+export function addWalletToDB (wallet) {
+  return async dispatch => {
+    dispatch(accountInitializationRequest())
+
+    try {
+      let accounts = await db.addUserAccount(wallet)
+
+      return dispatch(accountInitializationSuccess(accounts))
+    } catch (e) {
+      return dispatch(accountInitializationFailure(e))
+    }
+  }
+}
+
+export function fundAccount ({ publicKey, secretKey }) {
   return async dispatch => {
     dispatch(accountCreationRequest())
 
     let accounts = null
 
     try {
-      accounts = await horizon.createAccount(publicKey)
+      accounts = await horizon.fundAccount(publicKey)
       const { balance, sequence } = accounts
 
       await db.addUserAccount({

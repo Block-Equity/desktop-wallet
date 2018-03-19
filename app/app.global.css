@@ -4,12 +4,13 @@
  */
 @import "~font-awesome/css/font-awesome.css";
 @import "~bootstrap/dist/css/bootstrap.css";
+@import url('https://fonts.googleapis.com/css?family=Lato:100,300,400,400i,700,900');
 
 body {
   position: relative;
-  color: white;
-  height: 100vh;
-  font: caption;
+  color: black;
+  height: 100%;
+  font-family: 'Lato', sans-serif;
 }
 
 h2 {
@@ -21,6 +22,7 @@ h2 {
 
 p {
   font-size: 24px;
+  font-weight: 100;
 }
 
 li {
@@ -33,7 +35,6 @@ a {
 }
 
 a:hover {
-  opacity: 1;
   text-decoration: none;
   cursor: pointer;
 }

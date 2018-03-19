@@ -1,13 +1,14 @@
-import keytar from 'keytar'
+import { setPassword, getPassword } from '../authentication/keychain'
 import { create as createHash } from '../security/password'
-import config from 'config'
+//import config from '../../../config'
 
-const APP_IDENTIFIER = config.get('app.identifier')
-const APP_NAME = config.get('app.name')
+//TODO: Issues with getting production config variable in production build
+const APP_IDENTIFIER = 'com.blockeq'
+const APP_NAME = 'BlockEQ'
 const ACCOUNT = `${APP_NAME}.verification`
 
 const get = async () => {
-  return keytar.getPassword(APP_IDENTIFIER, ACCOUNT)
+  return getPassword(APP_IDENTIFIER, ACCOUNT)
 }
 
 export const verify = async (username, password) => {
@@ -36,10 +37,9 @@ export const update = async (username, password) => {
     salt: APP_NAME
   })
 
-  return keytar.setPassword(APP_IDENTIFIER, ACCOUNT, hash)
+  return setPassword(APP_IDENTIFIER, ACCOUNT, hash)
 }
 
 export const logout = async () => {
-  // TODO: implement
   return true
 }

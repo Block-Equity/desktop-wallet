@@ -1,23 +1,37 @@
 import styled from 'styled-components'
 
 export const Container = styled.div`
-  display: -webkit-flex;
+  height: 100vh;
+  background-image: linear-gradient(to top, #0153B6 0%, #07237A 100%);
+`
+export const ContentContainer = styled.div`
   display: flex;
-  -webkit-flex-direction: column;
   flex-direction: column;
-  -webkit-align-items: center;
   align-items: center;
-  -webkit-justify-content: center;
   justify-content: center;
-  margin-top: 10rem;
 `
 
 export const Header = styled.h2`
   font-size: 3rem;
-  font-weight: 100;
-  margin-top: 1rem;
+  font-weight: 400;
+  margin-top: 0.75rem;
+  color: #FFFFFF;
+`
+
+export const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3rem;
 `
 
 export const LaunchButton = styled.button`
-  margin-top: 3rem;
+  width: 20rem;
+  margin-top: 1rem;
+`
+
+export const CreationButton = styled.button`
+  margin-top: 1rem;
+  width: 20rem;
 `

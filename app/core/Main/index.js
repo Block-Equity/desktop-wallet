@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import { unlock } from '../../common/auth/actions'
 import {
-  initializeAccount,
+  initializeDB,
   createAccount,
   fetchAccountDetails,
   setCurrentAccount
@@ -38,7 +38,7 @@ import numeral from 'numeral'
 
 import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
-import logoIcon from '../Launch/logo-gray.png'
+import logoIcon from '../Launch/logo-white.png'
 
 import styles from './style.css';
 
@@ -62,19 +62,16 @@ class Main extends Component {
 
   async componentDidMount () {
     try {
-      // TODO: this is temporarily here. It will be moved to the Login (or auth flow) once
-      // it's done
       await this.props.unlock()
-      await this.props.initializeAccount()
-
+      await this.props.initializeDB()
       const { accounts } = this.props
-
       if (!isEmpty(accounts)) {
-        const currentAccount = accounts[Object.keys(accounts)[0]]
+        console.log(`Length of accounts || ${Object.keys(accounts).length}`)
+        const size = Object.keys(accounts).length
+        const currentAccount = accounts[Object.keys(accounts)[size-1]]
         const { pKey: publicKey, sKey: secretKey } = currentAccount
         await this.props.setCurrentAccount(currentAccount)
         await this.props.fetchAccountDetails()
-        //TODO: Fetching payment operation list will be component specific
         await this.props.fetchPaymentOperationList()
         await this.props.streamPayments()
         if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
@@ -109,7 +106,7 @@ class Main extends Component {
   renderAccountInfoContent () {
     const balance = this.props.currentAccount.balance.balance
     return (
-      <div className={styles.mainPageHeaderContainer} block>
+      <div className={styles.mainPageHeaderContainer}>
         <img className={styles.mainPageHeaderLogo} src={logoIcon} alt=''></img>
         <div className={styles.mainPageHeaderBalanceTitle}> YOUR CURRENT XLM BALANCE </div>
         <div className={styles.mainPageHeaderBalanceLabel}><b> {numeral(balance).format('0,0.00')} </b> </div>
@@ -216,7 +213,7 @@ const mapStateToProps = (state) => {
 
 export default connect(mapStateToProps, {
   unlock,
-  initializeAccount,
+  initializeDB,
   createAccount,
   fetchAccountDetails,
   setCurrentAccount,

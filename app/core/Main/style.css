@@ -16,7 +16,7 @@ used with styled componets but right now it only supports Bootstrap 3.
   flex-direction: column;
   align-items: center;
   width: 100%;
-  background: #EAEFF2;
+  background-image: linear-gradient(to top, #1E8BBA 0%, #0A5582 100%);
 }
 
 .mainPageHeaderLogo {
@@ -28,18 +28,18 @@ used with styled componets but right now it only supports Bootstrap 3.
 
 .mainPageHeaderBalanceTitle {
   margin-top: 1rem;
-  margin-bottom: 0.5rem;
-  color: #999999;
-  font-size: 0.7rem;
-  font-weight: 100;
+  margin-bottom: 0.1rem;
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 300;
 }
 
 .mainPageHeaderBalanceLabel {
   font-size: 1rem;
   font-weight: 100;
-  color: #000000;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+  color: #FFFFFF;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .mainPageContentContainer {

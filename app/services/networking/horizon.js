@@ -1,5 +1,5 @@
 import StellarSdk, { Config } from 'stellar-sdk'
-import config from 'config'
+//import config from '../../../config' //TODO: Issues with getting production config variable in production build
 import { StellarWallet } from '../security/wallet'
 import { generate as generateMnemonic } from '../security/mnemonic'
 
@@ -10,33 +10,14 @@ import axios from 'axios'
 Config.setAllowHttp(true)
 StellarSdk.Network.useTestNetwork()
 
-const BASE_URL_TEST_NET = config.get('app.testNetUrl')
-const BASE_URL_HORIZON_TEST_NET = config.get('horizon.testNetUrl')
+const BASE_URL_TEST_NET = 'http://ec2co-ecsel-1x5ev4f9g6tjf-1450006510.us-east-1.elb.amazonaws.com/'
+const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
 const BASE_URL = BASE_URL_HORIZON_TEST_NET
 const server = new StellarSdk.Server(BASE_URL)
 
-export const createAccount = (publicKey) => {
+export const fundAccount = (publicKey) => {
   // Friend Bot is only on Horizon Test Net
   return axios.get(`${BASE_URL_HORIZON_TEST_NET}/friendbot?addr=${publicKey}`)
-}
-
-// TODO: Perhaps this should go somewhere else, as it doesn't really have much to do with Horizon
-export const createSeed = (password = undefined) => {
-  const mnemonic = generateMnemonic()
-  console.log('Mnemonic', mnemonic, password)
-
-  const wallet = StellarWallet.createFromMnemonic(mnemonic, password)
-
-  const publicKey = wallet.getPublicKey(0)
-  const secretKey = wallet.getSecret(0)
-
-  console.log(`Secret: ${secretKey} || Public: ${publicKey}`)
-
-  return {
-    mnemonic,
-    publicKey,
-    secretKey
-  }
 }
 
 export const getAccountDetail = async (publicKey) => {
