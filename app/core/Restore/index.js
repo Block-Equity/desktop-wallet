@@ -15,13 +15,16 @@ import { unlock } from '../../common/auth/actions'
 import {
   initializeDB,
   addWalletToDB,
-  fundAccount,
   setCurrentAccount
 } from '../../common/account/actions'
 
 import {
   getAccounts
 } from '../../common/account/selectors'
+
+import {
+  fundAccount
+} from '../../services/networking/horizon'
 
 //Styles & UI
 import styles from './style.css'
@@ -411,6 +414,7 @@ class Restore extends Component {
     await this.initializeDatabase()
     await this.addPinToKeyChain()
     await this.encryptSecretKey()
+    await this.fundWallet()
     await this.addWalletToDB()
   }
 
@@ -438,6 +442,11 @@ class Restore extends Component {
     this.setState({
       wallet: encryptedWallet
     })
+  }
+
+  //5. Fund user account (Development Purposes only)
+  async fundWallet() {
+    await fundAccount(this.state.wallet.publicKey)
   }
 
   //4. Add user account

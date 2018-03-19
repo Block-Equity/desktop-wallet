@@ -6,7 +6,7 @@ import backIcon from './arrow-back-white.png'
 const BACK_IMAGE_SIZE = 16
 const LOGO_IMAGE_SIZE = { height: 21, width: 40 }
 
-export default class Restore extends Component {
+export default class NavBar extends Component {
   render() {
     return (
       <nav className='navbar navbar-dark'

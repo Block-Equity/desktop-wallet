@@ -14,13 +14,16 @@ import { setUserPIN } from '../../db'
 import {
   initializeDB,
   addWalletToDB,
-  fundAccount,
   setCurrentAccount
 } from '../../common/account/actions'
 
 import {
   getAccounts
 } from '../../common/account/selectors'
+
+import {
+  fundAccount
+} from '../../services/networking/horizon'
 
 //Material Design
 import { withStyles } from 'material-ui/styles';
@@ -484,6 +487,7 @@ class AccountCreation extends Component {
     await this.addPinToKeyChain()
     await this.generateStellarWallet()
     await this.encryptSecretKey()
+    await this.fundWallet()
     await this.addWalletToDB()
   }
 
@@ -522,6 +526,11 @@ class AccountCreation extends Component {
     })
   }
 
+  //5. Fund user account (Development Purposes only)
+  async fundWallet() {
+    await fundAccount(this.state.wallet.publicKey)
+  }
+
   //7. Add user account
   async addWalletToDB() {
     const { wallet } = this.state
@@ -532,10 +541,6 @@ class AccountCreation extends Component {
     })
   }
 
-  //5. Fund user account (Development Purposes only)
-  fundWallet() {
-
-  }
   //endregion
 
   //Re-usable components - TODO - put them in their own class....but for now this will do.
