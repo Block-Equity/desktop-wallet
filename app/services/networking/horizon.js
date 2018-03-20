@@ -89,6 +89,7 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
             // Because Stellar allows transaction in many currencies, you must
             // specify the asset type. The special "native" asset represents Lumens.
             asset: StellarSdk.Asset.native(),
+            amount: amount.toString()
           }))
           // A memo allows you to add your own metadata to a transaction. It's
           // optional and does not affect how Stellar treats the transaction.
