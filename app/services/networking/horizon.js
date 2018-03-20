@@ -116,14 +116,15 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
   })
 }
 
-export const createDestinationAccount = ({ decryptSK, publicKey, destination, amount }) => {
+export const createDestinationAccount = ({ decryptSK, publicKey, destination, amount, sequence }) => {
+  console.log(`SK: ${decryptSK} || PK: ${publicKey} || Destination: ${destination} || Amount: ${amount} || Sequence: ${sequence}`)
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var transaction
   return new Promise((resolve, reject) => {
     server.loadAccount(publicKey)
     .then(sourceAccount => {
+      sourceAccount.incrementSequenceNumber()
       transaction = new StellarSdk.TransactionBuilder(sourceAccount)
-
         .addOperation(StellarSdk.Operation.createAccount({
           destination: destination,
           startingBalance: amount.toString()

@@ -3,7 +3,8 @@ import * as encryption from '../services/security/encryption'
 
 import {
   DATABASE_PATH,
-  DOCUMENT_TYPE_USER_INFO
+  DOCUMENT_TYPE_USER_INFO,
+  APP_VERSION
 } from './constants'
 
 let db = null
@@ -28,7 +29,8 @@ export const databaseExists = async () => {
         console.log('Document exists')
         resolve({
           exists: true,
-          pin: doc.pin
+          pin: doc.pin,
+          appVersion: doc.appVersion
         })
       }
     })
@@ -49,7 +51,7 @@ export const initialize = async () => {
 
       if (!doc) {
         console.log('Create New Document')
-        const newDoc = { type: DOCUMENT_TYPE_USER_INFO, accounts: {}, pin: '' }
+        const newDoc = { type: DOCUMENT_TYPE_USER_INFO, accounts: {}, pin: '', appVersion: APP_VERSION }
         db.insert(newDoc, (err, newDocument) => {
           if (err) {
             reject(err)
@@ -143,7 +145,8 @@ export const updateUserAccount = ({ publicKey, secretKey, balance, sequence }) =
     sequence
   }
   return new Promise((resolve, reject) => {
-    db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: { [publicKey]: updatedAccount } } }, { returnUpdatedDocs: true, multi: false }, (err, numReplaced, affectedDocuments) => {
+    db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: { [publicKey]: updatedAccount } } },
+      { returnUpdatedDocs: true, multi: false }, (err, numReplaced, affectedDocuments) => {
       if (err) {
         reject(err)
         return
@@ -175,7 +178,7 @@ export const getTransactionSequence = () => {
 
 export const clearAllUserInfo = () => {
   return new Promise((resolve, reject) => {
-    db.remove({}, { multi: true }, (err, numRemoved) => {
+    db.remove({ }, { multi: true }, (err, numRemoved) => {
       if (err) {
         reject(err)
         return

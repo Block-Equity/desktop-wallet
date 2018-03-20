@@ -4,7 +4,11 @@ import { Redirect } from 'react-router'
 import { connect } from 'react-redux'
 
 import { getPassword } from '../../services/authentication/keychain'
-import { databaseExists } from '../../db'
+import { databaseExists, clearAllUserInfo } from '../../db'
+
+import {
+  APP_VERSION
+} from '../../db/constants'
 
 import {
   Container,
@@ -38,12 +42,21 @@ class Launch extends Component {
 
   async componentDidMount () {
     try {
-      const { exists } = await databaseExists()
+      const { exists, appVersion } = await databaseExists()
+      console.log(`DB Data || Exists: ${exists} || Version: ${appVersion}`)
       if (exists) {
-        this.setState({
-          databaseExists: exists,
-          authenticated: exists
-        })
+        if (appVersion === APP_VERSION) {
+          this.setState({
+            databaseExists: true,
+            authenticated: true
+          })
+        } else {
+          await clearAllUserInfo()
+          this.setState({
+            databaseExists: false,
+            authenticated: false
+          })
+        }
       }
     } catch (e) {
 

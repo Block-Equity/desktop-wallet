@@ -31,7 +31,7 @@ export function sendPaymentToAddress ({ destination, amount }) {
       })
 
       if (!exists) {
-        await createDestinationAccount({decryptSK, publicKey, destination, amount})
+        await createDestinationAccount({decryptSK, publicKey, destination, amount, sequence})
       }
 
       // 2. Fetch the account details to get the updated balance
