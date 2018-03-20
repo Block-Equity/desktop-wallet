@@ -70,12 +70,14 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
   return new Promise((resolve, reject) => {
     server.loadAccount(destinationId)
       // If the account is not found, then create a transaction for creating an account
-      .then(StellarSdk.NotFoundError, error => {
-        console.log(error)
-        resolve({
-          exists: false,
-          payload: result
-        })
+      .catch(error => {
+        console.log(error.name)
+        if (error.name === 'NotFoundError') {
+          resolve({
+            exists: false,
+            payload: error
+          })
+        }
       })
       // If there was no error, load up-to-date information on your account.
       .then(() => server.loadAccount(publicKey))
@@ -87,7 +89,6 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
             // Because Stellar allows transaction in many currencies, you must
             // specify the asset type. The special "native" asset represents Lumens.
             asset: StellarSdk.Asset.native(),
-            amount: amount
           }))
           // A memo allows you to add your own metadata to a transaction. It's
           // optional and does not affect how Stellar treats the transaction.
@@ -114,27 +115,34 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
   })
 }
 
-export const createDestinationAccount = ({ decryptSK, publicKey, destinationId, amount }) => {
+export const createDestinationAccount = ({ decryptSK, publicKey, destination, amount }) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
+  var transaction
   return new Promise((resolve, reject) => {
-    var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
-    .addOperation(StellarSdk.Operation.createAccount({
-      destination: destinationId,
-      amount: amount
-    }))
-    .build()
-    transaction.sign(sourceKeys)
-    server.submitTransaction(transaction)
-      .then( transactionResult => {
-        console.log(JSON.stringify(transactionResult, null, 2));
-        console.log('\nSuccess! View the transaction at: ');
-        console.log(transactionResult._links.transaction.href);
-        resolve(transactionResult._links.transaction.href)
-      })
-      .catch( err => {
-        console.log('An error has occured:');
-        console.log(err);
-        reject(err)
-      });
+    server.loadAccount(publicKey)
+    .then(sourceAccount => {
+      transaction = new StellarSdk.TransactionBuilder(sourceAccount)
+
+        .addOperation(StellarSdk.Operation.createAccount({
+          destination: destination,
+          startingBalance: amount.toString()
+        }))
+        .build()
+
+        transaction.sign(sourceKeys)
+
+        server.submitTransaction(transaction)
+        .then( transactionResult => {
+          console.log(JSON.stringify(transactionResult, null, 2));
+          console.log('\nSuccess! View the transaction at: ');
+          console.log(transactionResult._links.transaction.href);
+          resolve(transactionResult._links.transaction.href)
+        })
+        .catch( err => {
+          console.log('An error has occured:');
+          console.log(err);
+          reject(err)
+        });
+    })
   })
 }

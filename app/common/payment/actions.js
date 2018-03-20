@@ -31,9 +31,9 @@ export function sendPaymentToAddress ({ destination, amount }) {
       })
 
       console.log(`User exists: ${exists}`)
-
+      console.log(`Formatted Amount: ${amount.toString()}`)
       if (!exists) {
-        await createDestinationAccount({decryptSK, publicKey, destinationId, amount})
+        await createDestinationAccount({decryptSK, publicKey, destination, amount})
       }
 
       // 2. Fetch the account details to get the updated balance
