@@ -56,7 +56,8 @@ class Main extends Component {
     this.state = {
       paymentTransactions: [],
       selectedMenuItem: INITIAL_NAVIGATION_INDEX,
-      snackBarOpen: false
+      snackBarOpen: false,
+      publicKey: ''
     }
   }
 
@@ -70,6 +71,7 @@ class Main extends Component {
         const size = Object.keys(accounts).length
         const currentAccount = accounts[Object.keys(accounts)[size-1]]
         const { pKey: publicKey, sKey: secretKey } = currentAccount
+        this.setState({publicKey: currentAccount.pKey})
         await this.props.setCurrentAccount(currentAccount)
         await this.props.fetchAccountDetails()
         await this.props.fetchPaymentOperationList()
@@ -124,9 +126,10 @@ class Main extends Component {
   //Send Payment Call back
   receiveSendPaymentInfo = (info) => {
     (async () => {
+      var formattedAmount = numeral(info.amount).format('0.0000000')
       await this.props.sendPaymentToAddress({
         destination: info.destination,
-        amount: info.amount
+        amount: formattedAmount
       })
 
       await this.props.fetchAccountDetails()
@@ -181,33 +184,33 @@ class Main extends Component {
     switch(this.state.selectedMenuItem) {
       case navigation.history:
         return (
-          <History paymentTransactions={this.props.paymentTransactions} />
+          <History paymentTransactions={this.props.paymentTransactions} pKey={this.state.publicKey} />
         )
-      break;
+      break
       case navigation.send:
         return (
-          <div style={{width: '50%'}}>
+          <div style={{width: '60%'}}>
             <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } />
           </div>
         )
-      break;
+      break
       case navigation.receive:
         return (
           <div style={{width: '80%'}}>
             <Receive currentAccount={ this.props.currentAccount } />
           </div>
         )
-      break;
+      break
     }
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
   return {
     accounts: getAccounts(state),
     currentAccount: getCurrentAccount(state),
     incomingPayment: getIncomingPayment(state),
-    paymentTransactions: getPaymentTransactions(state)
+    paymentTransactions: getPaymentTransactions(state),
   }
 }
 

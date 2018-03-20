@@ -1,4 +1,4 @@
-import { sendPayment, getPaymentOperationList, receivePaymentStream } from '../../services/networking/horizon'
+import { sendPayment, getPaymentOperationList, receivePaymentStream, createDestinationAccount } from '../../services/networking/horizon'
 import { fetchAccountDetails, setCurrentAccount } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
 import * as Types from './types'
@@ -16,19 +16,23 @@ export function sendPaymentToAddress ({ destination, amount }) {
     } = currentAccount
 
     const { pin } = await getUserPIN()
-    const decryptSK = encryption.decryptText(secretKey, pin)
+    const decryptSK = await encryption.decryptText(secretKey, pin)
 
     dispatch(paymentSendRequest())
 
     try {
       // 1. Start the payment process
-      await sendPayment({
+      const { exists } = await sendPayment({
         publicKey,
         decryptSK,
         sequence,
         destinationId: destination,
         amount
       })
+
+      if (!exists) {
+        await createDestinationAccount({decryptSK, publicKey, destination, amount})
+      }
 
       // 2. Fetch the account details to get the updated balance
       await dispatch(fetchAccountDetails())

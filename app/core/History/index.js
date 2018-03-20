@@ -37,26 +37,49 @@ const tableRowStyle = {
   color: '#111111'
 }
 
+const TRANSACTION_TYPE = {
+  Payment: 'payment',
+  CreateAccount: 'create_account'
+}
+
 class History extends Component {
   renderTableBody() {
     return this.props.paymentTransactions.map(n => {
-      if (n.from !== undefined) {
-        const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow();
-        const formattedDate = moment(n.created_at).format('lll')
-        const displayDate = `${formattedNowTime}${formattedDate}`
-        return (
-          <TableRow key={n.id}>
-            <TableCell style={tableRowStyle}>
-              <div className={styles.tableCellMultiLine}>
-                <div><b>{formattedNowTime}</b></div>
-                <div style={{marginTop: '0.5rem'}}>{formattedDate}</div>
-              </div>
-            </TableCell>
-            <TableCell style={tableRowStyle}>{n.from}</TableCell>
-            <TableCell style={tableRowStyle}>{numeral(n.amount).format('0,0.00')}</TableCell>
-          </TableRow>
-        );
+      const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow();
+      const formattedDate = moment(n.created_at).format('lll')
+      const displayDate = `${formattedNowTime}${formattedDate}`
+      var displayAddress
+      var displayAmount
+      var displayTypeLabel
+      if (n.type === TRANSACTION_TYPE.Payment) {
+        displayAddress = n.from === this.props.pKey ? n.to : n.from
+        displayAmount = n.from === this.props.pKey ? numeral(`-${n.amount}`).format('(0,0.00)') : numeral(n.amount).format('0,0.00')
+        displayTypeLabel = n.from === this.props.pKey ? 'Payment sent' : 'Payment received'
+      } else if (n.type === TRANSACTION_TYPE.CreateAccount) {
+        displayAddress = n.source_account === this.props.pKey ? n.account : n.source_account
+        displayAmount = n.source_account === this.props.pKey ? numeral(`-${n.starting_balance}`).format('(0,0.00)') : numeral(n.starting_balance).format('0,0.00')
+        displayTypeLabel = n.source_account === this.props.pKey ? 'Account created for' : 'Account created by'
+      } else {
+
       }
+
+      return (
+        <TableRow key={n.id}>
+          <TableCell style={tableRowStyle}>
+            <div className={styles.tableCellMultiLine}>
+              <div><b>{formattedNowTime}</b></div>
+              <div style={{marginTop: '0.5rem'}}>{formattedDate}</div>
+            </div>
+          </TableCell>
+          <TableCell style={tableRowStyle}>
+            <div className={styles.tableCellMultiLine}>
+              <div><b>{displayTypeLabel}</b></div>
+              <div style={{marginTop: '0.5rem', fontSize: '0.57rem'}}>{displayAddress}</div>
+            </div>
+          </TableCell>
+          <TableCell style={tableRowStyle}>{ displayAmount }</TableCell>
+        </TableRow>
+      )
     })
   }
 
