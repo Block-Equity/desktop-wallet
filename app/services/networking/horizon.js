@@ -8,11 +8,12 @@ import axios from 'axios'
 // Horizon API Setup
 // TODO: BAD PRACTICE - Secure Server
 Config.setAllowHttp(true)
-StellarSdk.Network.useTestNetwork()
+StellarSdk.Network.usePublicNetwork()
 
 const BASE_URL_TEST_NET = 'http://ec2co-ecsel-1x5ev4f9g6tjf-1450006510.us-east-1.elb.amazonaws.com/'
 const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
-const BASE_URL = BASE_URL_HORIZON_TEST_NET
+const BASE_URL_HORIZON_PUBLIC_NET = 'https://horizon.stellar.org'
+const BASE_URL = BASE_URL_HORIZON_PUBLIC_NET
 const server = new StellarSdk.Server(BASE_URL)
 
 export const fundAccount = (publicKey) => {
@@ -89,6 +90,7 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
             // Because Stellar allows transaction in many currencies, you must
             // specify the asset type. The special "native" asset represents Lumens.
             asset: StellarSdk.Asset.native(),
+            amount: amount.toString()
           }))
           // A memo allows you to add your own metadata to a transaction. It's
           // optional and does not affect how Stellar treats the transaction.
@@ -115,14 +117,15 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
   })
 }
 
-export const createDestinationAccount = ({ decryptSK, publicKey, destination, amount }) => {
+export const createDestinationAccount = ({ decryptSK, publicKey, destination, amount, sequence }) => {
+  console.log(`SK: ${decryptSK} || PK: ${publicKey} || Destination: ${destination} || Amount: ${amount} || Sequence: ${sequence}`)
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var transaction
   return new Promise((resolve, reject) => {
     server.loadAccount(publicKey)
     .then(sourceAccount => {
+      sourceAccount.incrementSequenceNumber()
       transaction = new StellarSdk.TransactionBuilder(sourceAccount)
-
         .addOperation(StellarSdk.Operation.createAccount({
           destination: destination,
           startingBalance: amount.toString()

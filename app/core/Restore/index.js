@@ -414,7 +414,6 @@ class Restore extends Component {
     await this.initializeDatabase()
     await this.addPinToKeyChain()
     await this.encryptSecretKey()
-    await this.fundWallet()
     await this.addWalletToDB()
   }
 
@@ -464,11 +463,11 @@ class Restore extends Component {
   //Form submission
   handleSubmit(event) {
     event.preventDefault()
-    console.log(`Submitted Mnemonic: ${this.state.mnemonicInput}`)
     const { valid, error } = mnemonic.validSeed(this.state.mnemonicInput)
     if (valid) {
       try {
-        const wallet = accountCreation.createWallet(this.state.mnemonicInput,
+        const phrase = this.state.mnemonicInput.trim() //important! spaces can lead to different key pairs
+        const wallet = accountCreation.createWallet(phrase,
           this.state.passphraseValue, 0)
         console.log(`Wallet Keys: ${JSON.stringify(wallet)}`)
         this.setState({
@@ -479,7 +478,7 @@ class Restore extends Component {
           currentStage: accountRestoreStages.pin.key
         })
       } catch(error) {
-        this.showValidationErrorMessage( 'Incorrect Mnemonic Phrase. Please try again.')
+        this.showValidationErrorMessage('Incorrect Mnemonic Phrase. Please try again.')
         this.setState({
           mnemonicInputLength: 0
         })
