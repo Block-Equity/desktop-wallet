@@ -28,7 +28,7 @@ class Receive extends Component {
     return (
       <div id={ styles.receiveContainer }>
         <Paper style={qrContainer} elevation={4} >
-          <QRCode value={ address } size={ QR_CODE_CONTAINER_SIZE } fgColor={'#1E8BBA'} />
+          <QRCode value={ address } size={ QR_CODE_CONTAINER_SIZE } fgColor={'#0153B6'} />
         </Paper>
         <div className={ styles.addressLabelContainer }>
           <label className={ styles.addressLabelHeader }>YOUR WALLET ADDRESS</label>

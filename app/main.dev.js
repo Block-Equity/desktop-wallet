@@ -59,12 +59,18 @@ app.on('ready', async () => {
     await installExtensions()
   }
 
+  const path = require('path')
+
   mainWindow = new BrowserWindow({
     show: false,
     width: 800,
-    height: 728,
-    resizable: true
+    height: 700,
+    resizable: false,
+    titleBarStyle: 'hiddenInset',
+    frame: false
   })
+
+  mainWindow.setContentProtection(true)
 
   mainWindow.loadURL(`file://${__dirname}/app.html`)
 

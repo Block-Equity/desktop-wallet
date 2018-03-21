@@ -16,7 +16,7 @@ used with styled componets but right now it only supports Bootstrap 3.
   flex-direction: column;
   align-items: center;
   width: 100%;
-  background-image: linear-gradient(to top, #1E8BBA 0%, #0A5582 100%);
+  background-image: linear-gradient(to top, #0153B6 0%, #07237A 100%);
 }
 
 .mainPageHeaderLogo {
@@ -72,4 +72,5 @@ used with styled componets but right now it only supports Bootstrap 3.
   width: 100%;
   max-height: 700px;
   margin-bottom: 1rem;
+  -webkit-app-region: no-drag;
 }

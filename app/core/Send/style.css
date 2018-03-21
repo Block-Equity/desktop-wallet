@@ -9,3 +9,8 @@
 .sendAssetFormDisplayErrors input:invalid {
   border-color: #f73772;
 }
+
+.sendButton {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}

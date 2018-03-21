@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import styles from './style.css'
+import { CircularProgress } from 'material-ui/Progress'
 
 class Send extends Component {
 
@@ -41,7 +42,7 @@ class Send extends Component {
             <input type='text' className={formStyle} placeholder='Amount in XLM'
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
-          <button className='btn btn-outline-success' type='submit'>Send</button>
+          <button className='btn btn-outline-primary sendButton' type='submit' style={{paddingLeft: '3rem', paddingRight: '3rem'}}>Send</button>
         </form>
       </div>
     )

@@ -17,7 +17,7 @@
 }
 
 #receiveContainer a {
-  color: #1E8BBA;
+  color: #0153B6;
   margin-top: 0.75rem;
   font-size: 0.75rem;
   letter-spacing: 0.02rem;
@@ -25,7 +25,7 @@
 }
 
 #receiveContainer a:hover {
-  color: #1E8BBA;
+  color: #0153B6;
   text-decoration: underline;
 }
 
