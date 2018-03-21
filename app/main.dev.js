@@ -70,7 +70,7 @@ app.on('ready', async () => {
     frame: false
   })
 
-  mainWindow.setContentProtection(true)
+  //mainWindow.setContentProtection(true)
 
   mainWindow.loadURL(`file://${__dirname}/app.html`)
 

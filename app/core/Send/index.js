@@ -42,10 +42,38 @@ class Send extends Component {
             <input type='text' className={formStyle} placeholder='Amount in XLM'
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
-          <button className='btn btn-outline-primary sendButton' type='submit' style={{paddingLeft: '3rem', paddingRight: '3rem'}}>Send</button>
+          { this.renderSendButtonContent() }
         </form>
       </div>
     )
+  }
+
+  renderSendButtonContent() {
+    const renderNormalButton = (
+      <div className={styles.sendButtonContainer}>
+        <button className='btn btn-outline-primary sendButton'
+                  type='submit'
+                  style={{paddingLeft: '3rem', paddingRight: '3rem'}}
+                  id="load"> Send
+        </button>
+      </div>
+    )
+    const renderLoadingButton = (
+      <div className={styles.sendButtonContainer}>
+        <button className='btn btn-outline-primary sendButton'
+                  type='submit'
+                  style={{paddingLeft: '3rem', paddingRight: '3rem'}}
+                  id="load" disabled>
+                  <i className='fa fa-spinner fa-spin' style={{marginRight: '0.3rem'}}></i>  Sending
+        </button>
+      </div>
+    )
+
+    if (this.props.paymentSending) {
+      return renderLoadingButton
+    } else {
+      return renderNormalButton
+    }
   }
 
   handleChange (event) {

@@ -57,7 +57,9 @@ class Main extends Component {
       paymentTransactions: [],
       selectedMenuItem: INITIAL_NAVIGATION_INDEX,
       snackBarOpen: false,
-      publicKey: ''
+      publicKey: '',
+      paymentSending: false,
+      paymentFailed: false
     }
   }
 
@@ -143,7 +145,7 @@ class Main extends Component {
       })
     })().catch(err => {
         console.error(err);
-    });
+    })
   }
 
   renderSnackBar() {
@@ -190,7 +192,7 @@ class Main extends Component {
       case navigation.send:
         return (
           <div style={{width: '60%'}}>
-            <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } />
+            <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } paymentSending={ this.state.paymentSending } />
           </div>
         )
       break
@@ -211,6 +213,8 @@ const mapStateToProps = (state, ownProps) => {
     currentAccount: getCurrentAccount(state),
     incomingPayment: getIncomingPayment(state),
     paymentTransactions: getPaymentTransactions(state),
+    paymentSending: state.isSending,
+    paymentFailed: state.paymentFailed
   }
 }
 
