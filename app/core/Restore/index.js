@@ -463,7 +463,6 @@ class Restore extends Component {
   //Form submission
   handleSubmit(event) {
     event.preventDefault()
-    console.log(`Submitted Mnemonic: ${this.state.mnemonicInput}`)
     const { valid, error } = mnemonic.validSeed(this.state.mnemonicInput)
     if (valid) {
       try {
@@ -479,7 +478,7 @@ class Restore extends Component {
           currentStage: accountRestoreStages.pin.key
         })
       } catch(error) {
-        this.showValidationErrorMessage( 'Incorrect Mnemonic Phrase. Please try again.')
+        this.showValidationErrorMessage('Incorrect Mnemonic Phrase. Please try again.')
         this.setState({
           mnemonicInputLength: 0
         })
