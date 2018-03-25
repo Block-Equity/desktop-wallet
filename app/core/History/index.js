@@ -12,13 +12,13 @@ const font = "'Lato', sans-serif";
 
 const materialStyles = theme => ({
   root: {
-    width: '70%',
+    width: '100%',
     height: '90%',
     marginTop: theme.spacing.unit * 2,
     overflowY: undefined
   },
   table: {
-    minWidth: 850
+    minWidth: '100%'
   }
 })
 
@@ -85,7 +85,7 @@ class History extends Component {
 
   render() {
     return (
-      <Paper className={materialStyles.root}>
+      <Paper className={materialStyles.root} style={{width: 'inherit'}}>
         <Table className={materialStyles.table}>
           <TableHead>
             <TableRow>

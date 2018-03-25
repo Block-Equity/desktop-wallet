@@ -95,7 +95,7 @@ class Main extends Component {
       <div className={styles.mainPageContainer}>
         <div className={styles.mainPageContentContainer}>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
-          <div style={{width: '50%'}}>
+          <div style={{width: '100%'}}>
             <Tabs selectedItem={this.selectedItem}/>
           </div>
           <div className={styles.mainPageComponentContainer}>
