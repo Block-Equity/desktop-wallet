@@ -44,7 +44,7 @@ class Receive extends Component {
     this.setState({copyLabelText:'Copied!'});
     setTimeout(function(){
       this.setState({copyLabelText:'Copy public Address'});
-    }.bind(this), 2000);
+    }.bind(this), 1500);
   }
 
 }

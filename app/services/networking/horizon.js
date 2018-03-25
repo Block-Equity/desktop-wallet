@@ -10,10 +10,11 @@ import axios from 'axios'
 Config.setAllowHttp(true)
 StellarSdk.Network.usePublicNetwork()
 
-const BASE_URL_TEST_NET = 'http://ec2co-ecsel-1x5ev4f9g6tjf-1450006510.us-east-1.elb.amazonaws.com/'
+const BASE_URL_TEST_NET = 'https://stellar-testnet.blockeq.com/'
 const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
+//const BASE_URL_HORIZON_PUBLIC_NET = 'https://stellar-pubnet.blockeq.com/'
 const BASE_URL_HORIZON_PUBLIC_NET = 'https://horizon.stellar.org'
-const BASE_URL = BASE_URL_HORIZON_PUBLIC_NET
+const BASE_URL = BASE_URL_HORIZON_TEST_NET
 const server = new StellarSdk.Server(BASE_URL)
 
 export const fundAccount = (publicKey) => {
@@ -83,7 +84,8 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
       // If there was no error, load up-to-date information on your account.
       .then(() => server.loadAccount(publicKey))
       .then(sourceAccount => {
-        // Start building the transaction.
+        sourceAccount.incrementSequenceNumber()
+        console.log(`Next Sequence: ${sourceAccount.sequenceNumber()}`)
         transaction = new StellarSdk.TransactionBuilder(sourceAccount)
           .addOperation(StellarSdk.Operation.payment({
             destination: destinationId,

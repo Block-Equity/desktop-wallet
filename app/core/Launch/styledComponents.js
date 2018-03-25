@@ -36,3 +36,10 @@ export const CreationButton = styled.button`
   margin-top: 1rem;
   width: 20rem;
 `
+
+export const LoaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`

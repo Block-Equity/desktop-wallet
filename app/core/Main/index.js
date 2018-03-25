@@ -192,7 +192,7 @@ class Main extends Component {
       case navigation.send:
         return (
           <div style={{width: '60%'}}>
-            <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } paymentSending={ this.state.paymentSending } />
+            <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } paymentSending={ this.props.paymentSending } />
           </div>
         )
       break
@@ -213,8 +213,8 @@ const mapStateToProps = (state, ownProps) => {
     currentAccount: getCurrentAccount(state),
     incomingPayment: getIncomingPayment(state),
     paymentTransactions: getPaymentTransactions(state),
-    paymentSending: state.isSending,
-    paymentFailed: state.paymentFailed
+    paymentSending: state.payment.isSending,
+    paymentFailed: state.payment.paymentFailed
   }
 }
 

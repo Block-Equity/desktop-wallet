@@ -51,20 +51,22 @@ class Send extends Component {
   renderSendButtonContent() {
     const renderNormalButton = (
       <div className={styles.sendButtonContainer}>
-        <button className='btn btn-outline-primary sendButton'
+        <button className='btn btn-outline-primary'
                   type='submit'
                   style={{paddingLeft: '3rem', paddingRight: '3rem'}}
-                  id="load"> Send
+                  id="load">
+                  Send
         </button>
       </div>
     )
     const renderLoadingButton = (
       <div className={styles.sendButtonContainer}>
-        <button className='btn btn-outline-primary sendButton'
+        <button className='btn btn-primary'
                   type='submit'
-                  style={{paddingLeft: '3rem', paddingRight: '3rem'}}
+                  style={{paddingLeft: '2rem', paddingRight: '2rem'}}
                   id="load" disabled>
-                  <i className='fa fa-spinner fa-spin' style={{marginRight: '0.3rem'}}></i>  Sending
+                  <i className='fa fa-spinner fa-spin' style={{marginRight: '0.3rem'}}></i>
+                  Sending
         </button>
       </div>
     )
