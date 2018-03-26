@@ -8,13 +8,13 @@ import axios from 'axios'
 // Horizon API Setup
 // TODO: BAD PRACTICE - Secure Server
 Config.setAllowHttp(true)
-StellarSdk.Network.useTestNetwork()
+StellarSdk.Network.usePublicNetwork()
 
 const BASE_URL_TEST_NET = 'https://stellar-testnet.blockeq.com/'
 const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
 //const BASE_URL_HORIZON_PUBLIC_NET = 'https://stellar-pubnet.blockeq.com/'
 const BASE_URL_HORIZON_PUBLIC_NET = 'https://horizon.stellar.org'
-const BASE_URL = BASE_URL_HORIZON_TEST_NET
+const BASE_URL = BASE_URL_HORIZON_PUBLIC_NET
 const server = new StellarSdk.Server(BASE_URL)
 
 export const fundAccount = (publicKey) => {
