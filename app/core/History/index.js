@@ -85,7 +85,7 @@ class History extends Component {
 
   render() {
     return (
-      <Paper className={materialStyles.root} style={{width: 'inherit'}}>
+      <Paper className={materialStyles.root} style={{width: 'inherit', height: '28rem', overflowY:'scroll'}}>
         <Table className={materialStyles.table}>
           <TableHead>
             <TableRow>
