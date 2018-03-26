@@ -90,8 +90,8 @@ class History extends Component {
           <TableHead>
             <TableRow>
               <TableCell style={tableHeaderStyle}>Date</TableCell>
-              <TableCell style={tableHeaderStyle}>Address</TableCell>
-              <TableCell numeric style={tableHeaderStyle}>Amount</TableCell>
+              <TableCell style={tableHeaderStyle}>Description</TableCell>
+              <TableCell style={tableHeaderStyle}>Amount</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

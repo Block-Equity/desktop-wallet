@@ -27,7 +27,15 @@ class Navigation extends Component {
   constructor (props) {
     super()
     this.state = {
-      itemSelected: 0
+      itemSelected: props.setItem
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.setItem !== this.props.setItem) {
+      this.setState ({
+        itemSelected: nextProps.setItem
+      })
     }
   }
 
@@ -38,8 +46,8 @@ class Navigation extends Component {
         <Tabs
           value={this.state.itemSelected}
           onChange={this.handleChange}
-          indicatorColor='#0153B6'
-          textColor='#0153B6'
+          indicatorColor='primary'
+          textColor='primary'
           style={{ paddingLeft: '2rem'}}
           centered>
           { this.renderTabItems() }

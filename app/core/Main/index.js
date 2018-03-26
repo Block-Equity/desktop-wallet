@@ -96,7 +96,7 @@ class Main extends Component {
         <div className={styles.mainPageContentContainer}>
           { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
           <div style={{width: '100%'}}>
-            <Tabs selectedItem={this.selectedItem}/>
+            <Tabs selectedItem={this.selectedItem} setItem={this.state.selectedMenuItem}/>
           </div>
           <div className={styles.mainPageComponentContainer}>
             { this.renderContent() }
@@ -138,10 +138,10 @@ class Main extends Component {
       await this.props.fetchPaymentOperationList()
 
       this.setState({
+        selectedMenuItem: INITIAL_NAVIGATION_INDEX,
         sendAmount: '',
         sendAddress: '',
-        snackBarOpen: true,
-        selectedMenuItem: INITIAL_NAVIGATION_INDEX
+        snackBarOpen: true
       })
     })().catch(err => {
         console.error(err);

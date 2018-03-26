@@ -8,7 +8,7 @@ import axios from 'axios'
 // Horizon API Setup
 // TODO: BAD PRACTICE - Secure Server
 Config.setAllowHttp(true)
-StellarSdk.Network.usePublicNetwork()
+StellarSdk.Network.useTestNetwork()
 
 const BASE_URL_TEST_NET = 'https://stellar-testnet.blockeq.com/'
 const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
@@ -84,7 +84,7 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
       // If there was no error, load up-to-date information on your account.
       .then(() => server.loadAccount(publicKey))
       .then(sourceAccount => {
-        sourceAccount.incrementSequenceNumber()
+        //sourceAccount.incrementSequenceNumber()
         console.log(`Next Sequence: ${sourceAccount.sequenceNumber()}`)
         transaction = new StellarSdk.TransactionBuilder(sourceAccount)
           .addOperation(StellarSdk.Operation.payment({
