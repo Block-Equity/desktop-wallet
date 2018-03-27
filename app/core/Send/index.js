@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
+import HoverObserver from 'react-hover-observer'
 import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
+import Tooltip from 'material-ui/Tooltip'
 
 class Send extends Component {
 
@@ -9,6 +11,7 @@ class Send extends Component {
     this.state = {
       sendAddress: '',
       sendAmount: '',
+      sendMemoID: '',
       displayErrors: false
     }
     this.handleChange = this.handleChange.bind(this)
@@ -30,16 +33,26 @@ class Send extends Component {
     }
 
     return (
-      <div className={styles.sendAssetFormContainer}>
+      <div id={styles.sendAssetFormContainer}>
         <form id='sendAssetForm' onSubmit={this.handleSubmit}>
           <div className='form-group'>
-            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>Send to address: </label>
+            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>Send to address </label>
             <input type='text' className={formStyle} placeholder='Send Address'
               id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
           </div>
           <div className='form-group'>
-            <label className={styles.sendAssetFormLabel} htmlFor='sendAmount'>Amount in XLM: </label>
-            <input type='text' className={formStyle} placeholder='Amount in XLM'
+            <label className={styles.sendAssetFormLabel} htmlFor='sendMemoID'>
+              Memo ID (optional)
+              <Tooltip id="tooltip-right-start" title="Memo id is required by certain exchanges to transfer funds." placement="right-start">
+                 <i className="fa fa-info-circle" style={{marginLeft: '0.25rem'}}> </i>
+              </Tooltip>
+            </label>
+            <input type='number' className={formStyle} placeholder='Memo ID'
+              id='sendMemoID' name='sendMemoID' value={this.state.sendMemoID} onChange={this.handleChange} />
+          </div>
+          <div className='form-group'>
+            <label className={styles.sendAssetFormLabel} htmlFor='sendAmount'>Amount in XLM </label>
+            <input type='number' className={formStyle} placeholder='Amount in XLM'
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
           { this.renderSendButtonContent() }
@@ -51,19 +64,20 @@ class Send extends Component {
   renderSendButtonContent() {
     const renderNormalButton = (
       <div className={styles.sendButtonContainer}>
-        <button className='btn btn-outline-primary'
+        <button className='btn btn-primary'
                   type='submit'
-                  style={{paddingLeft: '3rem', paddingRight: '3rem'}}
+                  style={{width: 'inherit', height: '3rem'}}
                   id="load">
                   Send
         </button>
       </div>
     )
+
     const renderLoadingButton = (
       <div className={styles.sendButtonContainer}>
         <button className='btn btn-primary'
                   type='submit'
-                  style={{paddingLeft: '2rem', paddingRight: '2rem'}}
+                  style={{width: 'inherit', height: '3rem'}}
                   id="load" disabled>
                   <i className='fa fa-spinner fa-spin' style={{marginRight: '0.3rem'}}></i>
                   Sending
@@ -101,7 +115,8 @@ class Send extends Component {
     //Callback to the parent component
     const info = {
       destination: this.state.sendAddress,
-      amount: this.state.sendAmount
+      amount: this.state.sendAmount,
+      memoId: this.state.sendMemoID
     }
 
     this.props.receiveSendPaymentInfo(info)

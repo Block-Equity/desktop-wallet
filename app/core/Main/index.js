@@ -29,6 +29,7 @@ import History from '../History'
 import Tabs from '../Tabs'
 import Receive from '../Receive'
 import Send from '../Send'
+import Settings from '../Settings'
 import Alert from '../Alert'
 import * as alertTypes from '../Alert/types'
 
@@ -42,9 +43,13 @@ import logoIcon from '../Launch/logo-white.png'
 
 import styles from './style.css';
 
-import { withStyles } from 'material-ui/styles';
-import Button from 'material-ui/Button';
-import Snackbar from 'material-ui/Snackbar';
+import { withStyles } from 'material-ui/styles'
+import Button from 'material-ui/Button'
+import Snackbar from 'material-ui/Snackbar'
+import Drawer from 'material-ui/Drawer'
+import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import ListSubheader from 'material-ui/List/ListSubheader'
+import Divider from 'material-ui/Divider'
 
 const navigation = { history: 0, send: 1, receive: 2 }
 const INITIAL_NAVIGATION_INDEX = navigation.history;
@@ -59,8 +64,10 @@ class Main extends Component {
       snackBarOpen: false,
       publicKey: '',
       paymentSending: false,
-      paymentFailed: false
+      paymentFailed: false,
+      settingsOpen: false
     }
+    this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
   }
 
   async componentDidMount () {
@@ -102,6 +109,7 @@ class Main extends Component {
             { this.renderContent() }
           </div>
           { this.renderSnackBar() }
+          <Settings setOpen={this.toggleSettingsDrawer(!this.state.settingsOpen)} open={this.state.settingsOpen}/>
         </div>
       </div>
     )
@@ -111,11 +119,20 @@ class Main extends Component {
     const balance = this.props.currentAccount.balance.balance
     return (
       <div className={styles.mainPageHeaderContainer}>
+        <div id={styles.mainPageSettingsContainer}>
+          <a onClick={this.toggleSettingsDrawer(true)}><i className="fa fa-cog"></i></a>
+        </div>
         <img className={styles.mainPageHeaderLogo} src={logoIcon} alt=''></img>
         <div className={styles.mainPageHeaderBalanceTitle}> YOUR CURRENT XLM BALANCE </div>
         <div className={styles.mainPageHeaderBalanceLabel}><b> {numeral(balance).format('0,0.00')} </b> </div>
       </div>
     )
+  }
+
+  toggleSettingsDrawer = (open) => () => {
+    this.setState({
+      settingsOpen: open
+    })
   }
 
   //Tab Selection Callback from Tabs component
@@ -131,7 +148,8 @@ class Main extends Component {
       var formattedAmount = numeral(info.amount).format('0.0000000')
       await this.props.sendPaymentToAddress({
         destination: info.destination,
-        amount: formattedAmount
+        amount: formattedAmount,
+        memoID: info.memoId
       })
 
       await this.props.fetchAccountDetails()

@@ -24,7 +24,7 @@ const materialStyles = theme => ({
 
 const tableHeaderStyle = {
   fontFamily: font,
-  backgroundColor: '#EFF5F9',
+  backgroundColor: '#F7F7F7',
   color: '#777777',
   fontSize: '0.8rem',
   fontWeight: '400'
@@ -59,8 +59,6 @@ class History extends Component {
         displayAddress = n.source_account === this.props.pKey ? n.account : n.source_account
         displayAmount = n.source_account === this.props.pKey ? numeral(`-${n.starting_balance}`).format('(0,0.00)') : numeral(n.starting_balance).format('0,0.00')
         displayTypeLabel = n.source_account === this.props.pKey ? 'Account created for' : 'Account created by'
-      } else {
-
       }
 
       return (
@@ -85,7 +83,7 @@ class History extends Component {
 
   render() {
     return (
-      <Paper className={materialStyles.root} style={{width: 'inherit', height: '28rem', overflowY:'scroll'}}>
+      <Paper className={materialStyles.root} style={{width: 'inherit', height: '29rem', overflowY:'scroll'}}>
         <Table className={materialStyles.table}>
           <TableHead>
             <TableRow>

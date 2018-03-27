@@ -493,10 +493,12 @@ class Restore extends Component {
 
   handleChange(event) {
     event.preventDefault()
-
     const target = event.target
-    const value = target.value
     const name = target.name
+    var value = target.value
+    if (name==='pinValue') {
+      value = value.replace(/[^0-9]/g,'')
+    }
 
     switch (this.state.currentStage) {
       case accountRestoreStages.mnemonic.key:

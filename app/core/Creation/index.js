@@ -555,10 +555,12 @@ class AccountCreation extends Component {
 
   handleChange (event) {
     const target = event.target
-    const value = target.value
     const name = target.name
+    var value = target.value
+    if (name==='pinValue') {
+      value = value.replace(/[^0-9]/g,'')
+    }
     console.log(`Text Change || ${value}`)
-    console.log(`Validation Value || ${this.state.validationValue.label}`)
     this.setState({
       [name]: value
     })

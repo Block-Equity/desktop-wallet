@@ -1,10 +1,20 @@
-.sendAssetFormContainer {
+#sendAssetFormContainer {
   padding-bottom: 2rem;
-  margin-top: 3rem;
+  margin-top: 1.5rem;
+}
+
+#sendAssetFormContainer input:focus {
+  box-shadow: none;
+}
+
+#sendAssetFormContainer input::placeholder {
+  color: #C7C7C7;
+  font-size: 0.85rem;
 }
 
 .sendAssetFormLabel {
-  color: #000000;
+  color: #777777;
+  font-size: 0.8rem;
 }
 
 .sendAssetFormDisplayErrors input:invalid {

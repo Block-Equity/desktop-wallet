@@ -5,7 +5,7 @@ import * as Types from './types'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
 
-export function sendPaymentToAddress ({ destination, amount }) {
+export function sendPaymentToAddress ({ destination, amount, memoID }) {
   return async (dispatch, getState) => {
     let currentAccount = getCurrentAccount(getState())
 
@@ -27,7 +27,8 @@ export function sendPaymentToAddress ({ destination, amount }) {
         decryptSK,
         sequence,
         destinationId: destination,
-        amount
+        amount,
+        memoID
       })
 
       if (!exists) {

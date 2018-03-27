@@ -14,7 +14,7 @@ const materialStyles = theme => ({
     marginTop: theme.spacing.unit * 3,
     width: '100%',
   },
-});
+})
 
 const navigation = [
   {title: 'HISTORY'},
@@ -39,7 +39,7 @@ class Navigation extends Component {
     }
   }
 
-  renderTabs() {
+  renderTabs () {
     return (
       <Paper className={materialStyles.root} elevation={0} style={{borderRadius:'0'}}>
         <Divider />
@@ -92,4 +92,4 @@ class Navigation extends Component {
 
 }
 
-export default Navigation;
+export default Navigation
