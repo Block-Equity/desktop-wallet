@@ -65,6 +65,7 @@ class Main extends Component {
       publicKey: '',
       paymentSending: false,
       paymentFailed: false,
+      userAccountDetailFailed: true,
       settingsOpen: false
     }
     this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
@@ -83,6 +84,22 @@ class Main extends Component {
         this.setState({publicKey: currentAccount.pKey})
         await this.props.setCurrentAccount(currentAccount)
         await this.props.fetchAccountDetails()
+      }
+    } catch (e) {
+      console.log(e)
+      // TODO: display something on the UI
+    }
+  }
+
+  async componentWillUpdate(nextProps) {
+    if (nextProps.userAccountDetailFailed !== this.props.userAccountDetailFailed) {
+      if (nextProps.userAccountDetailFailed) {
+        var self = this;
+        this.pollUserAccount = setInterval(function() {
+          self.props.fetchAccountDetails()
+        }, 5000);
+      } else {
+        clearInterval(this.pollUserAccount)
         await this.props.fetchPaymentOperationList()
         await this.props.streamPayments()
         if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
@@ -91,9 +108,6 @@ class Main extends Component {
           )
         }
       }
-    } catch (e) {
-      console.log(e)
-      // TODO: display something on the UI
     }
   }
 
@@ -232,7 +246,8 @@ const mapStateToProps = (state, ownProps) => {
     incomingPayment: getIncomingPayment(state),
     paymentTransactions: getPaymentTransactions(state),
     paymentSending: state.payment.isSending,
-    paymentFailed: state.payment.paymentFailed
+    paymentFailed: state.payment.paymentFailed,
+    userAccountDetailFailed: state.account.fetchingFailed
   }
 }
 

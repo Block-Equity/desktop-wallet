@@ -487,7 +487,7 @@ class AccountCreation extends Component {
     await this.addPinToKeyChain()
     await this.generateStellarWallet()
     await this.encryptSecretKey()
-    await this.fundWallet()
+    //await this.fundWallet()
     await this.addWalletToDB()
   }
 

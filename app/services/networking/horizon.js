@@ -27,6 +27,7 @@ export const getAccountDetail = async (publicKey) => {
   // Just in case loading the account fails to retrieve the balances, immediately throw
   // an exception
   if (!account.balances.length) {
+    console.log('Account does not exist')
     throw new Error('Unable to retrieve balance')
   }
 

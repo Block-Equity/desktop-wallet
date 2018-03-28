@@ -84,7 +84,8 @@ function accountDetailsRequest (state) {
 function accountDetailsSuccess (state) {
   return {
     ...state,
-    isFetching: false
+    isFetching: false,
+    fetchingFailed: false
   }
 }
 
@@ -92,6 +93,7 @@ function accountDetailsFailure (state, error) {
   return {
     ...state,
     isFetching: false,
+    fetchingFailed: true,
     error
   }
 }

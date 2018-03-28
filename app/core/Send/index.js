@@ -47,7 +47,7 @@ class Send extends Component {
                  <i className="fa fa-info-circle" style={{marginLeft: '0.25rem'}}> </i>
               </Tooltip>
             </label>
-            <input type='number' className={formStyle} placeholder='Memo ID'
+            <input type='text' className={formStyle} placeholder='Memo ID'
               id='sendMemoID' name='sendMemoID' value={this.state.sendMemoID} onChange={this.handleChange} />
           </div>
           <div className='form-group'>

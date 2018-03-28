@@ -31,7 +31,16 @@ const listHeaderStyle = {
   fontFamily: font,
   color: '#777777',
   fontSize: '0.7rem',
-  fontWeight: '400'
+  fontWeight: '700',
+  letterSpacing: '0.1rem'
+}
+
+const listItemStyle = {
+  fontFamily: font,
+  color: '#222222',
+  fontSize: '0.9rem',
+  fontWeight: '300',
+  marginTop: '0.4rem'
 }
 
 class Settings extends Component {
@@ -83,8 +92,8 @@ class Settings extends Component {
   renderUserSettings() {
     return userSettingsOptions.map((item, index) => {
       return (
-        <ListItem button key={index} style={{ fontFamily: font, fontSize: '0.7rem' }}>
-          <ListItemText primary={item.title}/>
+        <ListItem button key={index}>
+          <h6 style={listItemStyle}>{item.title}</h6>
         </ListItem>
       )
     })
@@ -93,8 +102,8 @@ class Settings extends Component {
   renderAboutSettings() {
     return aboutSettingsOptions.map((item, index) => {
       return (
-        <ListItem button key={index} style={{ fontFamily: font, fontSize: '0.7rem' }}>
-          <ListItemText primary={item.title}/>
+        <ListItem button key={index}>
+          <h6 style={listItemStyle}>{item.title}</h6>
         </ListItem>
       )
     })
