@@ -122,7 +122,14 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var transaction
   return new Promise((resolve, reject) => {
-    server.loadAccount(publicKey)
+    server.loadAccount(destination)
+    // If the account is not found, then create a transaction for creating an account
+    .catch(error => {
+      console.log(error.name)
+      reject({error: true, errorMessage: error.name})
+    })
+    // If there was no error, load up-to-date information on your account.
+    .then(() => server.loadAccount(publicKey))
     .then(sourceAccount => {
       sourceAccount.incrementSequenceNumber()
       transaction = new StellarSdk.TransactionBuilder(sourceAccount)
@@ -139,12 +146,15 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
           console.log(JSON.stringify(transactionResult, null, 2));
           console.log('\nSuccess! View the transaction at: ');
           console.log(transactionResult._links.transaction.href);
-          resolve(transactionResult._links.transaction.href)
+          resolve({
+            payload: transactionResult._links.transaction.href,
+            error: false
+          })
         })
         .catch( err => {
           console.log('An error has occured:');
           console.log(err);
-          reject(err)
+          reject({error: true, errorMessage: err})
         });
     })
   })

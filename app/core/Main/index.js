@@ -62,6 +62,7 @@ class Main extends Component {
       paymentTransactions: [],
       selectedMenuItem: INITIAL_NAVIGATION_INDEX,
       snackBarOpen: false,
+      snackBarMessage: '',
       publicKey: '',
       paymentSending: false,
       paymentFailed: false,
@@ -117,6 +118,29 @@ class Main extends Component {
         }
       }
     }
+
+    if (nextProps.paymentFailed !== this.props.paymentFailed) {
+      if (nextProps.paymentFailed) {
+        this.setState({
+          paymentFailed: true,
+          snackBarOpen: true,
+          snackBarMessage: 'Payment Failed'
+        })
+      } else {
+        await this.props.fetchAccountDetails()
+        await this.props.fetchPaymentOperationList()
+
+        this.setState({
+          selectedMenuItem: INITIAL_NAVIGATION_INDEX,
+          sendAmount: '',
+          sendAddress: '',
+          paymentFailed: false,
+          snackBarOpen: true,
+          snackBarMessage: 'Payment Successful'
+        })
+      }
+    }
+
   }
 
   render () {
@@ -173,16 +197,6 @@ class Main extends Component {
         amount: formattedAmount,
         memoID: info.memoId
       })
-
-      await this.props.fetchAccountDetails()
-      await this.props.fetchPaymentOperationList()
-
-      this.setState({
-        selectedMenuItem: INITIAL_NAVIGATION_INDEX,
-        sendAmount: '',
-        sendAddress: '',
-        snackBarOpen: true
-      })
     })().catch(err => {
         console.error(err);
     })
@@ -202,7 +216,7 @@ class Main extends Component {
           SnackbarContentProps={{
             'aria-describedby': 'message-id',
           }}
-          message={<span id="message-id">Payment Sent</span>}
+          message={<span id="message-id">{this.state.snackBarMessage}</span>}
           action={[
             <Button key="close" color="secondary" size="small"
               onClick={this.handleSnackBarClose}>

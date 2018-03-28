@@ -98,7 +98,7 @@ class Send extends Component {
     const name = target.name
     if (name==='sendAmount' || name==='sendMemoID') {
       console.log('Send Amount On Change')
-      value = value.replace(/[^0-9]/g, '')
+      value = value.replace(/[^0.001-9]/g, '')
     }
     this.setState({
       [name]: value

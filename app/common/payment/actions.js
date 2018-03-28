@@ -32,7 +32,10 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
       })
 
       if (!exists) {
-        await createDestinationAccount({decryptSK, publicKey, destination, amount, sequence})
+        const { error, errorMessage } = await createDestinationAccount({decryptSK, publicKey, destination, amount, sequence})
+        if (error) {
+          return dispatch(paymentSendFailure(errorMessage))
+        }
       }
 
       // 2. Fetch the account details to get the updated balance
@@ -48,6 +51,7 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
         amount
       }))
     } catch (e) {
+      console.log(`Send payment error: ${e}`)
       return dispatch(paymentSendFailure(e))
     }
   }
