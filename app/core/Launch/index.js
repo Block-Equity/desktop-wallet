@@ -20,7 +20,7 @@ import {
   LoaderContainer
 } from './styledComponents'
 
-import mainLogo from './logo-white.png'
+import mainLogo from './logo-brand.png'
 import MaterialButton from 'material-ui/Button'
 import Snackbar from 'material-ui/Snackbar'
 import { CircularProgress } from 'material-ui/Progress'
@@ -69,8 +69,7 @@ class Launch extends Component {
     return (
       <Container data-id='container'>
         <ContentContainer>
-            <img src={mainLogo} width='120' height='62' style={{ marginTop: '10rem' }} alt='' />
-            <Header>BlockEQ</Header>
+            <img src={mainLogo} width='170' height='93' style={{ marginTop: '10rem' }} alt='' />
             { this.renderConditionalContent() }
           </ContentContainer>
       </Container>

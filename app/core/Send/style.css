@@ -12,6 +12,13 @@
   font-size: 0.85rem;
 }
 
+#sendAssetFormContainer
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .sendAssetFormLabel {
   color: #777777;
   font-size: 0.8rem;

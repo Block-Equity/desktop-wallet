@@ -47,12 +47,12 @@ class Send extends Component {
                  <i className="fa fa-info-circle" style={{marginLeft: '0.25rem'}}> </i>
               </Tooltip>
             </label>
-            <input type='text' className={formStyle} placeholder='Memo ID'
+            <input type='number' maxLength='64' className={formStyle} placeholder='Memo ID'
               id='sendMemoID' name='sendMemoID' value={this.state.sendMemoID} onChange={this.handleChange} />
           </div>
           <div className='form-group'>
             <label className={styles.sendAssetFormLabel} htmlFor='sendAmount'>Amount in XLM </label>
-            <input type='number' className={formStyle} placeholder='Amount in XLM'
+            <input type='text' className={formStyle} placeholder='Amount in XLM'
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
           { this.renderSendButtonContent() }
@@ -94,8 +94,12 @@ class Send extends Component {
 
   handleChange (event) {
     const target = event.target
-    const value = target.value
+    var value = target.value
     const name = target.name
+    if (name==='sendAmount') {
+      console.log('Send Amount On Change')
+      value = value.replace(/[^0-9]/g, '')
+    }
     this.setState({
       [name]: value
     })

@@ -5,13 +5,13 @@ import { generate as generateMnemonic } from '../security/mnemonic'
 import axios from 'axios'
 
 Config.setAllowHttp(true)
-StellarSdk.Network.useTestNetwork()
+StellarSdk.Network.usePublicNetwork()
 
 const BASE_URL_TEST_NET = 'https://stellar-testnet.blockeq.com/'
 const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
 //const BASE_URL_HORIZON_PUBLIC_NET = 'https://stellar-pubnet.blockeq.com/'
 const BASE_URL_HORIZON_PUBLIC_NET = 'https://horizon.stellar.org'
-const BASE_URL = BASE_URL_HORIZON_TEST_NET
+const BASE_URL = BASE_URL_HORIZON_PUBLIC_NET
 const server = new StellarSdk.Server(BASE_URL)
 
 export const fundAccount = (publicKey) => {
@@ -94,7 +94,7 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
           }))
           // A memo allows you to add your own metadata to a transaction. It's
           // optional and does not affect how Stellar treats the transaction.
-          .addMemo(StellarSdk.Memo.id(memoID))
+          .addMemo(memoID.length===0 ? StellarSdk.Memo.text('No memo defined') : StellarSdk.Memo.id(memoID))
           .build()
 
         // Sign the transaction to prove you are actually the person sending it.

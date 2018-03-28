@@ -84,6 +84,14 @@ class Main extends Component {
         this.setState({publicKey: currentAccount.pKey})
         await this.props.setCurrentAccount(currentAccount)
         await this.props.fetchAccountDetails()
+        if (!this.state.userAccountDetailFailed) {
+          await this.props.streamPayments()
+          if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
+            new Notification('Payment Received',
+              { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
+            )
+          }
+        }
       }
     } catch (e) {
       console.log(e)
@@ -97,7 +105,7 @@ class Main extends Component {
         var self = this;
         this.pollUserAccount = setInterval(function() {
           self.props.fetchAccountDetails()
-        }, 5000);
+        }, 7000);
       } else {
         clearInterval(this.pollUserAccount)
         await this.props.fetchPaymentOperationList()
