@@ -47,7 +47,7 @@ class Send extends Component {
                  <i className="fa fa-info-circle" style={{marginLeft: '0.25rem'}}> </i>
               </Tooltip>
             </label>
-            <input type='number' maxLength='64' className={formStyle} placeholder='Memo ID'
+            <input type='text' className={formStyle} placeholder='Memo ID'
               id='sendMemoID' name='sendMemoID' value={this.state.sendMemoID} onChange={this.handleChange} />
           </div>
           <div className='form-group'>
@@ -96,7 +96,7 @@ class Send extends Component {
     const target = event.target
     var value = target.value
     const name = target.name
-    if (name==='sendAmount') {
+    if (name==='sendAmount' || name==='sendMemoID') {
       console.log('Send Amount On Change')
       value = value.replace(/[^0-9]/g, '')
     }
