@@ -67,7 +67,7 @@ class Settings extends Component {
               open={this.state.open}
               onClose={this.toggleSettingsDrawer(false)}>
           <div
-            className={materialStyles}
+            className={materialStyles.root}
             tabIndex={0}
             role="button"
             style={{width: '15rem'}}

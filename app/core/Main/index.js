@@ -66,7 +66,7 @@ class Main extends Component {
       publicKey: '',
       paymentSending: false,
       paymentFailed: false,
-      userAccountDetailFailed: true,
+      userAccountDetailFailed: false,
       settingsOpen: false
     }
     this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
@@ -87,7 +87,7 @@ class Main extends Component {
         await this.props.fetchAccountDetails()
         if (!this.state.userAccountDetailFailed) {
           await this.props.streamPayments()
-          if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
+          if (this.props.incomingPayment.from !== this.state.publicKey || this.props.incomingPayment.from !== undefined ) {
             new Notification('Payment Received',
               { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
             )
@@ -111,7 +111,7 @@ class Main extends Component {
         clearInterval(this.pollUserAccount)
         await this.props.fetchPaymentOperationList()
         await this.props.streamPayments()
-        if (this.props.incomingPayment.from !== publicKey || this.props.incomingPayment.from !== undefined ) {
+        if (this.props.incomingPayment.from !== this.state.publicKey || this.props.incomingPayment.from !== undefined ) {
           new Notification('Payment Received',
             { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
           )
@@ -119,8 +119,8 @@ class Main extends Component {
       }
     }
 
-    if (nextProps.paymentFailed !== this.props.paymentFailed) {
-      if (nextProps.paymentFailed) {
+    if (nextProps.paymentSending !== this.props.paymentSending) {
+      if (this.props.paymentFailed) {
         this.setState({
           paymentFailed: true,
           snackBarOpen: true,
@@ -129,6 +129,12 @@ class Main extends Component {
       } else {
         await this.props.fetchAccountDetails()
         await this.props.fetchPaymentOperationList()
+        await this.props.streamPayments()
+        if (this.props.incomingPayment.from !== this.state.publicKey || this.props.incomingPayment.from !== undefined ) {
+          new Notification('Payment Received',
+            { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
+          )
+        }
 
         this.setState({
           selectedMenuItem: INITIAL_NAVIGATION_INDEX,
