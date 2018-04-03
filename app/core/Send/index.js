@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import HoverObserver from 'react-hover-observer'
 import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
 import Tooltip from 'material-ui/Tooltip'
@@ -97,7 +96,6 @@ class Send extends Component {
     var value = target.value
     const name = target.name
     if (name==='sendAmount' || name==='sendMemoID') {
-      console.log('Send Amount On Change')
       value = value.replace(/[^0.001-9]/g, '')
     }
     this.setState({
