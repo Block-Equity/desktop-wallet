@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
+import Snackbar from 'material-ui/Snackbar'
+import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
 import { getUserPIN } from '../../db'
 
 import {
-  Button,
   Modal,
   ModalHeader,
   ModalBody,
@@ -27,7 +28,10 @@ class Send extends Component {
       modalHeader: 'Enter your PIN to complete the transaction',
       invalidPIN: false,
       pinValue: '',
-      retrieve: false
+      retrieve: false,
+      currentAddress: props.currentAddress,
+      alertOpen: false,
+      alertMessage: ''
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -40,6 +44,7 @@ class Send extends Component {
       <div>
         { this.renderSendMoneySection() }
         { this.renderPINModal() }
+        { this.renderAlertView() }
       </div>
     )
   }
@@ -136,18 +141,23 @@ class Send extends Component {
        return
     }
 
-    //Callback to the parent component
-    const info = {
-      destination: this.state.sendAddress,
-      amount: this.state.sendAmount,
-      memoId: this.state.sendMemoID
+    if (this.state.sendAddress === this.state.currentAddress) {
+      this.setState({
+        alertOpen: true,
+        alertMessage: 'Send address cannot be your own address.',
+        sendAddress: ''
+      })
+    } else {
+      const info = {
+        destination: this.state.sendAddress,
+        amount: this.state.sendAmount,
+        memoId: this.state.sendMemoID
+      }
+      this.setState({
+        info,
+        showPINModal: true
+      })
     }
-
-    this.setState({
-      info,
-      showPINModal: true
-    })
-
   }
 
   renderPINModal () {
@@ -235,6 +245,49 @@ class Send extends Component {
       })
     }
   }
+
+  renderAlertView() {
+    return (
+      <div>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={this.state.alertOpen}
+          autoHideDuration={6000}
+          onClose={this.handleAlertClose}
+          SnackbarContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">{this.state.alertMessage}</span>}
+          action={[
+            <Button key="close" color="secondary" size="small"
+              onClick={this.handleAlertClose}>
+              CLOSE
+            </Button>
+          ]}
+        />
+      </div>
+    )
+  }
+
+  handleAlertOpen (message) {
+    this.setState({
+      alertOpen: true,
+      alertMessage: message
+    })
+  }
+
+  handleAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    this.setState({
+      alertOpen: false
+    })
+  }
+
 
 }
 

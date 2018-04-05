@@ -252,7 +252,7 @@ class Main extends Component {
       case navigation.send:
         return (
           <div style={{width: '60%'}}>
-            <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } paymentSending={ this.props.paymentSending } />
+            <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } paymentSending={ this.props.paymentSending } currentAddress={ this.state.publicKey } />
           </div>
         )
       break
