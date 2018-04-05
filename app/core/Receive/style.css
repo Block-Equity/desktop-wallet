@@ -2,22 +2,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 1.5rem;
 }
 
 .addressLabelContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #EFF5F9;
+  background-color: #F7F7F7;
   padding-top: 1.2rem;
   padding-left: 3rem;
   padding-right: 3rem;
   padding-bottom: 0.75rem;
-  border-radius: 40px;
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #F1F1F1;
 }
 
 #receiveContainer a {
-  color: #1E8BBA;
+  color: #0153B6;
   margin-top: 0.75rem;
   font-size: 0.75rem;
   letter-spacing: 0.02rem;
@@ -25,7 +29,7 @@
 }
 
 #receiveContainer a:hover {
-  color: #1E8BBA;
+  color: #0153B6;
   text-decoration: underline;
 }
 

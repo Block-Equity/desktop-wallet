@@ -1,10 +1,20 @@
 import React, { Component } from 'react'
 import styles from './style.css'
-import {
-  Nav,
-  NavItem,
-  NavLink }
-from 'reactstrap';
+
+import { withStyles } from 'material-ui/styles'
+import Paper from 'material-ui/Paper'
+import Tabs, { Tab } from 'material-ui/Tabs'
+import Divider from 'material-ui/Divider'
+
+const font = "'Lato', sans-serif";
+
+const materialStyles = theme => ({
+  root: {
+    flexGrow: 1,
+    marginTop: theme.spacing.unit * 3,
+    width: '100%',
+  },
+})
 
 const navigation = [
   {title: 'HISTORY'},
@@ -17,31 +27,51 @@ class Navigation extends Component {
   constructor (props) {
     super()
     this.state = {
-      itemSelected: 0
+      itemSelected: props.setItem
     }
   }
 
-  renderTabs() {
+  componentWillReceiveProps (nextProps) {
+    if (nextProps.setItem !== this.props.setItem) {
+      this.setState ({
+        itemSelected: nextProps.setItem
+      })
+    }
+  }
+
+  renderTabs () {
     return (
-      <div className={styles.tabContainer}>
-        <Nav pills justified={true}>
-          { this.renderNavigationItems() }
-        </Nav>
-      </div>
+      <Paper className={materialStyles.root} elevation={0} style={{borderRadius:'0'}}>
+        <Divider />
+        <Tabs
+          value={this.state.itemSelected}
+          onChange={this.handleChange}
+          indicatorColor='primary'
+          textColor='primary'
+          style={{ paddingLeft: '2rem'}}
+          centered>
+          { this.renderTabItems() }
+        </Tabs>
+        <Divider />
+      </Paper>
     )
   }
 
-  renderNavigationItems() {
+  renderTabItems() {
     return navigation.map((item, index) => {
         var idBuilder = `${item.title}-tab`;
-        var classNameBuilder = (this.state.itemSelected === index) ? 'bg-secondary' : '';
         return (
-          <NavItem key={ idBuilder }>
-              <NavLink className={classNameBuilder} active={this.state.itemSelected === index} href=''
-                  onClick={(e) => this.navigationClickHandler(e, index)}>{ item.title }</NavLink>
-          </NavItem>
+          <Tab key={ idBuilder } label={ item.title }
+              style={{ fontFamily: font, outline: 'none', marginLeft:'2rem', marginRight: '2rem', paddingLeft:'2rem', paddingRight:'2rem' }}/>
         )
     });
+  }
+
+  handleChange = (event, value) => {
+    this.setState({
+      itemSelected: value
+    })
+    this.props.selectedItem(value)
   }
 
   navigationClickHandler(event, index) {
@@ -62,4 +92,4 @@ class Navigation extends Component {
 
 }
 
-export default Navigation;
+export default Navigation

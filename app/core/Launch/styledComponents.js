@@ -3,6 +3,7 @@ import styled from 'styled-components'
 export const Container = styled.div`
   height: 100vh;
   background-image: linear-gradient(to top, #0153B6 0%, #07237A 100%);
+  -webkit-app-region: drag;
 `
 export const ContentContainer = styled.div`
   display: flex;
@@ -34,4 +35,11 @@ export const LaunchButton = styled.button`
 export const CreationButton = styled.button`
   margin-top: 1rem;
   width: 20rem;
+`
+
+export const LoaderContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `

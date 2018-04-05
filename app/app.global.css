@@ -11,6 +11,8 @@ body {
   color: black;
   height: 100%;
   font-family: 'Lato', sans-serif;
+  -webkit-app-region: drag;
+  overflow: hidden;
 }
 
 h2 {

@@ -12,19 +12,19 @@ const font = "'Lato', sans-serif";
 
 const materialStyles = theme => ({
   root: {
-    width: '70%',
+    width: '100%',
     height: '90%',
     marginTop: theme.spacing.unit * 2,
     overflowY: undefined
   },
   table: {
-    minWidth: 850
+    minWidth: '100%'
   }
 })
 
 const tableHeaderStyle = {
   fontFamily: font,
-  backgroundColor: '#EFF5F9',
+  backgroundColor: '#F7F7F7',
   color: '#777777',
   fontSize: '0.8rem',
   fontWeight: '400'
@@ -59,8 +59,6 @@ class History extends Component {
         displayAddress = n.source_account === this.props.pKey ? n.account : n.source_account
         displayAmount = n.source_account === this.props.pKey ? numeral(`-${n.starting_balance}`).format('(0,0.00)') : numeral(n.starting_balance).format('0,0.00')
         displayTypeLabel = n.source_account === this.props.pKey ? 'Account created for' : 'Account created by'
-      } else {
-
       }
 
       return (
@@ -85,13 +83,13 @@ class History extends Component {
 
   render() {
     return (
-      <Paper className={materialStyles.root}>
+      <Paper className={materialStyles.root} style={{width: 'inherit', height: '29rem', overflowY:'scroll'}}>
         <Table className={materialStyles.table}>
           <TableHead>
             <TableRow>
               <TableCell style={tableHeaderStyle}>Date</TableCell>
-              <TableCell style={tableHeaderStyle}>Address</TableCell>
-              <TableCell numeric style={tableHeaderStyle}>Amount</TableCell>
+              <TableCell style={tableHeaderStyle}>Description</TableCell>
+              <TableCell style={tableHeaderStyle}>Amount</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

@@ -10,7 +10,7 @@ import { setPassword } from '../../services/authentication/keychain'
 import * as encryption from '../../services/security/encryption'
 
 //Redux Actions/States/Reducers
-import { setUserPIN } from '../../db'
+import { setUserPIN, setPhrase } from '../../db'
 import { unlock } from '../../common/auth/actions'
 import {
   initializeDB,
@@ -413,22 +413,28 @@ class Restore extends Component {
   async completionOperations() {
     await this.initializeDatabase()
     await this.addPinToKeyChain()
+    await this.addPhraseToKeyChain()
     await this.encryptSecretKey()
     await this.addWalletToDB()
   }
 
-  //1. Add password to KeyChain
-  async addPinToKeyChain() {
-    await setUserPIN(this.state.pinValue)
-  }
-
-  //2. Initialize DB
+  //Initialize DB
   async initializeDatabase() {
     await this.props.unlock()
     await this.props.initializeDB()
   }
 
-  //3. Encrypt Secret Key using PIN
+  //Add password to KeyChain
+  async addPinToKeyChain() {
+    await setUserPIN(this.state.pinValue)
+  }
+
+  //Add Phrase
+  addPhraseToKeyChain() {
+    setPhrase(this.state.mnemonicInput, this.state.pinValue)
+  }
+
+  //Encrypt Secret Key using PIN
   encryptSecretKey() {
     const { wallet, pinValue } = this.state
     var encryptedWallet = {}
@@ -472,7 +478,6 @@ class Restore extends Component {
         console.log(`Wallet Keys: ${JSON.stringify(wallet)}`)
         this.setState({
           alertOpen: false,
-          mnemonicInput: '',
           mnemonicInputLength: 0,
           wallet: wallet,
           currentStage: accountRestoreStages.pin.key
@@ -493,10 +498,12 @@ class Restore extends Component {
 
   handleChange(event) {
     event.preventDefault()
-
     const target = event.target
-    const value = target.value
     const name = target.name
+    var value = target.value
+    if (name==='pinValue') {
+      value = value.replace(/[^0-9]/g,'')
+    }
 
     switch (this.state.currentStage) {
       case accountRestoreStages.mnemonic.key:

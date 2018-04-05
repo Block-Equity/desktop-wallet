@@ -2,16 +2,14 @@ import StellarSdk, { Config } from 'stellar-sdk'
 //import config from '../../../config' //TODO: Issues with getting production config variable in production build
 import { StellarWallet } from '../security/wallet'
 import { generate as generateMnemonic } from '../security/mnemonic'
-
 import axios from 'axios'
 
-// Horizon API Setup
-// TODO: BAD PRACTICE - Secure Server
 Config.setAllowHttp(true)
 StellarSdk.Network.usePublicNetwork()
 
-const BASE_URL_TEST_NET = 'http://ec2co-ecsel-1x5ev4f9g6tjf-1450006510.us-east-1.elb.amazonaws.com/'
+const BASE_URL_TEST_NET = 'https://stellar-testnet.blockeq.com/'
 const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
+//const BASE_URL_HORIZON_PUBLIC_NET = 'https://stellar-pubnet.blockeq.com/'
 const BASE_URL_HORIZON_PUBLIC_NET = 'https://horizon.stellar.org'
 const BASE_URL = BASE_URL_HORIZON_PUBLIC_NET
 const server = new StellarSdk.Server(BASE_URL)
@@ -29,6 +27,7 @@ export const getAccountDetail = async (publicKey) => {
   // Just in case loading the account fails to retrieve the balances, immediately throw
   // an exception
   if (!account.balances.length) {
+    console.log('Account does not exist')
     throw new Error('Unable to retrieve balance')
   }
 
@@ -64,7 +63,7 @@ export const receivePaymentStream = async (publicKey) => {
   })
 }
 
-export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount }) => {
+export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount, memoID }) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   let transaction
 
@@ -83,7 +82,8 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
       // If there was no error, load up-to-date information on your account.
       .then(() => server.loadAccount(publicKey))
       .then(sourceAccount => {
-        // Start building the transaction.
+        //sourceAccount.incrementSequenceNumber()
+        console.log(`Next Sequence: ${sourceAccount.sequenceNumber()}`)
         transaction = new StellarSdk.TransactionBuilder(sourceAccount)
           .addOperation(StellarSdk.Operation.payment({
             destination: destinationId,
@@ -94,7 +94,7 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
           }))
           // A memo allows you to add your own metadata to a transaction. It's
           // optional and does not affect how Stellar treats the transaction.
-          .addMemo(StellarSdk.Memo.text('Test Transaction'))
+          .addMemo(memoID.length===0 ? StellarSdk.Memo.text('No memo defined') : StellarSdk.Memo.id(memoID))
           .build()
 
         // Sign the transaction to prove you are actually the person sending it.
@@ -122,7 +122,14 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var transaction
   return new Promise((resolve, reject) => {
-    server.loadAccount(publicKey)
+    server.loadAccount(destination)
+    // If the account is not found, then create a transaction for creating an account
+    .catch(error => {
+      console.log(error.name)
+      reject({error: true, errorMessage: error.name})
+    })
+    // If there was no error, load up-to-date information on your account.
+    .then(() => server.loadAccount(publicKey))
     .then(sourceAccount => {
       sourceAccount.incrementSequenceNumber()
       transaction = new StellarSdk.TransactionBuilder(sourceAccount)
@@ -139,12 +146,15 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
           console.log(JSON.stringify(transactionResult, null, 2));
           console.log('\nSuccess! View the transaction at: ');
           console.log(transactionResult._links.transaction.href);
-          resolve(transactionResult._links.transaction.href)
+          resolve({
+            payload: transactionResult._links.transaction.href,
+            error: false
+          })
         })
         .catch( err => {
           console.log('An error has occured:');
           console.log(err);
-          reject(err)
+          reject({error: true, errorMessage: err})
         });
     })
   })

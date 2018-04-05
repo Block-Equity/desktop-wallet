@@ -28,7 +28,7 @@ class Receive extends Component {
     return (
       <div id={ styles.receiveContainer }>
         <Paper style={qrContainer} elevation={4} >
-          <QRCode value={ address } size={ QR_CODE_CONTAINER_SIZE } fgColor={'#1E8BBA'} />
+          <QRCode value={ address } size={ QR_CODE_CONTAINER_SIZE } fgColor={'#0153B6'} />
         </Paper>
         <div className={ styles.addressLabelContainer }>
           <label className={ styles.addressLabelHeader }>YOUR WALLET ADDRESS</label>
@@ -44,7 +44,7 @@ class Receive extends Component {
     this.setState({copyLabelText:'Copied!'});
     setTimeout(function(){
       this.setState({copyLabelText:'Copy public Address'});
-    }.bind(this), 2000);
+    }.bind(this), 1500);
   }
 
 }

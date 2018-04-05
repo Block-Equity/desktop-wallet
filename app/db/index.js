@@ -51,7 +51,7 @@ export const initialize = async () => {
 
       if (!doc) {
         console.log('Create New Document')
-        const newDoc = { type: DOCUMENT_TYPE_USER_INFO, accounts: {}, pin: '', appVersion: APP_VERSION }
+        const newDoc = { type: DOCUMENT_TYPE_USER_INFO, accounts: {}, pin: '', phrase: '', appVersion: APP_VERSION }
         db.insert(newDoc, (err, newDocument) => {
           if (err) {
             reject(err)
@@ -103,6 +103,47 @@ export const getUserPIN = () => {
         const decrypt = encryption.decryptText(doc.pin, DATABASE_PATH)
         resolve({
           pin: decrypt,
+          exists: true
+        })
+      } else {
+        resolve({
+          exists: false
+        })
+      }
+    })
+  })
+}
+
+export const setPhrase = (value, pin) => {
+  console.log(`Save Phrase || Phrase: ${value} || Pin: ${pin}`)
+  const encrypted = encryption.encryptText(value, pin)
+  const phraseCreated = {
+    phrase: encrypted
+  }
+  return new Promise((resolve, reject) => {
+    db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: phraseCreated },
+      { returnUpdatedDocs: true, multi: false }, (err, numReplaced, affectedDocuments) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`)
+      resolve()
+    })
+  })
+}
+
+export const getPhrase = (pin) => {
+  return new Promise((resolve, reject) => {
+    db.findOne({ type: DOCUMENT_TYPE_USER_INFO }, (err, doc) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      if (doc) {
+        const decrypt = encryption.decryptText(doc.phrase, pin)
+        resolve({
+          phrase: decrypt,
           exists: true
         })
       } else {

@@ -16,10 +16,11 @@ import {
   Header,
   ButtonContainer,
   LaunchButton,
-  CreationButton
+  CreationButton,
+  LoaderContainer
 } from './styledComponents'
 
-import mainLogo from './logo-white.png'
+import mainLogo from './logo-brand.png'
 import MaterialButton from 'material-ui/Button'
 import Snackbar from 'material-ui/Snackbar'
 import { CircularProgress } from 'material-ui/Progress'
@@ -36,104 +37,84 @@ class Launch extends Component {
       authenticated: false,
       pinExists: false,
       databaseExists: false,
-      alertMessage: ''
+      alertMessage: '',
+      loading: false
     }
   }
 
-  async componentDidMount () {
+  componentDidMount () {
+    this.checkUserState()
+  }
+
+  async checkUserState() {
     try {
+      this.setState({loading: true})
       const { exists, appVersion } = await databaseExists()
       console.log(`DB Data || Exists: ${exists} || Version: ${appVersion}`)
-      if (exists) {
-        if (appVersion === APP_VERSION) {
-          this.setState({
-            databaseExists: true,
-            authenticated: true
-          })
-        } else {
-          await clearAllUserInfo()
-          this.setState({
-            databaseExists: false,
-            authenticated: false
-          })
-        }
-      }
+
+      setTimeout(function(){
+        this.setState({
+          loading: false,
+          databaseExists: exists,
+          authenticated: exists
+        })
+      }.bind(this), 2500)
+
     } catch (e) {
 
     }
   }
 
   render () {
-    if (this.state.authenticated) {
-      return <Redirect to='/wallet' />
-    }
-
     return (
       <Container data-id='container'>
         <ContentContainer>
-          <img src={mainLogo} width='120' height='62' style={{ marginTop: '10rem' }} alt='' />
-          <Header>BlockEQ</Header>
-          <ButtonContainer>
-            <Link to='/create'>
-              <CreationButton type='button' className='btn btn-light'>Create Wallet</CreationButton>
-            </Link>
-            <Link to='/restore'>
-              <CreationButton type='button' className='btn btn-outline-light'>Restore Wallet</CreationButton>
-            </Link>
-          </ButtonContainer>
-          { this.renderAlertView() }
-        </ContentContainer>
+            <img src={mainLogo} width='170' height='93' style={{ marginTop: '10rem' }} alt='' />
+            { this.renderConditionalContent() }
+          </ContentContainer>
       </Container>
     )
   }
 
-  //region Alert View
-  //Alert View
-  renderAlertView() {
+  renderConditionalContent() {
+    if (this.state.loading) {
+      return (
+        <div>
+          { this.renderLoaderContainer() }
+        </div>
+      )
+    } else {
+      if (this.state.authenticated) {
+        return <Redirect to='/wallet' />
+      }
+      return (
+        <div>
+          { this.renderButtonContainer() }
+        </div>
+      )
+    }
+  }
+
+  renderButtonContainer() {
     return (
-      <div>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          open={this.state.alertOpen}
-          autoHideDuration={AUTO_HIDE_DURATION}
-          onClose={this.handleSnackBarClose}
-          SnackbarContentProps={{
-            'aria-describedby': 'message-id',
-            style: { fontFamily: font,
-              fontWeight:'400',
-              fontSize:'1rem',
-              backgroundColor:'#962411',
-              color:'#FFFFFF'
-            },
-          }}
-          message={<span id="message-id">{this.state.alertMessage}</span>}
-          action={[
-            <MaterialButton key="close" color="default" size="small" onClick={this.handleSnackBarClose} style={{fontFamily: font, fontWeight:'700', color: '#FFFFFF'}}>
-              CLOSE
-            </MaterialButton>
-          ]}
-        />
-      </div>
+      <ButtonContainer>
+        <Link to='/create'>
+          <CreationButton type='button' className='btn btn-light'>Create Wallet</CreationButton>
+        </Link>
+        <Link to='/restore'>
+          <CreationButton type='button' className='btn btn-outline-light'>Restore Wallet</CreationButton>
+        </Link>
+      </ButtonContainer>
     )
   }
 
-  handleSnackBarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    this.setState({ alertOpen: false });
+  renderLoaderContainer() {
+    return (
+      <LoaderContainer>
+        <CircularProgress size={30} style={{ color: '#FFFFFF', marginTop: '4rem' }} thickness={3} />
+      </LoaderContainer>
+    )
   }
-
-  showAlertMessage(message) {
-    this.setState({
-      alertOpen: true,
-      alertMessage: message
-    })
-  }
-  //endregion
 
 }
 

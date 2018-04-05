@@ -5,7 +5,7 @@ import * as Types from './types'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
 
-export function sendPaymentToAddress ({ destination, amount }) {
+export function sendPaymentToAddress ({ destination, amount, memoID }) {
   return async (dispatch, getState) => {
     let currentAccount = getCurrentAccount(getState())
 
@@ -27,11 +27,15 @@ export function sendPaymentToAddress ({ destination, amount }) {
         decryptSK,
         sequence,
         destinationId: destination,
-        amount
+        amount,
+        memoID
       })
 
       if (!exists) {
-        await createDestinationAccount({decryptSK, publicKey, destination, amount, sequence})
+        const { error, errorMessage } = await createDestinationAccount({decryptSK, publicKey, destination, amount, sequence})
+        if (error) {
+          return dispatch(paymentSendFailure(errorMessage))
+        }
       }
 
       // 2. Fetch the account details to get the updated balance
@@ -47,6 +51,7 @@ export function sendPaymentToAddress ({ destination, amount }) {
         amount
       }))
     } catch (e) {
+      console.log(`Send payment error: ${e}`)
       return dispatch(paymentSendFailure(e))
     }
   }

@@ -15,7 +15,7 @@ import MenuBuilder from './menu'
 const { ipcMain } = require('electron');
 //import keytar from 'keytar'
 
-let mainWindow = null
+var mainWindow = null
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support')
@@ -45,26 +45,23 @@ const installExtensions = async () => {
 /**
  * Add event listeners...
  */
-
-app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
-})
-
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions()
   }
 
+  const path = require('path')
+
   mainWindow = new BrowserWindow({
     show: false,
     width: 800,
-    height: 728,
-    resizable: true
+    height: 700,
+    resizable: true,
+    titleBarStyle: 'hiddenInset',
+    frame: false
   })
+
+  //mainWindow.setContentProtection(true)
 
   mainWindow.loadURL(`file://${__dirname}/app.html`)
 
@@ -82,9 +79,26 @@ app.on('ready', async () => {
     mainWindow = null
   })
 
+  mainWindow.on('minimize',function(event){
+    event.preventDefault();
+    mainWindow.minimize();
+  })
+
   const menuBuilder = new MenuBuilder(mainWindow)
   menuBuilder.buildMenu()
 })
+
+app.on('window-all-closed', () => {
+  // Respect the OSX convention of having the application in memory even
+  // after all windows have been closed
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+app.on('before-quit', () => app.quitting = true)
+
+//app.on('activate', () => { mainWindow.show() })
 
 /*
 //TODO: Figure out how to do Production Build with C binding library

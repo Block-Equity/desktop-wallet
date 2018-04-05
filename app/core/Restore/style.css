@@ -26,6 +26,10 @@
   padding: 2rem;
 }
 
+#contentContainer *:focus {
+  box-shadow: none;
+}
+
 #contentContainer h4 {
   margin-bottom: 0.75rem;
   font-weight: 400;
