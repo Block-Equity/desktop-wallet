@@ -97,7 +97,7 @@ class Send extends Component {
                   type='submit'
                   style={{width: 'inherit', height: '3rem'}}
                   id="load" disabled>
-                  <i className='fa fa-spinner fa-spin' style={{marginRight: '0.3rem'}}></i>
+                  <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
                   Sending
         </button>
       </div>
@@ -218,12 +218,12 @@ class Send extends Component {
     const { pin } = await getUserPIN()
     console.log(`PIN Saved in DB: ${pin}`)
     if (pin === this.state.pinValue) {
-      //TODO: Delete Wallet
       this.timer = setTimeout(() => {
         this.setState({
           retrieve: false,
           pinValue: '',
-          invalidPIN: false
+          invalidPIN: false,
+          showPINModal: false
         })
         this.props.receiveSendPaymentInfo(this.state.info)
       }, 1000)
