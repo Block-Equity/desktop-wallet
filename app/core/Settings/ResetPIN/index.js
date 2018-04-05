@@ -17,8 +17,8 @@ class ResetPIN extends Component {
       newPIN: '',
       newPINConfirm: '',
       savingPIN: false,
-      alertOpen: true,
-      alertMessage: 'Test'
+      alertOpen: false,
+      alertMessage: ''
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
@@ -27,7 +27,7 @@ class ResetPIN extends Component {
   render() {
     return (
       <div id={styles.formContainer}>
-        <h6>
+        <h6 style={{width: '28rem'}}>
           PIN will used to encrypt your secret keys. Please make sure you choose a PIN that is difficult to guess for others.
         </h6>
         <Form onSubmit={this.handleSubmit}>
@@ -94,6 +94,9 @@ class ResetPIN extends Component {
     }
 
     console.log(`Reset PIN Values: ${JSON.stringify(resetPINValues)}`)
+    this.setState({
+      savingPIN: true
+    })
     this.saveUpdatedPIN()
   }
 
@@ -114,15 +117,28 @@ class ResetPIN extends Component {
       if (pin === this.state.oldPIN) {
         //Save new PIN to the DB
         await setUserPIN(this.state.newPIN)
-        this.setState({
-          oldPIN: '',
-          newPIN: '',
-          newPINConfirm: ''
-        })
-        this.props.close()
+        this.timer = setTimeout(() => {
+          this.handleAlertOpen('New PIN saved!')
+          this.setState({
+            savingPIN: false,
+            oldPIN: '',
+            newPIN: '',
+            newPINConfirm: ''
+          })
+        }, 1500)
+
       } else {
         console.log(`PIN Doesn't match. Show some error to the user`)
+        this.handleAlertOpen('The old PIN you entered is not valid.')
+        this.setState({
+          savingPIN: false
+        })
       }
+    } else {
+      this.handleAlertOpen('Values for new PIN do not match')
+      this.setState({
+        savingPIN: false
+      })
     }
   }
 
@@ -136,14 +152,14 @@ class ResetPIN extends Component {
           }}
           open={this.state.alertOpen}
           autoHideDuration={6000}
-          onClose={this.handleSnackBarClose}
+          onClose={this.handleAlertClose}
           SnackbarContentProps={{
             'aria-describedby': 'message-id',
           }}
           message={<span id="message-id">{this.state.alertMessage}</span>}
           action={[
             <Button key="close" color="secondary" size="small"
-              onClick={this.handleSnackBarClose}>
+              onClick={this.handleAlertClose}>
               CLOSE
             </Button>
           ]}
@@ -152,18 +168,20 @@ class ResetPIN extends Component {
     )
   }
 
-  handleSnackBarOpen (message) {
+  handleAlertOpen (message) {
     this.setState({
       alertOpen: true,
       alertMessage: message
     })
   }
 
-  handleSnackBarClose = (event, reason) => {
+  handleAlertClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
-    this.setState({ alertOpen: false });
+    this.setState({
+      alertOpen: false
+    })
   }
 
 }

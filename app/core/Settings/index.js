@@ -3,6 +3,8 @@ import styles from './style.css'
 
 import { withStyles } from 'material-ui/styles'
 import Drawer from 'material-ui/Drawer'
+import { MenuList, MenuItem } from 'material-ui/Menu';
+import Paper from 'material-ui/Paper';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
 import ListSubheader from 'material-ui/List/ListSubheader'
 import Divider from 'material-ui/Divider'
@@ -30,19 +32,42 @@ const userSettingsOptions = [
 ]
 
 const aboutSettingsOptions = [
-  { id: 0, feedback: { id: 0, title: 'Feedback' }, title: 'Reset PIN' },
-  { id: 1, bug: { id: 1, title: 'Bug Reporting' }, title: 'Reset PIN' },
-  { id: 2, blog: { id: 2, title: 'Blog' }, title: 'Reset PIN' }
+  { id: 0, feedback: { id: 0, title: 'Feedback' }, title: 'Feedback' },
+  { id: 1, bug: { id: 1, title: 'Bug Reporting' }, title: 'Bug Reporting' },
+  { id: 2, blog: { id: 2, title: 'Blog' }, title: 'Blog' }
 ]
 
 const font = "'Lato', sans-serif"
 
 const materialStyles = theme => ({
   root: {
-    width: '100%'
+    flexGrow: 1,
+    zIndex: 1,
+    overflow: 'hidden',
+    position: 'relative',
+    display: 'flex'
   },
   appBar: {
-    position: 'relative'
+    zIndex: theme.zIndex.drawer + 1
+  },
+  drawerPaper: {
+    position: 'absolute',
+    width: 210,
+    zIndex: 0
+  },
+  content: {
+    flexGrow: 1,
+    backgroundColor: theme.palette.background.default,
+    padding: theme.spacing.unit * 3,
+    minWidth: 0, // So the Typography noWrap works
+  },
+  menuItem: {
+    '&:focus': {
+      backgroundColor: theme.palette.primary.main,
+      '& $primary, & $icon': {
+        color: theme.palette.common.white
+      }
+    }
   },
   flex: {
     flex: 1
@@ -60,8 +85,8 @@ const listHeaderStyle = {
 const listItemStyle = {
   fontFamily: font,
   color: '#222222',
-  fontSize: '0.9rem',
-  fontWeight: '300',
+  fontSize: '0.8rem',
+  fontWeight: '400',
   marginTop: '0.4rem'
 }
 
@@ -72,8 +97,10 @@ const appBarStyle = {
 
 const appBarTitleStyle = {
   fontFamily: font,
-  fontSize: '1.25rem',
-  fontWeight: '300'
+  fontSize: '1rem',
+  fontWeight: '400',
+  letterSpacing: '0.1rem',
+  paddingRight: '2rem'
 }
 
 function Transition(props) {
@@ -86,13 +113,10 @@ class Settings extends Component {
     super()
     this.state = {
       open: props.open,
-      itemOpen: false,
       selectedItem: userSettingsOptions[0]
     }
     this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
     this.handleItemClick = this.handleItemClick.bind(this)
-    this.handleSettingsContentOpen = this.handleSettingsContentOpen.bind(this)
-    this.handleSettingsContentClose = this.handleSettingsContentClose.bind(this)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -103,34 +127,58 @@ class Settings extends Component {
     }
   }
 
-  render () {
+  render() {
     return (
-      <Drawer anchor="right"
-              open={this.state.open}
-              onClose={this.toggleSettingsDrawer(false)}>
-          <div
-            className={materialStyles.root}
-            tabIndex={0}
-            role="button"
-            style={{width: '15rem'}}
-            onKeyDown={this.toggleSettingsDrawer(false)}>
-              <List
-                component="nav"
-                subheader={<ListSubheader component="div" style={listHeaderStyle}>USER SETTINGS</ListSubheader>}>
-                { this.renderUserSettings() }
-              </List>
+      <Dialog
+          fullScreen
+          open={this.state.open}
+          onClose={this.closeSettings}
+          transition={Transition}>
+          <div id={styles.mainContainer}>
+            <AppBar position='absolute' className={materialStyles.appBar} style={appBarStyle}>
+              <Toolbar style={{paddingTop: '2rem'}}>
+                <IconButton color="inherit" onClick={this.closeSettings} style={{outline: 'none'}} aria-label="Close">
+                  <CloseIcon />
+                </IconButton>
+                <div style={{width: '100%', alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
+                  <Typography variant="title" color="inherit" style={appBarTitleStyle}>
+                    SETTINGS
+                  </Typography>
+                </div>
+              </Toolbar>
+            </AppBar>
+            { this.renderSettingsDrawer() }
+            <div className={styles.contentContainer}>
+              { this.renderSettingsItemContent() }
+            </div>
           </div>
-          { this.renderSettingsItem() }
-      </Drawer>
+      </Dialog>
+    )
+  }
+
+  renderSettingsDrawer() {
+    return (
+      <div
+        role='button'
+        style={{width: '12rem', marginRight: '3rem'}}
+        onKeyDown={this.toggleSettingsDrawer(false)}>
+          <MenuList>
+            { this.renderUserSettings() }
+          </MenuList>
+      </div>
     )
   }
 
   renderUserSettings() {
     return userSettingsOptions.map((item, index) => {
+      const isSelected = this.state.selectedItem.id === index ? true : false
       return (
-        <ListItem button key={ index } onClick={() => this.handleItemClick(item) }>
-          <h6 style={listItemStyle}>{item.title}</h6>
-        </ListItem>
+        <MenuItem selected={ isSelected }
+                  className={ materialStyles.menuItem }
+                  key={ index }
+                  onClick={() => this.handleItemClick(item) }>
+                    <h6 style={listItemStyle}>{item.title}</h6>
+        </MenuItem>
       )
     })
   }
@@ -145,49 +193,25 @@ class Settings extends Component {
     })
   }
 
-  renderSettingsItem() {
-    return (
-      <Dialog
-          fullScreen
-          open={this.state.itemOpen}
-          onClose={this.handleSettingsContentClose}
-          transition={Transition}>
-          <AppBar className={materialStyles.appBar} style={appBarStyle}>
-            <Toolbar style={{paddingTop: '2rem'}}>
-              <IconButton color="inherit" onClick={this.handleSettingsContentClose} style={{outline: 'none'}} aria-label="Close">
-                <CloseIcon />
-              </IconButton>
-              <Typography variant="title" color="inherit" className={materialStyles.flex} style={appBarTitleStyle}>
-                { this.state.selectedItem.title }
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <div id={styles.contentContainer}>
-            { this.renderSettingsItemContent() }
-          </div>
-      </Dialog>
-    )
-  }
-
   renderSettingsItemContent() {
     switch (this.state.selectedItem.id) {
       case 0:
         return (
-          <div style={{ width: '60%' }}>
-            <ResetPIN close={this.handleSettingsContentClose} />
+          <div style={{ width: '90%' }}>
+            <ResetPIN />
           </div>
         )
       break
       case 1:
         return (
-          <div style={{ width: '60%' }}>
+          <div style={{ width: '90%' }}>
             <ViewMnemonic />
           </div>
         )
       break
       case 2:
         return (
-          <div style={{ width: '60%' }}>
+          <div style={{ width: '90%' }}>
             <DeleteWallet />
           </div>
         )
@@ -202,22 +226,16 @@ class Settings extends Component {
     this.props.setOpen(open)
   }
 
+  closeSettings = () =>  {
+    this.setState({
+      open: false
+    })
+    this.props.setOpen(false)
+  }
+
   handleItemClick (selectedItem) {
     this.setState({
       selectedItem
-    })
-    this.handleSettingsContentOpen()
-  }
-
-  handleSettingsContentOpen() {
-    this.setState({
-      itemOpen : true
-    })
-  }
-
-  handleSettingsContentClose() {
-    this.setState({
-      itemOpen : false
     })
   }
 

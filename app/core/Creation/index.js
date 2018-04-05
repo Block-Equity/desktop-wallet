@@ -10,7 +10,7 @@ import isEmpty from 'lodash/isEmpty'
 import * as accountCreation from '../../services/security/createAccount'
 import * as encryption from '../../services/security/encryption'
 import { unlock } from '../../common/auth/actions'
-import { setUserPIN } from '../../db'
+import { setUserPIN, setPhrase } from '../../db'
 import {
   initializeDB,
   addWalletToDB,
@@ -26,14 +26,14 @@ import {
 } from '../../services/networking/horizon'
 
 //Material Design
-import { withStyles } from 'material-ui/styles';
-import Paper from 'material-ui/Paper';
-import Typography from 'material-ui/Typography';
-import Avatar from 'material-ui/Avatar';
-import Chip from 'material-ui/Chip';
-import MaterialButton from 'material-ui/Button';
-import Snackbar from 'material-ui/Snackbar';
-import { CircularProgress } from 'material-ui/Progress';
+import { withStyles } from 'material-ui/styles'
+import Paper from 'material-ui/Paper'
+import Typography from 'material-ui/Typography'
+import Avatar from 'material-ui/Avatar'
+import Chip from 'material-ui/Chip'
+import MaterialButton from 'material-ui/Button'
+import Snackbar from 'material-ui/Snackbar'
+import { CircularProgress } from 'material-ui/Progress'
 
 import NavBar from '../NavBar'
 import styles from './style.css'
@@ -485,21 +485,27 @@ class AccountCreation extends Component {
   async completionOperations() {
     await this.initializeDatabase()
     await this.addPinToKeyChain()
+    await this.addPhraseToKeyChain()
     await this.generateStellarWallet()
     await this.encryptSecretKey()
     //await this.fundWallet()
     await this.addWalletToDB()
   }
 
-  //1. Add password to KeyChain
+  //1. Initialize DB
+  async initializeDatabase() {
+    await this.props.unlock()
+    await this.props.initializeDB()
+  }
+
+  //2. Add password to KeyChain
   addPinToKeyChain() {
     setUserPIN(this.state.pinValue)
   }
 
-  //2. Initialize DB
-  async initializeDatabase() {
-    await this.props.unlock()
-    await this.props.initializeDB()
+  //Add Phrase
+  addPhraseToKeyChain() {
+    setPhrase(this.state.mnemonicString, this.state.pinValue)
   }
 
   //3. Generate Stellar Wallet
