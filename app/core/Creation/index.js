@@ -40,7 +40,7 @@ import styles from './style.css'
 import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter,
   Form, FormGroup, Label, Input }
-from 'reactstrap';
+from 'reactstrap'
 
 const AUTO_HIDE_DURATION = 8000
 

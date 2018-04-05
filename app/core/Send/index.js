@@ -2,6 +2,17 @@ import React, { Component } from 'react'
 import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
 import Tooltip from 'material-ui/Tooltip'
+import { getUserPIN } from '../../db'
+
+import {
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input
+}
+from 'reactstrap'
 
 class Send extends Component {
 
@@ -11,7 +22,10 @@ class Send extends Component {
       sendAddress: '',
       sendAmount: '',
       sendMemoID: '',
-      displayErrors: false
+      displayErrors: false,
+      showPINModal: false,
+      pinValue: '',
+      retrieve: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -21,6 +35,7 @@ class Send extends Component {
     return (
       <div>
         { this.renderSendMoneySection() }
+        { this.renderPINModal() }
       </div>
     )
   }
@@ -98,6 +113,9 @@ class Send extends Component {
     if (name==='sendAmount' || name==='sendMemoID') {
       value = value.replace(/[^0.001-9]/g, '')
     }
+    if (name==='pinValue') {
+      value = value.replace(/[^0-9]/g,'')
+    }
     this.setState({
       [name]: value
     })
@@ -121,8 +139,73 @@ class Send extends Component {
       memoId: this.state.sendMemoID
     }
 
-    this.props.receiveSendPaymentInfo(info)
+    //this.props.receiveSendPaymentInfo(info)
+    this.setState({
+      showPINModal: true
+    })
+
   }
+
+  renderPINModal () {
+    var header = 'Enter your PIN to complete the transaction'
+    return (
+      <Modal isOpen={this.state.showModal} toggle={this.togglePINModal} className={this.props.className} centered={true}>
+        <ModalHeader toggle={this.togglePINModal}>{header}</ModalHeader>
+        <ModalBody>
+          <Input type='password' name='pinValue' id='pinValue'
+            value={this.state.pinValue} onChange={this.handleChange}
+            placeholder='Enter PIN' required />
+        </ModalBody>
+        <ModalFooter>
+          { this.renderSaveButtonContent() }
+        </ModalFooter>
+      </Modal>
+    )
+  }
+
+  renderSaveButtonContent() {
+    const renderNormalButton = (
+      <div className={styles.saveButtonContainer}>
+        <button className='btn btn-primary'
+                  type='submit'
+                  style={{width: 'inherit', height: '3rem'}}
+                  id="load">
+                  Submit PIN
+        </button>
+      </div>
+    )
+
+    const renderLoadingButton = (
+      <div className={styles.saveButtonContainer}>
+        <button className='btn btn-primary'
+                  type='submit'
+                  style={{width: 'inherit', height: '3rem'}}
+                  id="load" disabled>
+                  <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
+                  Checking PIN
+        </button>
+      </div>
+    )
+
+    if (this.state.retrieve) {
+      return renderLoadingButton
+    } else {
+      return renderNormalButton
+    }
+  }
+
+  togglePINModal(event) {
+    event.preventDefault()
+    this.setState({
+      showModal: !this.state.showModal
+    });
+  }
+
+  handlePINSubmit (event) {
+    event.preventDefault()
+
+  }
+
 }
 
-export default Send;
+export default Send
