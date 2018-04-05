@@ -16,7 +16,6 @@ const materialStyles = theme => ({
 })
 
 class Mnemonic extends Component {
-
   constructor (props) {
     super()
     this.state = {
