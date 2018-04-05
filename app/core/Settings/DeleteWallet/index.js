@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 import styles from './style.css'
 import { getUserPIN, clearAllUserInfo } from '../../../db'
+import { logout } from '../../../common/auth/actions'
 
 import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
@@ -110,14 +112,14 @@ class DeleteWallet extends Component {
       if (pin === this.state.pinValue) {
         //TODO: Delete Wallet
         await clearAllUserInfo()
-        this.handleAlertOpen('Wallet Deleted')
         this.timer = setTimeout(() => {
           this.setState({
             retrieve: false,
             pinValue: '',
             walletDeleted: true
           })
-        }, 300)
+          window.location.reload()
+        }, 500)
       } else {
         this.handleAlertOpen('Invalid PIN.')
         this.setState({
@@ -170,4 +172,6 @@ class DeleteWallet extends Component {
 
 }
 
-export default DeleteWallet
+export default connect(null, {
+  logout
+})(DeleteWallet)

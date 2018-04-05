@@ -24,11 +24,15 @@ class Send extends Component {
       sendMemoID: '',
       displayErrors: false,
       showPINModal: false,
+      modalHeader: 'Enter your PIN to complete the transaction',
+      invalidPIN: false,
       pinValue: '',
       retrieve: false
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.togglePINModal = this.togglePINModal.bind(this)
+    this.handlePINSubmit = this.handlePINSubmit.bind(this)
   }
 
   render() {
@@ -139,17 +143,17 @@ class Send extends Component {
       memoId: this.state.sendMemoID
     }
 
-    //this.props.receiveSendPaymentInfo(info)
     this.setState({
+      info,
       showPINModal: true
     })
 
   }
 
   renderPINModal () {
-    var header = 'Enter your PIN to complete the transaction'
+    var header = this.state.invalidPIN ? 'Invalid PIN. Please try again.' : 'Enter your PIN to complete the transaction.'
     return (
-      <Modal isOpen={this.state.showModal} toggle={this.togglePINModal} className={this.props.className} centered={true}>
+      <Modal isOpen={this.state.showPINModal} toggle={this.togglePINModal} className={this.props.className} centered={true}>
         <ModalHeader toggle={this.togglePINModal}>{header}</ModalHeader>
         <ModalBody>
           <Input type='password' name='pinValue' id='pinValue'
@@ -168,6 +172,7 @@ class Send extends Component {
       <div className={styles.saveButtonContainer}>
         <button className='btn btn-primary'
                   type='submit'
+                  onClick={this.handlePINSubmit}
                   style={{width: 'inherit', height: '3rem'}}
                   id="load">
                   Submit PIN
@@ -197,13 +202,38 @@ class Send extends Component {
   togglePINModal(event) {
     event.preventDefault()
     this.setState({
-      showModal: !this.state.showModal
-    });
+      showPINModal: !this.state.showPINModal
+    })
   }
 
   handlePINSubmit (event) {
     event.preventDefault()
+    this.setState({
+      retrieve: true
+    })
+    this.checkPIN()
+  }
 
+  async checkPIN() {
+    const { pin } = await getUserPIN()
+    console.log(`PIN Saved in DB: ${pin}`)
+    if (pin === this.state.pinValue) {
+      //TODO: Delete Wallet
+      this.timer = setTimeout(() => {
+        this.setState({
+          retrieve: false,
+          pinValue: '',
+          invalidPIN: false
+        })
+        this.props.receiveSendPaymentInfo(this.state.info)
+      }, 1000)
+    } else {
+      //Show alert for invalid PIN
+      this.setState({
+        retrieve: false,
+        invalidPIN: true
+      })
+    }
   }
 
 }

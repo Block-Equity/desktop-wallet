@@ -1,5 +1,6 @@
 import { createReducer } from '../utils'
 import * as Types from './types'
+import { stat } from 'fs';
 
 export const INITIAL_STATE = {
   // Log in
@@ -131,6 +132,13 @@ function setAuthenticated (state) {
   }
 }
 
+function logout (state) {
+  state = undefined
+  return {
+    state
+  }
+}
+
 const reducers = {
   [Types.UNLOCK_REQUEST]: unlockRequest,
   [Types.UNLOCK_SUCCESS]: unlockSuccess,
@@ -144,7 +152,8 @@ const reducers = {
   [Types.VERIFY_2FA_REQUEST]: verifyTwoFaRequest,
   [Types.VERIFY_2FA_SUCCESS]: verifyTwoFaSuccess,
   [Types.VERIFY_2FA_FAILURE]: verifyTwoFaFailure,
-  [Types.SET_AUTHENTICATED]: setAuthenticated
+  [Types.SET_AUTHENTICATED]: setAuthenticated,
+  [Types.LOGOUT]: logout
 }
 
 export default createReducer(INITIAL_STATE, reducers)

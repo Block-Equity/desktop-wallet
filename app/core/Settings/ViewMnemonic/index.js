@@ -121,7 +121,7 @@ class ViewMnemonic extends Component {
       const mnemonicArray = phrase.phrase.split(' ')
       this.timer = setTimeout(() => {
         this.setState({
-          title: 'Your mnemonic phrase will be displayed for 30 seconds',
+          title: 'Your mnemonic phrase will be displayed for 3 minutes',
           phrase: mnemonicArray,
           viewPhrase: true,
           retrieve: false,
@@ -129,14 +129,14 @@ class ViewMnemonic extends Component {
         })
       }, 1500)
 
-      //After ten seconds hide the mnemonic
+      //After 3 minutes hide the mnemonic
       setTimeout(() => {
         this.setState({
           title: 'Please enter your PIN to view your mnemonic phrase.',
           phrase: '',
           viewPhrase: false,
         })
-      }, 30000)
+      }, 180000)
 
     } else {
       this.handleAlertOpen('Invalid PIN.')
