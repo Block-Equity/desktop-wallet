@@ -58,7 +58,7 @@ class Launch extends Component {
           databaseExists: exists,
           authenticated: exists
         })
-      }.bind(this), 2500)
+      }.bind(this), 1500)
 
     } catch (e) {
 

@@ -53,15 +53,15 @@ const materialStyles = theme => ({
 });
 
 const accountCreationStages = {
-  pin: {
+  mnemonic: {
     key: 0,
     progressValue: 25,
-    progressTitle: 'Step 1 of 4'
+    progressTitle: 'Step 1 of 3'
   },
-  mnemonic: {
+  pin: {
     key: 1,
     progressValue: 50,
-    progressTitle: 'Step 2 of 4'
+    progressTitle: 'Step 2 of 3'
   },
   validation: {
     key: 2,
@@ -71,7 +71,7 @@ const accountCreationStages = {
   completion: {
     key: 3,
     progressValue: 100,
-    progressTitle: 'Step 4 of 4'
+    progressTitle: 'Step 3 of 3'
   }
 }
 
@@ -80,7 +80,7 @@ class AccountCreation extends Component {
   constructor (props) {
     super()
     this.state = {
-      currentStage: accountCreationStages.pin.key,
+      currentStage: accountCreationStages.mnemonic.key,
       showModal: false,
       pinValue1: '',
       pinValue: '',
@@ -205,9 +205,10 @@ class AccountCreation extends Component {
       //Validate PIN Value
       if (this.state.pinValue1 === this.state.pinValue) {
         this.setState({
-          currentStage: 1,
+          currentStage: accountCreationStages.completion.key,
           alertOpen: false
         })
+        this.completionOperations()
       } else {
         //Show user message that it's not the same
         var errorMessage
@@ -289,7 +290,7 @@ class AccountCreation extends Component {
     event.preventDefault()
     await this.pickRandomIndex()
     this.setState({
-      currentStage: 2
+      currentStage: accountCreationStages.pin.key
     })
   }
 
