@@ -1,7 +1,19 @@
 import React, { Component } from 'react'
 import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
+import Snackbar from 'material-ui/Snackbar'
+import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
+import { getUserPIN } from '../../db'
+
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input
+}
+from 'reactstrap'
 
 class Send extends Component {
 
@@ -11,16 +23,28 @@ class Send extends Component {
       sendAddress: '',
       sendAmount: '',
       sendMemoID: '',
-      displayErrors: false
+      displayErrors: false,
+      showPINModal: false,
+      modalHeader: 'Enter your PIN to complete the transaction',
+      invalidPIN: false,
+      pinValue: '',
+      retrieve: false,
+      currentAddress: props.currentAddress,
+      alertOpen: false,
+      alertMessage: ''
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.togglePINModal = this.togglePINModal.bind(this)
+    this.handlePINSubmit = this.handlePINSubmit.bind(this)
   }
 
   render() {
     return (
       <div>
         { this.renderSendMoneySection() }
+        { this.renderPINModal() }
+        { this.renderAlertView() }
       </div>
     )
   }
@@ -78,7 +102,7 @@ class Send extends Component {
                   type='submit'
                   style={{width: 'inherit', height: '3rem'}}
                   id="load" disabled>
-                  <i className='fa fa-spinner fa-spin' style={{marginRight: '0.3rem'}}></i>
+                  <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
                   Sending
         </button>
       </div>
@@ -98,6 +122,9 @@ class Send extends Component {
     if (name==='sendAmount' || name==='sendMemoID') {
       value = value.replace(/[^0.001-9]/g, '')
     }
+    if (name==='pinValue') {
+      value = value.replace(/[^0-9]/g,'')
+    }
     this.setState({
       [name]: value
     })
@@ -114,15 +141,154 @@ class Send extends Component {
        return
     }
 
-    //Callback to the parent component
-    const info = {
-      destination: this.state.sendAddress,
-      amount: this.state.sendAmount,
-      memoId: this.state.sendMemoID
+    if (this.state.sendAddress === this.state.currentAddress) {
+      this.setState({
+        alertOpen: true,
+        alertMessage: 'Send address cannot be your own address.',
+        sendAddress: ''
+      })
+    } else {
+      const info = {
+        destination: this.state.sendAddress,
+        amount: this.state.sendAmount,
+        memoId: this.state.sendMemoID
+      }
+      this.setState({
+        info,
+        showPINModal: true
+      })
     }
-
-    this.props.receiveSendPaymentInfo(info)
   }
+
+  renderPINModal () {
+    var header = this.state.invalidPIN ? 'Invalid PIN. Please try again.' : 'Enter your PIN to complete the transaction.'
+    return (
+      <Modal isOpen={this.state.showPINModal} toggle={this.togglePINModal} className={this.props.className} centered={true}>
+        <ModalHeader toggle={this.togglePINModal}>{header}</ModalHeader>
+        <ModalBody>
+          <Input type='password' name='pinValue' id='pinValue'
+            value={this.state.pinValue} onChange={this.handleChange}
+            placeholder='Enter PIN' required />
+        </ModalBody>
+        <ModalFooter>
+          { this.renderSaveButtonContent() }
+        </ModalFooter>
+      </Modal>
+    )
+  }
+
+  renderSaveButtonContent() {
+    const renderNormalButton = (
+      <div className={styles.saveButtonContainer}>
+        <button className='btn btn-primary'
+                  type='submit'
+                  onClick={this.handlePINSubmit}
+                  style={{width: 'inherit', height: '3rem'}}
+                  id="load">
+                  Submit PIN
+        </button>
+      </div>
+    )
+
+    const renderLoadingButton = (
+      <div className={styles.saveButtonContainer}>
+        <button className='btn btn-primary'
+                  type='submit'
+                  style={{width: 'inherit', height: '3rem'}}
+                  id="load" disabled>
+                  <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
+                  Checking PIN
+        </button>
+      </div>
+    )
+
+    if (this.state.retrieve) {
+      return renderLoadingButton
+    } else {
+      return renderNormalButton
+    }
+  }
+
+  togglePINModal(event) {
+    event.preventDefault()
+    this.setState({
+      showPINModal: !this.state.showPINModal
+    })
+  }
+
+  handlePINSubmit (event) {
+    event.preventDefault()
+    this.setState({
+      retrieve: true
+    })
+    this.checkPIN()
+  }
+
+  async checkPIN() {
+    const { pin } = await getUserPIN()
+    console.log(`PIN Saved in DB: ${pin}`)
+    if (pin === this.state.pinValue) {
+      this.timer = setTimeout(() => {
+        this.setState({
+          retrieve: false,
+          pinValue: '',
+          invalidPIN: false,
+          showPINModal: false
+        })
+        this.props.receiveSendPaymentInfo(this.state.info)
+      }, 1000)
+    } else {
+      //Show alert for invalid PIN
+      this.setState({
+        retrieve: false,
+        invalidPIN: true
+      })
+    }
+  }
+
+  renderAlertView() {
+    return (
+      <div>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={this.state.alertOpen}
+          autoHideDuration={6000}
+          onClose={this.handleAlertClose}
+          SnackbarContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">{this.state.alertMessage}</span>}
+          action={[
+            <Button key="close" color="secondary" size="small"
+              onClick={this.handleAlertClose}>
+              CLOSE
+            </Button>
+          ]}
+        />
+      </div>
+    )
+  }
+
+  handleAlertOpen (message) {
+    this.setState({
+      alertOpen: true,
+      alertMessage: message
+    })
+  }
+
+  handleAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    this.setState({
+      alertOpen: false
+    })
+  }
+
+
 }
 
-export default Send;
+export default Send

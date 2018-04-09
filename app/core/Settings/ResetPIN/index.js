@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import styles from './style.css'
-import { getUserPIN, setUserPIN } from '../../../db'
+import { getUserPIN, setUserPIN, getPhrase, setPhrase } from '../../../db'
 
 import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
@@ -115,7 +115,12 @@ class ResetPIN extends Component {
       const { pin } = await getUserPIN()
       console.log(`PIN Saved in DB: ${pin}`)
       if (pin === this.state.oldPIN) {
-        //Save new PIN to the DB
+        //Encrypt mnemonic with new PIN
+        //1. Get Mnemonic with old pin
+        const { phrase } = await getPhrase(pin)
+        //2. Resave mnemonic with new pin
+        await setPhrase(phrase, this.state.newPIN)
+        //3. Save new PIN to the DB
         await setUserPIN(this.state.newPIN)
         this.timer = setTimeout(() => {
           this.handleAlertOpen('New PIN saved!')

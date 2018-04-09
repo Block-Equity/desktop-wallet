@@ -68,6 +68,16 @@ export function lock () {
   }
 }
 
+export function logout () {
+  console.log('Logout Called')
+
+  return async dispatch => {
+    return {
+      type: Types.LOGOUT
+    }
+  }
+}
+
 export function verifyCredentialsRequest () {
   return {
     type: Types.VERIFY_CRENDENTIALS_REQUEST
