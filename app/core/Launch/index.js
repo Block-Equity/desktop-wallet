@@ -104,6 +104,7 @@ class Launch extends Component {
         <Link to='/restore'>
           <CreationButton type='button' className='btn btn-outline-light'>Restore Wallet</CreationButton>
         </Link>
+        <CreationButton type='button' className='btn btn-outline-light'>Nano ledger</CreationButton>
       </ButtonContainer>
     )
   }
