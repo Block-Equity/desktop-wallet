@@ -5,8 +5,8 @@ import { connect } from 'react-redux'
 
 import Transport from '@ledgerhq/hw-transport-node-hid'
 import Str from '@ledgerhq/hw-app-str'
+const { ipcRenderer } = require('electron')
 
-import { getPassword } from '../../services/authentication/keychain'
 import { databaseExists, clearAllUserInfo } from '../../db'
 
 import {
@@ -46,28 +46,19 @@ class Launch extends Component {
   }
 
   async componentDidMount () {
-    /*const transport = await Transport.create()
-    const str = new Str(transport)
-    const result = await str.getAppConfiguration()
-    const publicKey = await str.getPublicKey("44'/148'/0'");
-    console.log(`Public Key: ${publicKey.publicKey}`)*/
-
-    await this.checkForLedger()
-
+    //await this.checkForLedger()
+    ipcRenderer.send('getLedgerStellarKey', '')
     this.checkUserState()
   }
 
   checkForLedger() {
-    console.log('Checking ledgers')
-
-    var transport
-
     const sub = Transport.listen({
       next: async e => {
-        console.log(`Transport Success || ${JSON.stringify(e)}`)
-        if (e.type==='add') {
+          ipcRenderer.send('getLedgerStellarKey', e.descriptor)
           sub.unsubscribe()
-          transport = await Transport.open(e.descriptor)
+          /*const transport = await Transport.open(e.descriptor)
+          console.log(`Component Transport: ${JSON.stringify(transport)}`)
+          //
           const str = new Str(transport)
           const result = await str.getAppConfiguration();
           console.log(`App Configuration: ${result.version}`)
@@ -78,8 +69,7 @@ class Launch extends Component {
           }).catch((err) => {
             console.log(JSON.stringify(err))
             transport.close();
-          })
-        }
+          })*/
       },
       error: error => {
         console.log(JSON.stringify(error))

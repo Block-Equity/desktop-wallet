@@ -12,8 +12,11 @@
  */
 import { app, BrowserWindow } from 'electron'
 import MenuBuilder from './menu'
-const { ipcMain } = require('electron');
+const ipcMain = require('electron').ipcMain
+const ipcRenderer = require('electron').ipcRenderer
 //import keytar from 'keytar'
+import Transport from '@ledgerhq/hw-transport-node-hid'
+import Str from '@ledgerhq/hw-app-str'
 
 var mainWindow = null
 
@@ -115,3 +118,38 @@ ipcMain.on('delete-password', (event, serviceName, user) => {
   event.returnValue = keytar.deletePassword(serviceName, user);
 })
 */
+
+/*ipcRenderer.on('getLedgerStellarKey-reply', (event, arg) => {
+  console.log('IPCRenderer || getLedgerStellarKey-reply')
+  console.log(args)
+})*/
+
+ipcMain.on('getLedgerStellarKey', (event, arg) => {
+  const sub = Transport.listen({
+    next: async e => {
+        console.log(`Listen Transport: ${JSON.stringify(e)}`)
+        const transport = await Transport.open(e.descriptor).catch( error => {
+          console.log(`Transport Error || ${JSON.stringify(error)}`)
+        })
+
+        console.log(`Transport: ${JSON.stringify(transport)}`)
+        const str = new Str(transport)
+        const result = await str.getAppConfiguration();
+
+        await str.getPublicKey("44'/148'/0'").then(res => {
+          console.log('App found');
+          console.log(`Public Key: ${res.publicKey}`)
+        }).catch((err) => {
+          console.log(JSON.stringify(err))
+          transport.close();
+        })
+        sub.unsubscribe()
+    },
+    error: error => {
+      console.log(JSON.stringify(error))
+    },
+    complete: () => {
+
+    }
+  })
+})
