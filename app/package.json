@@ -14,5 +14,13 @@
     "postinstall": "npm run electron-rebuild"
   },
   "license": "MIT",
-  "dependencies": {}
+  "dependencies": {
+    "@ledgerhq/currencies": "^4.10.1",
+    "@ledgerhq/hw-app-str": "^4.7.3",
+    "@ledgerhq/hw-transport": "^4.7.3",
+    "@ledgerhq/hw-transport-node-hid": "^4.7.6",
+    "@ledgerhq/hw-transport-u2f": "^4.7.3",
+    "@ledgerhq/wallet-common": "^0.13.2",
+    "@ledgerhq/react-native-hid": "^4.7.3"
+  }
 }

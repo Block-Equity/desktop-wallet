@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom'
 import { Redirect } from 'react-router'
 import { connect } from 'react-redux'
 
+import Transport from '@ledgerhq/hw-transport-node-hid'
+import Str from '@ledgerhq/hw-app-str'
+
 import { getPassword } from '../../services/authentication/keychain'
 import { databaseExists, clearAllUserInfo } from '../../db'
 
@@ -42,8 +45,49 @@ class Launch extends Component {
     }
   }
 
-  componentDidMount () {
+  async componentDidMount () {
+    /*const transport = await Transport.create()
+    const str = new Str(transport)
+    const result = await str.getAppConfiguration()
+    const publicKey = await str.getPublicKey("44'/148'/0'");
+    console.log(`Public Key: ${publicKey.publicKey}`)*/
+
+    await this.checkForLedger()
+
     this.checkUserState()
+  }
+
+  checkForLedger() {
+    console.log('Checking ledgers')
+
+    var transport
+
+    const sub = Transport.listen({
+      next: async e => {
+        console.log(`Transport Success || ${JSON.stringify(e)}`)
+        if (e.type==='add') {
+          sub.unsubscribe()
+          transport = await Transport.open(e.descriptor)
+          const str = new Str(transport)
+          const result = await str.getAppConfiguration();
+          console.log(`App Configuration: ${result.version}`)
+
+          await str.getPublicKey("44'/148'/0'").then(res => {
+            console.log('App found');
+            console.log(`Public Key: ${res.publicKey}`)
+          }).catch((err) => {
+            console.log(JSON.stringify(err))
+            transport.close();
+          })
+        }
+      },
+      error: error => {
+        console.log(JSON.stringify(error))
+      },
+      complete: () => {
+
+      }
+    })
   }
 
   async checkUserState() {
@@ -104,7 +148,7 @@ class Launch extends Component {
         <Link to='/restore'>
           <CreationButton type='button' className='btn btn-outline-light'>Restore Wallet</CreationButton>
         </Link>
-        <CreationButton type='button' className='btn btn-outline-light'>Nano ledger</CreationButton>
+        <CreationButton onClick={this.handleNanoLedgerLogin} type='button' className='btn btn-outline-light'>Nano ledger</CreationButton>
       </ButtonContainer>
     )
   }
@@ -115,6 +159,12 @@ class Launch extends Component {
         <CircularProgress size={30} style={{ color: '#FFFFFF', marginTop: '4rem' }} thickness={3} />
       </LoaderContainer>
     )
+  }
+
+  handleNanoLedgerLogin (event) {
+    event.preventDefault()
+
+
   }
 
 }
