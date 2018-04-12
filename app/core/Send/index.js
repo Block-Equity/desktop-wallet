@@ -7,15 +7,6 @@ import Tooltip from 'material-ui/Tooltip'
 import PinModal from '../PinModal'
 import { getUserPIN } from '../../db'
 
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input
-}
-from 'reactstrap'
-
 class Send extends Component {
 
   constructor (props) {

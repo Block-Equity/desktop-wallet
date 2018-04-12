@@ -45,7 +45,7 @@ export const getPaymentOperationList = async (publicKey) => {
     server.operations()
       .forAccount(publicKey)
       .order('desc')
-      .limit(25)
+      .limit(100)
       .call()
       .then(({ records }) => resolve(records))
       .catch(error => reject(error));
@@ -155,7 +155,17 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
           console.log('An error has occured:');
           console.log(err);
           reject({error: true, errorMessage: err})
-        });
+        })
     })
   })
+}
+
+export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
+  console.log(`SK: ${decryptSK} || PK: ${publicKey} || Issuer: ${issuerPK} || AssetType: ${assetType}`)
+  let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
+
+  var ptsToken = new StellarSdk.Asset(assetType, issuerPK)
+
+
+
 }
