@@ -42,7 +42,6 @@ class Navigation extends Component {
   renderTabs () {
     return (
       <Paper className={materialStyles.root} elevation={0} style={{borderRadius:'0'}}>
-        <Divider />
         <Tabs
           value={this.state.itemSelected}
           onChange={this.handleChange}

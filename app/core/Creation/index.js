@@ -44,7 +44,8 @@ from 'reactstrap'
 
 const AUTO_HIDE_DURATION = 8000
 
-const font = "'Lato', sans-serif";
+const font = "'Lato', sans-serif"
+
 const materialStyles = theme => ({
   chip: {
     margin: theme.spacing.unit / 2,
@@ -133,7 +134,7 @@ class AccountCreation extends Component {
 
     return (
       <div className={styles.container}>
-        <NavBar/>
+        <NavBar isMainView={false}/>
         <div style={{margin: '1rem', textAlign: 'center'}}>
           { this.renderContent(this.state.currentStage) }
         </div>

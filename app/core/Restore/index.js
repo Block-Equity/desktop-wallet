@@ -120,7 +120,7 @@ class Restore extends Component {
 
     return (
       <div className={styles.container}>
-        <NavBar/>
+        <NavBar isMainView={false}/>
         <div style={{margin: '1rem', textAlign: 'center'}}>
           { this.renderContent(this.state.currentStage) }
         </div>

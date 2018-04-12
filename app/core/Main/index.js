@@ -171,11 +171,7 @@ class Main extends Component {
     const balance = this.props.currentAccount.balance.balance
     return (
       <div className={styles.mainPageHeaderContainer}>
-        <div id={styles.mainPageSettingsContainer}>
-          <a onClick={this.toggleSettingsDrawer(true)}><i className="fa fa-cog"></i></a>
-        </div>
-        <img className={styles.mainPageHeaderLogo} src={logoIcon} alt=''></img>
-        <div className={styles.mainPageHeaderBalanceTitle}> YOUR CURRENT XLM BALANCE </div>
+        <div className={styles.mainPageHeaderBalanceTitle}> Stellar Lumens (XLM) </div>
         <div className={styles.mainPageHeaderBalanceLabel}><b> {numeral(balance).format('0,0.00')} </b> </div>
       </div>
     )

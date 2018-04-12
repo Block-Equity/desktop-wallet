@@ -54,25 +54,23 @@ class History extends Component {
       if (n.type === TRANSACTION_TYPE.Payment) {
         displayAddress = n.from === this.props.pKey ? n.to : n.from
         displayAmount = n.from === this.props.pKey ? numeral(`-${n.amount}`).format('(0,0.00)') : numeral(n.amount).format('0,0.00')
-        displayTypeLabel = n.from === this.props.pKey ? 'Payment sent' : 'Payment received'
+        displayTypeLabel = n.from === this.props.pKey ? `Payment sent ` : `Payment received `
       } else if (n.type === TRANSACTION_TYPE.CreateAccount) {
         displayAddress = n.source_account === this.props.pKey ? n.account : n.source_account
         displayAmount = n.source_account === this.props.pKey ? numeral(`-${n.starting_balance}`).format('(0,0.00)') : numeral(n.starting_balance).format('0,0.00')
-        displayTypeLabel = n.source_account === this.props.pKey ? 'Account created for' : 'Account created by'
+        displayTypeLabel = n.source_account === this.props.pKey ? `Account created ` : `Account created by `
       }
 
       return (
         <TableRow key={n.id}>
           <TableCell style={tableRowStyle}>
             <div className={styles.tableCellMultiLine}>
-              <div><b>{formattedNowTime}</b></div>
-              <div style={{marginTop: '0.5rem'}}>{formattedDate}</div>
-            </div>
-          </TableCell>
-          <TableCell style={tableRowStyle}>
-            <div className={styles.tableCellMultiLine}>
-              <div><b>{displayTypeLabel}</b></div>
-              <div style={{marginTop: '0.5rem', fontSize: '0.57rem'}}>{displayAddress}</div>
+              <div style={{display: 'flex', flexDirection: 'row'}}>
+                <b>{displayTypeLabel}</b>
+                <i className="fa fa-circle" style={{color:'#A1A1A1', marginRight: '0.5rem', marginLeft: '0.5rem', marginTop: '0.45rem', fontSize: '0.4rem'}}></i>
+                <div style={{color:'#A1A1A1', fontWeight: '300'}}>{formattedNowTime}</div>
+              </div>
+              <div style={{marginTop: '0.5rem', fontSize: '0.65rem'}}>{displayAddress}</div>
             </div>
           </TableCell>
           <TableCell style={tableRowStyle}>{ displayAmount }</TableCell>
@@ -87,7 +85,6 @@ class History extends Component {
         <Table className={materialStyles.table}>
           <TableHead>
             <TableRow>
-              <TableCell style={tableHeaderStyle}>Date</TableCell>
               <TableCell style={tableHeaderStyle}>Description</TableCell>
               <TableCell style={tableHeaderStyle}>Amount</TableCell>
             </TableRow>
