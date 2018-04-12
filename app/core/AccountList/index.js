@@ -10,6 +10,8 @@ import InboxIcon from 'material-ui-icons/MoveToInbox'
 import DraftsIcon from 'material-ui-icons/Drafts'
 import SendIcon from 'material-ui-icons/Send'
 
+import { getSupportedAssets } from '../../services/networking/lists'
+
 const materialStyles = theme => ({
   menuItem: {
     '&:focus': {
@@ -37,6 +39,12 @@ class AccountList extends Component {
       itemSelected: supportedAssetData[0]
     })
 
+  }
+
+  async componentDidMount () {
+    console.log(`Fetching supported Assets`)
+    const supportedAssets = await getSupportedAssets()
+    console.log(`Fetching supported Assets ${JSON.stringify(supportedAssets)}`)
   }
 
   render() {
