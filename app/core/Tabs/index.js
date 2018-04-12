@@ -11,7 +11,7 @@ const font = "'Lato', sans-serif";
 const materialStyles = theme => ({
   root: {
     flexGrow: 1,
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing.unit * 2,
     width: '100%',
   },
 })
@@ -47,7 +47,6 @@ class Navigation extends Component {
           onChange={this.handleChange}
           indicatorColor='primary'
           textColor='primary'
-          style={{ paddingLeft: '2rem'}}
           centered>
           { this.renderTabItems() }
         </Tabs>

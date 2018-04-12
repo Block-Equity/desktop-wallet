@@ -4,6 +4,7 @@ import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
+import PinModal from '../PinModal'
 import { getUserPIN } from '../../db'
 
 import {
@@ -25,10 +26,6 @@ class Send extends Component {
       sendMemoID: '',
       displayErrors: false,
       showPINModal: false,
-      modalHeader: 'Enter your PIN to complete the transaction',
-      invalidPIN: false,
-      pinValue: '',
-      retrieve: false,
       currentAddress: props.currentAddress,
       alertOpen: false,
       alertMessage: ''
@@ -36,14 +33,15 @@ class Send extends Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.togglePINModal = this.togglePINModal.bind(this)
-    this.handlePINSubmit = this.handlePINSubmit.bind(this)
   }
 
   render() {
     return (
       <div>
         { this.renderSendMoneySection() }
-        { this.renderPINModal() }
+        <PinModal showPINModal={this.state.showPINModal}
+                  pinSuccessful={this.handlePinSubmission()}
+                  toggle={this.togglePINModal} />
         { this.renderAlertView() }
       </div>
     )
@@ -122,9 +120,6 @@ class Send extends Component {
     if (name==='sendAmount' || name==='sendMemoID') {
       value = value.replace(/[^0.001-9]/g, '')
     }
-    if (name==='pinValue') {
-      value = value.replace(/[^0-9]/g,'')
-    }
     this.setState({
       [name]: value
     })
@@ -160,68 +155,16 @@ class Send extends Component {
     }
   }
 
-  renderPINModal () {
-    var header = this.state.invalidPIN ? 'Invalid PIN. Please try again.' : 'Enter your PIN to complete the transaction.'
-    return (
-      <Modal isOpen={this.state.showPINModal} toggle={this.togglePINModal} className={this.props.className} centered={true}>
-        <ModalHeader toggle={this.togglePINModal}>{header}</ModalHeader>
-        <ModalBody>
-          <Input type='password' name='pinValue' id='pinValue'
-            value={this.state.pinValue} onChange={this.handleChange}
-            placeholder='Enter PIN' required />
-        </ModalBody>
-        <ModalFooter>
-          { this.renderSaveButtonContent() }
-        </ModalFooter>
-      </Modal>
-    )
-  }
-
-  renderSaveButtonContent() {
-    const renderNormalButton = (
-      <div className={styles.saveButtonContainer}>
-        <button className='btn btn-primary'
-                  type='submit'
-                  onClick={this.handlePINSubmit}
-                  style={{width: 'inherit', height: '3rem'}}
-                  id="load">
-                  Submit PIN
-        </button>
-      </div>
-    )
-
-    const renderLoadingButton = (
-      <div className={styles.saveButtonContainer}>
-        <button className='btn btn-primary'
-                  type='submit'
-                  style={{width: 'inherit', height: '3rem'}}
-                  id="load" disabled>
-                  <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
-                  Checking PIN
-        </button>
-      </div>
-    )
-
-    if (this.state.retrieve) {
-      return renderLoadingButton
-    } else {
-      return renderNormalButton
-    }
-  }
-
-  togglePINModal(event) {
-    event.preventDefault()
+  togglePINModal (event) {
     this.setState({
       showPINModal: !this.state.showPINModal
     })
   }
 
-  handlePINSubmit (event) {
-    event.preventDefault()
-    this.setState({
-      retrieve: true
-    })
-    this.checkPIN()
+  handlePinSubmission (success) {
+    if (success) {
+      this.props.receiveSendPaymentInfo(this.state.info)
+    }
   }
 
   async checkPIN() {
@@ -287,7 +230,6 @@ class Send extends Component {
       alertOpen: false
     })
   }
-
 
 }
 
