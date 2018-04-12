@@ -166,6 +166,38 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
 
   var ptsToken = new StellarSdk.Asset(assetType, issuerPK)
 
+  return new Promise((resolve, reject) => {
+    server.loadAccount(sourceKeys.publicKey)
+    .catch(error => {
+      console.log(error.name)
+      reject({error: true, errorMessage: error.name})
+    })
+    // If there was no error, load up-to-date information on your account.
+    .then(sourceAccount => {
+      var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
+        .addOperation(StellarSdk.Operation.changeTrust({
+          asset: ptsToken
+        }))
+        .build()
 
+        transaction.sign(sourceKeys)
+
+        server.submitTransaction(transaction)
+        .then( transactionResult => {
+          console.log(JSON.stringify(transactionResult, null, 2));
+          console.log('\nSuccess! View the transaction at: ');
+          console.log(transactionResult._links.transaction.href);
+          resolve({
+            payload: transactionResult._links.transaction.href,
+            error: false
+          })
+        })
+        .catch( err => {
+          console.log('An error has occured:');
+          console.log(err);
+          reject({error: true, errorMessage: err})
+        })
+    })
+  })
 
 }
