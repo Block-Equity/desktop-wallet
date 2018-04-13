@@ -5,11 +5,15 @@ export const getSupportedAssets = () => {
   return new Promise((resolve, reject) => {
     axios.get(url)
     .then( response => {
-      resolve(response)
-      console.log(response)
+      var obj = response.data
+      var array = Object.keys(obj).map(item => obj[item]);
+      resolve({
+        list: array,
+        response: obj
+      })
     })
     .catch( error => {
-      reject(error)
+      reject({error})
       console.log(error)
     })
   })

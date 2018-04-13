@@ -2,15 +2,15 @@ import React, { Component } from 'react'
 import styles from './style.css'
 import PropTypes from 'prop-types'
 
-import { MenuList, MenuItem } from 'material-ui/Menu'
 import Paper from 'material-ui/Paper'
 import { withStyles } from 'material-ui/styles'
-import { ListItemIcon, ListItemText } from 'material-ui/List'
-import InboxIcon from 'material-ui-icons/MoveToInbox'
-import DraftsIcon from 'material-ui-icons/Drafts'
-import SendIcon from 'material-ui-icons/Send'
+import { ListItemIcon, ListItemText, ListSubheader } from 'material-ui/List'
+import { MenuList, MenuItem } from 'material-ui/Menu'
+import Divider from 'material-ui/Divider'
 
 import { getSupportedAssets } from '../../services/networking/lists'
+
+const font = "'Lato', sans-serif"
 
 const materialStyles = theme => ({
   menuItem: {
@@ -31,48 +31,84 @@ const supportedAssetData = [
   { id: 2, cadtoken: { id: 2, title: 'CAD Token', ticker: 'CAD'}, title: 'CAD Token', ticker: 'CAD' }
 ]
 
+const listSections = {
+   wallet: { displayName: 'WALLET' },
+   supported_assets: { displayName: 'SUPPORTED ASSETS' }
+}
+
 class AccountList extends Component {
 
   constructor (props) {
     super()
     this.state = ({
-      itemSelected: supportedAssetData[0]
+      itemSelected: supportedAssetData[0],
+      assets: [{ asset_code: 'XLM', asset_name: 'Stellar'}],
+      supportedAssets: []
     })
 
   }
 
-  async componentDidMount () {
-    console.log(`Fetching supported Assets`)
-    const supportedAssets = await getSupportedAssets()
-    console.log(`Fetching supported Assets ${JSON.stringify(supportedAssets)}`)
+  componentDidMount () {
+    this.loadAccounts()
+  }
+
+  async loadAccounts () {
+    //Fetch Stellar Accounts
+
+    //Supported Asset List
+    const { list, response, error } = await getSupportedAssets()
+    console.log(`Fetching supported Assets ${JSON.stringify(list)}`)
+    this.setState({
+      supportedAssets: list
+    })
   }
 
   render() {
     return (
       <div style={{display: 'flex', flexDirection: 'row'}}>
-        <Paper elevation={1} style={{marginTop: '-0.5rem'}}>
+        <Paper elevation={2} style={{marginTop: '-0.5rem', width: '11.5rem'}}>
           <MenuList style={{marginTop: '2.5rem', height: '100vh'}}>
-            <MenuItem className={materialStyles.menuItem}>
-              <ListItemIcon className={materialStyles.icon}>
-                <SendIcon />
-              </ListItemIcon>
-              <ListItemText inset primary="Stellar" />
-            </MenuItem>
-            <MenuItem className={materialStyles.menuItem}>
-              <ListItemIcon className={materialStyles.icon}>
-                <DraftsIcon />
-              </ListItemIcon>
-              <ListItemText inset primary="BlockPoints" />
-            </MenuItem>
-            <MenuItem className={materialStyles.menuItem}>
-              <ListItemIcon className={materialStyles.icon}>
-                <InboxIcon />
-              </ListItemIcon>
-              <ListItemText inset primary="CAD" />
-            </MenuItem>
+            { this.renderSubHeader(listSections.wallet.displayName)}
+            { this.renderAssets() }
+            <Divider />
+            { this.renderSubHeader(listSections.supported_assets.displayName)}
+            { this.renderSupportedAssets() }
           </MenuList>
         </Paper>
       </div>
+    )
+  }
+
+  renderAssets() {
+    return this.state.assets.map((asset, index) => {
+      return (
+        <MenuItem className={materialStyles.menuItem} key={index}>
+          {this.renderListLabel(asset.asset_name)}
+        </MenuItem>
+      )
+    })
+  }
+
+  renderSupportedAssets() {
+    return this.state.supportedAssets.map((asset, index) => {
+      const isSelected = index === 0 ? true : false
+      return (
+        <MenuItem className={materialStyles.menuItem} key={index}>
+          {this.renderListLabel(asset.asset_name)}
+        </MenuItem>
+      )
+    })
+  }
+
+  renderSubHeader (value) {
+    return (
+      <ListSubheader style={{fontFamily: font, outline: 'none', fontSize: '0.6rem', fontWeight: '700', letterSpacing: '0.05rem' }} component="div">{value}</ListSubheader>
+    )
+  }
+
+  renderListLabel (value) {
+    return (
+      <label style={{fontFamily: font, fontSize: '0.85rem', paddingTop: '0.5rem'}}>{value}</label>
     )
   }
 

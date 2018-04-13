@@ -1,6 +1,13 @@
 import React, { Component } from 'react'
 import styles from './style.css'
 
+import { unlock } from '../../common/auth/actions'
+import { initializeDB } from '../../common/account/actions'
+import { getAccounts } from '../../common/account/selectors'
+
+import { connect } from 'react-redux'
+import isEmpty from 'lodash/isEmpty'
+
 //Nav Bar
 import NavBar from '../NavBar'
 import AccountList from '../AccountList'
@@ -12,10 +19,24 @@ class AppView extends Component {
   constructor (props) {
     super()
     this.state = {
-      settingsOpen: false
+      settingsOpen: false,
+      dbInit: false
     }
     this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
   }
+
+  async componentDidMount () {
+    try {
+      await this.props.unlock()
+      await this.props.initializeDB()
+      this.setState({
+        dbInit: true
+      })
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
 
   render() {
     return (
@@ -26,12 +47,20 @@ class AppView extends Component {
           </div>
           <div className={styles.accountContentContainer}>
             <NavBar isMainView={true} openSettings={this.openSettings}/>
-            <Main />
+            { this.renderMainView() }
           </div>
         </div>
         <Settings setOpen={this.toggleSettingsDrawer(!this.state.settingsOpen)} open={this.state.settingsOpen}/>
       </div>
     )
+  }
+
+  renderMainView () {
+    if (this.state.dbInit) {
+      return (
+        <Main />
+      )
+    }
   }
 
   openSettings = () => {
@@ -48,4 +77,13 @@ class AppView extends Component {
 
 }
 
-export default AppView
+const mapStateToProps = (state, ownProps) => {
+  return {
+    accounts: getAccounts(state)
+  }
+}
+
+export default connect(null, {
+  unlock,
+  initializeDB
+})(AppView)

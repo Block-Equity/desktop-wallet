@@ -1,9 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { unlock } from '../../common/auth/actions'
 import {
-  initializeDB,
   createAccount,
   fetchAccountDetails,
   setCurrentAccount
@@ -74,8 +72,6 @@ class Main extends Component {
 
   async componentDidMount () {
     try {
-      await this.props.unlock()
-      await this.props.initializeDB()
       const { accounts } = this.props
       if (!isEmpty(accounts)) {
         console.log(`Length of accounts || ${Object.keys(accounts).length}`)

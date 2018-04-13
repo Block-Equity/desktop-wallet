@@ -6,7 +6,7 @@ import Paper from 'material-ui/Paper'
 import Tabs, { Tab } from 'material-ui/Tabs'
 import Divider from 'material-ui/Divider'
 
-const font = "'Lato', sans-serif";
+const font = "'Lato', sans-serif"
 
 const materialStyles = theme => ({
   root: {
