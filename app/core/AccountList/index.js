@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import styles from './style.css'
 import PropTypes from 'prop-types'
 
@@ -9,6 +10,15 @@ import { MenuList, MenuItem } from 'material-ui/Menu'
 import Divider from 'material-ui/Divider'
 
 import { getSupportedAssets } from '../../services/networking/lists'
+import {
+  fetchAccountDetails,
+  setCurrentAccount
+} from '../../common/account/actions'
+
+import {
+  getAccounts,
+  getCurrentAccount
+} from '../../common/account/selectors'
 
 const font = "'Lato', sans-serif"
 

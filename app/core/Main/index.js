@@ -272,8 +272,6 @@ const mapStateToProps = (state, ownProps) => {
 }
 
 export default connect(mapStateToProps, {
-  unlock,
-  initializeDB,
   createAccount,
   fetchAccountDetails,
   setCurrentAccount,
