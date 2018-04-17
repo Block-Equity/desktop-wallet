@@ -86,12 +86,7 @@ class AccountList extends Component {
   async loadAccounts () {
     try {
       const { accounts } = this.props
-      console.log(`Length of accounts || ${Object.keys(accounts).length}`)
-
       if (!isEmpty(accounts)) {
-        const size = Object.keys(accounts).length
-        const currentAccount = accounts[Object.keys(accounts)[size-1]]
-        await this.props.setCurrentAccount(currentAccount)
         //Supported Asset List
         const { list } = await getSupportedAssets()
         console.log(`Fetching supported Assets ${JSON.stringify(list)}`)

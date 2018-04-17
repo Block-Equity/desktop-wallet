@@ -31,7 +31,7 @@ class Send extends Component {
       <div>
         { this.renderSendMoneySection() }
         <PinModal showPINModal={this.state.showPINModal}
-                  pinSuccessful={this.handlePinSubmission()}
+                  pinSuccessful={this.handlePinSubmission}
                   toggle={this.togglePINModal} />
         { this.renderAlertView() }
       </div>

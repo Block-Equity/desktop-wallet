@@ -1,6 +1,7 @@
 import * as db from '../../db'
 import { getCurrentAccount } from './selectors'
 import * as horizon from '../../services/networking/horizon'
+import { getSupportedAssets } from '../../services/networking/lists'
 import * as mnemonic from '../../services/security/mnemonic'
 import * as Types from './types'
 
@@ -10,6 +11,9 @@ export function initializeDB () {
 
     try {
       let { accounts } = await db.initialize()
+      const updatedCurrentAccount = accounts[Object.keys(accounts)[0]]
+      dispatch(setAccounts(accounts))
+      dispatch(setCurrentAccount(updatedCurrentAccount))
 
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
@@ -64,10 +68,8 @@ export function fetchAccountDetails () {
     const { pKey: publicKey, sKey: secretKey } = currentAccount
     dispatch(accountDetailsRequest())
 
-    let details
-
     try {
-      details = await horizon.getAccountDetail(publicKey)
+      let details = await horizon.getAccountDetail(publicKey)
 
       const { balance, sequence: nextSequence } = details
 
@@ -78,14 +80,25 @@ export function fetchAccountDetails () {
         sequence: nextSequence
       })
 
-      const updatedCurrentAccount = accounts[Object.keys(accounts)[0]]
       dispatch(setAccounts(accounts))
-      dispatch(setCurrentAccount(updatedCurrentAccount))
     } catch (e) {
       return dispatch(accountDetailsFailure(e))
     }
 
     return dispatch(accountDetailsSuccess())
+  }
+}
+
+export function fetchSupportedAssets () {
+  return async (dispatch, getState) => {
+    dispatch(supportedAssetsRequest())
+
+    try {
+      const { list } = await getSupportedAssets()
+      return dispatch(supportedAssetsSuccess(list))
+    } catch (e) {
+      return dispatch(supportedAssetsFailure(e))
+    }
   }
 }
 
@@ -159,6 +172,27 @@ export function accountDetailsSuccess () {
 export function accountDetailsFailure (error) {
   return {
     type: Types.ACCOUNT_DETAILS_FAILURE,
+    payload: error,
+    error: true
+  }
+}
+
+export function supportedAssetsRequest () {
+  return {
+    type: Types.ACCOUNT_SUPPORTED_ASSETS_REQUEST
+  }
+}
+
+export function supportedAssetsSuccess (list) {
+  return {
+    type: Types.ACCOUNT_SUPPORTED_ASSETS_SUCCESS,
+    payload: { list }
+  }
+}
+
+export function supportedAssetsFailure (error) {
+  return {
+    type: Types.ACCOUNT_SUPPORTED_ASSETS_FAILURE,
     payload: error,
     error: true
   }

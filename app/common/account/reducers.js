@@ -7,6 +7,7 @@ export const INITIAL_STATE = {
   isFetching: false,
   error: undefined,
   accounts: undefined,
+  supportedAssets: undefined,
   currentAccount: undefined
 }
 
@@ -97,6 +98,28 @@ function accountDetailsFailure (state, error) {
     error
   }
 }
+
+function accountSupportedAssetsRequest (state) {
+  return {
+    ...state
+  }
+}
+
+function accountSupportedAssetsSuccess (state, payload) {
+  const { list } = payload
+  return {
+    ...state,
+    supportedAssets: list
+  }
+}
+
+function accountSupportedAssetsFailure (state, error) {
+  return {
+    ...state,
+    error
+  }
+}
+
 const reducers = {
   [Types.ACCOUNT_INITIALIZATION_REQUEST]: accountInitializationRequest,
   [Types.ACCOUNT_INITIALIZATION_SUCCESS]: accountInitializationSuccess,
@@ -108,7 +131,8 @@ const reducers = {
   [Types.SET_CURRENT_ACCOUNT]: setCurrentAccount,
   [Types.ACCOUNT_DETAILS_REQUEST]: accountDetailsRequest,
   [Types.ACCOUNT_DETAILS_SUCCESS]: accountDetailsSuccess,
-  [Types.ACCOUNT_DETAILS_FAILURE]: accountDetailsFailure
+  [Types.ACCOUNT_DETAILS_FAILURE]: accountDetailsFailure,
+  [Types.ACCOUNT_SUPPORTED_ASSETS_REQUEST]: accountSupportedAssetsRequest
 }
 
 export default createReducer(INITIAL_STATE, reducers)
