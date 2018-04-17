@@ -36,6 +36,7 @@ class PinModal extends Component {
 
     this.togglePINModal = this.togglePINModal.bind(this)
     this.handlePINSubmit = this.handlePINSubmit.bind(this)
+    this.handleChange = this.handleChange.bind(this)
   }
 
   render () {
@@ -95,6 +96,7 @@ class PinModal extends Component {
     const target = event.target
     var value = target.value
     const name = target.name
+    console.log(`Entered PIN Value: ${value}`)
     value = value.replace(/[^0-9]/g,'')
     this.setState({
       [name]: value

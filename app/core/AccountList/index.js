@@ -3,13 +3,26 @@ import { connect } from 'react-redux'
 import styles from './style.css'
 import PropTypes from 'prop-types'
 
+import isEmpty from 'lodash/isEmpty'
+
 import Paper from 'material-ui/Paper'
 import { withStyles } from 'material-ui/styles'
-import { ListItemIcon, ListItemText, ListSubheader } from 'material-ui/List'
-import { MenuList, MenuItem } from 'material-ui/Menu'
+
+import {
+  ListItemIcon,
+  ListItemText,
+  ListSubheader
+} from 'material-ui/List'
+
+import {
+  MenuList,
+  MenuItem
+} from 'material-ui/Menu'
+
 import Divider from 'material-ui/Divider'
 
 import { getSupportedAssets } from '../../services/networking/lists'
+
 import {
   fetchAccountDetails,
   setCurrentAccount
@@ -19,6 +32,14 @@ import {
   getAccounts,
   getCurrentAccount
 } from '../../common/account/selectors'
+
+import {
+  streamPayments
+} from '../../common/payment/actions'
+
+import {
+  getIncomingPayment
+} from '../../common/payment/selectors'
 
 const font = "'Lato', sans-serif"
 
@@ -63,14 +84,34 @@ class AccountList extends Component {
   }
 
   async loadAccounts () {
-    //Fetch Stellar Accounts
+    try {
+      const { accounts } = this.props
+      console.log(`Length of accounts || ${Object.keys(accounts).length}`)
 
-    //Supported Asset List
-    const { list, response, error } = await getSupportedAssets()
-    console.log(`Fetching supported Assets ${JSON.stringify(list)}`)
-    this.setState({
-      supportedAssets: list
-    })
+      if (!isEmpty(accounts)) {
+        const size = Object.keys(accounts).length
+        const currentAccount = accounts[Object.keys(accounts)[size-1]]
+        await this.props.setCurrentAccount(currentAccount)
+        //Supported Asset List
+        const { list } = await getSupportedAssets()
+        console.log(`Fetching supported Assets ${JSON.stringify(list)}`)
+        this.setState({
+          supportedAssets: list
+        })
+        await this.props.fetchAccountDetails()
+        if (!this.state.userAccountDetailFailed) {
+          await this.props.streamPayments()
+          if (this.props.incomingPayment.from !== this.state.publicKey || this.props.incomingPayment.from !== undefined ) {
+            new Notification('Payment Received',
+              { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
+            )
+          }
+        }
+      }
+    } catch (e) {
+      console.log(e)
+      // TODO: display something on the UI
+    }
   }
 
   render() {
@@ -124,4 +165,16 @@ class AccountList extends Component {
 
 }
 
-export default AccountList
+const mapStateToProps = (state) => {
+  return {
+    accounts: getAccounts(state),
+    currentAccount: getCurrentAccount(state),
+    userAccountDetailFailed: state.account.fetchingFailed
+  }
+}
+
+export default connect(mapStateToProps, {
+  fetchAccountDetails,
+  setCurrentAccount,
+  streamPayments
+})(AccountList)

@@ -39,7 +39,7 @@ import walletIcon from './images/icnWallet.png'
 import settingIcon from './images/icnSettings.png'
 import logoIcon from '../Launch/logo-white.png'
 
-import styles from './style.css';
+import styles from './style.css'
 
 import { withStyles } from 'material-ui/styles'
 import Button from 'material-ui/Button'
@@ -68,32 +68,6 @@ class Main extends Component {
       settingsOpen: false
     }
     this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
-  }
-
-  async componentDidMount () {
-    try {
-      const { accounts } = this.props
-      if (!isEmpty(accounts)) {
-        console.log(`Length of accounts || ${Object.keys(accounts).length}`)
-        const size = Object.keys(accounts).length
-        const currentAccount = accounts[Object.keys(accounts)[size-1]]
-        const { pKey: publicKey, sKey: secretKey } = currentAccount
-        this.setState({publicKey: currentAccount.pKey})
-        await this.props.setCurrentAccount(currentAccount)
-        await this.props.fetchAccountDetails()
-        if (!this.state.userAccountDetailFailed) {
-          await this.props.streamPayments()
-          if (this.props.incomingPayment.from !== this.state.publicKey || this.props.incomingPayment.from !== undefined ) {
-            new Notification('Payment Received',
-              { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
-            )
-          }
-        }
-      }
-    } catch (e) {
-      console.log(e)
-      // TODO: display something on the UI
-    }
   }
 
   async componentWillUpdate(nextProps) {

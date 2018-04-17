@@ -43,7 +43,7 @@ class AppView extends Component {
       <div className={styles.mainContainer}>
         <div className={styles.contentContainer}>
           <div style={{zIndex: '2'}}>
-            <AccountList />
+            { this.renderAccountListView() }
           </div>
           <div className={styles.accountContentContainer}>
             <NavBar isMainView={true} openSettings={this.openSettings}/>
@@ -59,6 +59,14 @@ class AppView extends Component {
     if (this.state.dbInit) {
       return (
         <Main />
+      )
+    }
+  }
+
+  renderAccountListView () {
+    if (this.state.dbInit) {
+      return (
+        <AccountList />
       )
     }
   }
