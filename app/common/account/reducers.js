@@ -7,7 +7,7 @@ export const INITIAL_STATE = {
   isFetching: false,
   error: undefined,
   accounts: undefined,
-  supportedAssets: undefined,
+  supportedAssets: [],
   currentAccount: undefined
 }
 
@@ -107,6 +107,7 @@ function accountSupportedAssetsRequest (state) {
 
 function accountSupportedAssetsSuccess (state, payload) {
   const { list } = payload
+  const { supportedAssets } = state
   return {
     ...state,
     supportedAssets: list
@@ -132,7 +133,9 @@ const reducers = {
   [Types.ACCOUNT_DETAILS_REQUEST]: accountDetailsRequest,
   [Types.ACCOUNT_DETAILS_SUCCESS]: accountDetailsSuccess,
   [Types.ACCOUNT_DETAILS_FAILURE]: accountDetailsFailure,
-  [Types.ACCOUNT_SUPPORTED_ASSETS_REQUEST]: accountSupportedAssetsRequest
+  [Types.ACCOUNT_SUPPORTED_ASSETS_REQUEST]: accountSupportedAssetsRequest,
+  [Types.ACCOUNT_SUPPORTED_ASSETS_SUCCESS]: accountSupportedAssetsSuccess,
+  [Types.ACCOUNT_SUPPORTED_ASSETS_FAILURE]: accountSupportedAssetsFailure
 }
 
 export default createReducer(INITIAL_STATE, reducers)

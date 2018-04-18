@@ -1,5 +1,5 @@
 import * as db from '../../db'
-import { getCurrentAccount } from './selectors'
+import { getCurrentAccount, getAccounts } from './selectors'
 import * as horizon from '../../services/networking/horizon'
 import { getSupportedAssets } from '../../services/networking/lists'
 import * as mnemonic from '../../services/security/mnemonic'
@@ -11,9 +11,7 @@ export function initializeDB () {
 
     try {
       let { accounts } = await db.initialize()
-      const updatedCurrentAccount = accounts[Object.keys(accounts)[0]]
       dispatch(setAccounts(accounts))
-      dispatch(setCurrentAccount(updatedCurrentAccount))
 
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
@@ -64,20 +62,23 @@ export function fundAccount ({ publicKey, secretKey }) {
 
 export function fetchAccountDetails () {
   return async (dispatch, getState) => {
-    let currentAccount = getCurrentAccount(getState())
+    let accounts = getAccounts(getState())
+    const currentAccount = accounts[Object.keys(accounts)[0]]
     const { pKey: publicKey, sKey: secretKey } = currentAccount
+    dispatch(setCurrentAccount(currentAccount))
     dispatch(accountDetailsRequest())
 
     try {
       let details = await horizon.getAccountDetail(publicKey)
 
-      const { balance, sequence: nextSequence } = details
+      const { balances, sequence: nextSequence, type } = details
 
       const accounts = await db.updateUserAccount({
         publicKey,
         secretKey,
-        balance,
-        sequence: nextSequence
+        balances,
+        sequence: nextSequence,
+        type
       })
 
       dispatch(setAccounts(accounts))

@@ -25,12 +25,14 @@ import { getSupportedAssets } from '../../services/networking/lists'
 
 import {
   fetchAccountDetails,
-  setCurrentAccount
+  setCurrentAccount,
+  fetchSupportedAssets
 } from '../../common/account/actions'
 
 import {
   getAccounts,
-  getCurrentAccount
+  getCurrentAccount,
+  getSupportedStellarAssets
 } from '../../common/account/selectors'
 
 import {
@@ -76,7 +78,7 @@ class AccountList extends Component {
       assets: [{ asset_code: 'XLM', asset_name: 'Stellar'}],
       supportedAssets: []
     })
-
+    this.displaySupportedAccounts = this.displaySupportedAccounts.bind(this)
   }
 
   componentDidMount () {
@@ -87,13 +89,13 @@ class AccountList extends Component {
     try {
       const { accounts } = this.props
       if (!isEmpty(accounts)) {
-        //Supported Asset List
-        const { list } = await getSupportedAssets()
-        console.log(`Fetching supported Assets ${JSON.stringify(list)}`)
-        this.setState({
-          supportedAssets: list
-        })
         await this.props.fetchAccountDetails()
+        await this.props.fetchSupportedAssets()
+        const { supportedDisplayAssets, stellarAccounts } = await this.displaySupportedAccounts(accounts)
+        this.setState({
+          supportedAssets: supportedDisplayAssets,
+          assets: stellarAccounts
+        })
         if (!this.state.userAccountDetailFailed) {
           await this.props.streamPayments()
           if (this.props.incomingPayment.from !== this.state.publicKey || this.props.incomingPayment.from !== undefined ) {
@@ -107,6 +109,42 @@ class AccountList extends Component {
       console.log(e)
       // TODO: display something on the UI
     }
+  }
+
+  displaySupportedAccounts (accounts) {
+    var supportedDisplayAssets = []
+    var stellarAccounts = []
+
+    Object.keys(accounts).map((key, index) => {
+      if (accounts[key].type === 'Stellar') {
+        const stellarAccount = accounts[Object.keys(accounts)[index]]
+        stellarAccount.balances.map(n => {
+          if (n.asset_type === 'native') {
+            const stellarAccountObj = {
+              asset_code: 'XLM',
+              asset_name: 'Stellar',
+              balanceAmount: n.balance
+            }
+            stellarAccounts.push(stellarAccountObj)
+          } else {
+            this.props.supportedStellarAccounts.map((value, index) => {
+              if (value.asset_code !== n.asset_code) {
+                supportedDisplayAssets.push(value)
+              } else {
+                const stellarSuppAccObj ={
+                  asset_code: value.asset_code,
+                  asset_name: value.asset_name,
+                  balanceAmount: n.balance
+                }
+                stellarAccounts.push(stellarSuppAccObj)
+              }
+            })
+          }
+        })
+      }
+    })
+
+    return { supportedDisplayAssets, stellarAccounts }
   }
 
   render() {
@@ -164,6 +202,7 @@ const mapStateToProps = (state) => {
   return {
     accounts: getAccounts(state),
     currentAccount: getCurrentAccount(state),
+    supportedStellarAccounts: getSupportedStellarAssets(state),
     userAccountDetailFailed: state.account.fetchingFailed
   }
 }
@@ -171,5 +210,6 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   fetchAccountDetails,
   setCurrentAccount,
+  fetchSupportedAssets,
   streamPayments
 })(AccountList)

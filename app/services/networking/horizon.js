@@ -22,8 +22,6 @@ export const fundAccount = (publicKey) => {
 export const getAccountDetail = async (publicKey) => {
   let account = await server.loadAccount(publicKey)
 
-  console.log('Balances for account:', publicKey)
-
   // Just in case loading the account fails to retrieve the balances, immediately throw
   // an exception
   if (!account.balances.length) {
@@ -35,8 +33,9 @@ export const getAccountDetail = async (publicKey) => {
   let latest = account.balances[account.balances.length - 1]
 
   return {
-    balance: latest,
-    sequence: account.sequence
+    balances: account.balances,
+    sequence: account.sequence,
+    type: 'Stellar'
   }
 }
 

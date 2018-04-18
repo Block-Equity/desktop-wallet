@@ -17,3 +17,7 @@ export function getAccountByPublicKey (state, publicKey) {
 
   return accounts[publicKey]
 }
+
+export function getSupportedStellarAssets (state) {
+  return state.account.supportedAssets
+}
