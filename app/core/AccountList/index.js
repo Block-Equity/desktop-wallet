@@ -91,7 +91,7 @@ class AccountList extends Component {
       if (!isEmpty(accounts)) {
         await this.props.fetchAccountDetails()
         await this.props.fetchSupportedAssets()
-        const { supportedDisplayAssets, stellarAccounts } = await this.displaySupportedAccounts(accounts)
+        const { supportedDisplayAssets, stellarAccounts } = this.displaySupportedAccounts(accounts)
         this.setState({
           supportedAssets: supportedDisplayAssets,
           assets: stellarAccounts
@@ -118,30 +118,50 @@ class AccountList extends Component {
     Object.keys(accounts).map((key, index) => {
       if (accounts[key].type === 'Stellar') {
         const stellarAccount = accounts[Object.keys(accounts)[index]]
-        stellarAccount.balances.map(n => {
-          if (n.asset_type === 'native') {
-            const stellarAccountObj = {
-              asset_code: 'XLM',
-              asset_name: 'Stellar',
-              asset_balance: n.balance
-            }
-            //Insert at index 0 without deleting any obj
-            stellarAccounts.splice(0, 0, stellarAccountObj)
-          } else {
-            this.props.supportedStellarAccounts.map((value, index) => {
-              if (value.asset_code !== n.asset_code) {
-                supportedDisplayAssets.push(value)
-              } else {
-                const stellarSuppAccObj ={
-                  asset_code: value.asset_code,
-                  asset_name: value.asset_name,
-                  asset_balance: n.balance
-                }
-                stellarAccounts.push(stellarSuppAccObj)
+        if (stellarAccount.balances.length > 1) {
+          stellarAccount.balances.map(n => {
+            if (n.asset_type === 'native') {
+              const stellarAccountObj = {
+                asset_code: 'XLM',
+                asset_name: 'Stellar',
+                asset_balance: n.balance
               }
-            })
+              //Insert at index 0 without deleting any obj
+              stellarAccounts.splice(0, 0, stellarAccountObj)
+            } else {
+              this.props.supportedStellarAccounts.map((value, index) => {
+                if (value.asset_code !== n.asset_code) {
+                  supportedDisplayAssets.push(value)
+                } else {
+                  const stellarSuppAccObj = {
+                    asset_code: value.asset_code,
+                    asset_name: value.asset_name,
+                    asset_balance: n.balance
+                  }
+                  stellarAccounts.push(stellarSuppAccObj)
+                }
+              })
+            }
+          })
+        } else {
+          //Only Native Asset
+          const stellarAccount = accounts[Object.keys(accounts)[0]]
+          const stellarAccountObj = {
+            asset_code: 'XLM',
+            asset_name: 'Stellar',
+            asset_balance: stellarAccount.balances[0].balance
           }
-        })
+          stellarAccounts.push(stellarAccountObj)
+
+          //Add all supported assets in the list
+          this.props.supportedStellarAccounts.map((value, index) => {
+            const stellarSuppAccObj = {
+              asset_code: value.asset_code,
+              asset_name: value.asset_name
+            }
+            supportedDisplayAssets.push(stellarSuppAccObj)
+          })
+        }
       }
     })
 
@@ -155,7 +175,7 @@ class AccountList extends Component {
           <MenuList style={{marginTop: '2.5rem', height: '100vh'}}>
             { this.renderSubHeader(listSections.wallet.displayName)}
             { this.renderAssets() }
-            <Divider />
+            <Divider style={{marginTop: '1rem'}}/>
             { this.renderSubHeader(listSections.supported_assets.displayName)}
             { this.renderSupportedAssets() }
           </MenuList>
@@ -168,7 +188,7 @@ class AccountList extends Component {
     return this.state.assets.map((asset, index) => {
       return (
         <MenuItem className={materialStyles.menuItem} key={index}>
-          {this.renderListLabel(asset.asset_name, asset.asset_balance)}
+          {this.renderAccountListLabel(asset.asset_name, asset.asset_balance)}
         </MenuItem>
       )
     })
@@ -179,7 +199,7 @@ class AccountList extends Component {
       const isSelected = index === 0 ? true : false
       return (
         <MenuItem className={materialStyles.menuItem} key={index}>
-          {this.renderListLabel(asset.asset_name)}
+          {this.renderSupportedAssetListLabel(asset.asset_name)}
         </MenuItem>
       )
     })
@@ -191,16 +211,24 @@ class AccountList extends Component {
     )
   }
 
-  renderListLabel (label, balance) {
+  renderAccountListLabel (label, balance) {
     return (
       <div className={styles.assetContainer}>
-        <label style={{fontFamily: font, fontSize: '0.85rem', paddingTop: '0.6rem', marginBottom: '-0.4rem'}}>
+        <label style={{fontFamily: font, fontSize: '0.85rem', paddingTop: '0.3rem', marginBottom: '-0.4rem'}}>
           {label}
         </label>
         <label style={{fontFamily: font, fontSize: '0.65rem'}}>
           {balance}
         </label>
       </div>
+    )
+  }
+
+  renderSupportedAssetListLabel (value) {
+    return (
+      <label style={{fontFamily: font, fontSize: '0.85rem', paddingTop: '0.4rem'}}>
+        {value}
+      </label>
     )
   }
 

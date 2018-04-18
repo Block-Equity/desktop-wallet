@@ -139,7 +139,7 @@ class Main extends Component {
 
   renderAccountInfoContent () {
     //TODO: below will come from current account balance
-    const balance = this.props.currentAccount.balances[0]
+    const balance = this.props.currentAccount.balance
     return (
       <div className={styles.mainPageHeaderContainer}>
         <div className={styles.mainPageHeaderBalanceTitle}> Stellar Lumens (XLM) </div>

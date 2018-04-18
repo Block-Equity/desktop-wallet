@@ -12,6 +12,15 @@ export function initializeDB () {
     try {
       let { accounts } = await db.initialize()
       dispatch(setAccounts(accounts))
+      const currentAccount = accounts[Object.keys(accounts)[0]]
+      const modCurrentAccount = {
+        pKey: currentAccount.pKey,
+        sKey: currentAccount.sKey,
+        balance: '0',
+        sequence: '0',
+        asset_type: ''
+      }
+      dispatch(setCurrentAccount(modCurrentAccount))
 
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
@@ -62,17 +71,44 @@ export function fundAccount ({ publicKey, secretKey }) {
 
 export function fetchAccountDetails () {
   return async (dispatch, getState) => {
-    let accounts = getAccounts(getState())
-    const currentAccount = accounts[Object.keys(accounts)[0]]
+//    let accounts = getAccounts(getState())
+    const currentAccount = getCurrentAccount(getState())
     const { pKey: publicKey, sKey: secretKey } = currentAccount
-    dispatch(setCurrentAccount(currentAccount))
     dispatch(accountDetailsRequest())
 
     try {
       let details = await horizon.getAccountDetail(publicKey)
-
       const { balances, sequence: nextSequence, type } = details
 
+      //Update current account info
+      var updateCurrentAccount = {
+        pKey: currentAccount.pKey,
+        sKey: currentAccount.sKey,
+        sequence: nextSequence
+      }
+      balances.map(n => {
+        if (currentAccount.asset_type.length === 0) {
+          if (n.asset_type === 'native') {
+            updateCurrentAccount = {
+              ...updateCurrentAccount,
+              balance: n.balance,
+              asset_type: n.asset_type,
+              asset_code: 'XLM'
+            }
+          }
+        } else {
+          updateCurrentAccount = {
+            ...updateCurrentAccount,
+            balance: n.balance,
+            asset_type: n.asset_type === currentAccount.asset_type ? currentAccount.asset_type : n.asset_type,
+            asset_code: n.asset_type === 'native' ? 'XLM' : n.asset_code
+          }
+        }
+      })
+
+      dispatch(setCurrentAccount(updateCurrentAccount))
+
+      //Update Database
       const accounts = await db.updateUserAccount({
         publicKey,
         secretKey,
