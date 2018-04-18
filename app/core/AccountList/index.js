@@ -123,9 +123,10 @@ class AccountList extends Component {
             const stellarAccountObj = {
               asset_code: 'XLM',
               asset_name: 'Stellar',
-              balanceAmount: n.balance
+              asset_balance: n.balance
             }
-            stellarAccounts.push(stellarAccountObj)
+            //Insert at index 0 without deleting any obj
+            stellarAccounts.splice(0, 0, stellarAccountObj)
           } else {
             this.props.supportedStellarAccounts.map((value, index) => {
               if (value.asset_code !== n.asset_code) {
@@ -134,7 +135,7 @@ class AccountList extends Component {
                 const stellarSuppAccObj ={
                   asset_code: value.asset_code,
                   asset_name: value.asset_name,
-                  balanceAmount: n.balance
+                  asset_balance: n.balance
                 }
                 stellarAccounts.push(stellarSuppAccObj)
               }
@@ -167,7 +168,7 @@ class AccountList extends Component {
     return this.state.assets.map((asset, index) => {
       return (
         <MenuItem className={materialStyles.menuItem} key={index}>
-          {this.renderListLabel(asset.asset_name)}
+          {this.renderListLabel(asset.asset_name, asset.asset_balance)}
         </MenuItem>
       )
     })
@@ -190,9 +191,16 @@ class AccountList extends Component {
     )
   }
 
-  renderListLabel (value) {
+  renderListLabel (label, balance) {
     return (
-      <label style={{fontFamily: font, fontSize: '0.85rem', paddingTop: '0.5rem'}}>{value}</label>
+      <div className={styles.assetContainer}>
+        <label style={{fontFamily: font, fontSize: '0.85rem', paddingTop: '0.6rem', marginBottom: '-0.4rem'}}>
+          {label}
+        </label>
+        <label style={{fontFamily: font, fontSize: '0.65rem'}}>
+          {balance}
+        </label>
+      </div>
     )
   }
 
