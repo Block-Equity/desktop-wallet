@@ -23,7 +23,9 @@ export function initializeDB () {
               sKey: currentAccount.sKey,
               sequence: currentAccount.sequence,
               balance: n.balance,
-              asset_type: n.asset_type
+              asset_type: n.asset_type,
+              asset_name: 'Stellar',
+              asset_code: 'XLM'
             }
           }
         })
@@ -88,7 +90,6 @@ export function fundAccount ({ publicKey, secretKey }) {
 
 export function fetchAccountDetails () {
   return async (dispatch, getState) => {
-//    let accounts = getAccounts(getState())
     const currentAccount = getCurrentAccount(getState())
     const { pKey: publicKey, sKey: secretKey } = currentAccount
     dispatch(accountDetailsRequest())
@@ -112,7 +113,8 @@ export function fetchAccountDetails () {
               ...updateCurrentAccount,
               balance: n.balance,
               asset_type: n.asset_type,
-              asset_code: 'XLM'
+              asset_code: 'XLM',
+              asset_name: 'Stellar'
             }
           }
         } else {
@@ -121,7 +123,8 @@ export function fetchAccountDetails () {
             ...updateCurrentAccount,
             balance: n.balance,
             asset_type: n.asset_type === currentAccount.asset_type ? currentAccount.asset_type : n.asset_type,
-            asset_code: n.asset_type === 'native' ? 'XLM' : n.asset_code
+            asset_code: n.asset_type === 'native' ? 'XLM' : n.asset_code,
+            asset_name: n.asset_type === 'native' ? 'Stellar' : ''
           }
         }
       })

@@ -64,12 +64,19 @@ const listSections = {
    supported_assets: { displayName: 'SUPPORTED ASSETS' }
 }
 
+const stellarAssetDesc = {
+  asset_order: 0,
+  asset_type: 'native',
+  asset_name: 'Stellar',
+  asset_code: 'XLM'
+}
+
 class AccountList extends Component {
 
   constructor (props) {
     super()
     this.state = ({
-      itemSelected: 0,
+      assetSelected: 0,
       assets: [],
       supportedAssets: []
     })
@@ -85,6 +92,7 @@ class AccountList extends Component {
       if (!isEmpty(accounts)) {
         await this.props.fetchAccountDetails()
         await this.props.fetchSupportedAssets()
+        await this.displayStellarAssets()
         await this.displaySupportedAccounts()
         await this.registerForNotifications()
       }
@@ -92,6 +100,55 @@ class AccountList extends Component {
       console.log(e)
       // TODO: display something on the UI
     }
+  }
+
+  displayStellarAssets () {
+    const { accounts, supportedStellarAccounts } = this.props
+    const { response } = supportedStellarAccounts
+    var stellarAccounts = []
+
+    Object.keys(accounts).map((key, index) => {
+      if (accounts[key].type === stellarAssetDesc.asset_name) {
+        const stellarAccount = accounts[Object.keys(accounts)[index]]
+        stellarAccount.balances.map((acc, index) => {
+          const displayAccount = {
+            asset_type: acc.asset_type,
+            balance: acc.balance,
+            asset_code: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_code : acc.asset_code,
+            asset_name: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_name : response[acc.asset_code.toLowerCase()].asset_name,
+            pKey: stellarAccount.pKey,
+            sKey: stellarAccount.sKey,
+            sequence: stellarAccount.sequence
+          }
+
+          if (acc.asset_type === stellarAssetDesc.asset_type) {
+            stellarAccounts.splice(stellarAssetDesc.asset_order, 0, displayAccount)
+          } else {
+            stellarAccounts.push(displayAccount)
+          }
+        })
+      }
+    })
+
+    this.setState({ assets: stellarAccounts })
+  }
+
+  displaySupportedAccounts () {
+    const { list } = this.props.supportedStellarAccounts
+    var supportedDisplayAssets = []
+    const stellarAccounts = this.state.assets
+
+    for (var i = 0; i < list.length; i ++ ) {
+      const supportedAsset = list[i]
+      for (var j = 0; j < stellarAccounts.length; j ++ ) {
+        const stellarAsset = stellarAccounts[j]
+        if (stellarAsset.asset_type !== 'native')
+          if (supportedAsset.asset_code !== stellarAsset.asset_code)
+            supportedDisplayAssets.push(supportedAsset)
+      }
+    }
+
+    this.setState({ supportedAssets: stellarAccounts.length > 1 ? supportedDisplayAssets : list })
   }
 
   async registerForNotifications () {
@@ -103,65 +160,6 @@ class AccountList extends Component {
         )
       }
     }
-  }
-
-  displaySupportedAccounts () {
-    const { accounts, supportedStellarAccounts } = this.props
-    const { list, response } = supportedStellarAccounts
-    var supportedDisplayAssets = []
-    var stellarAccounts = []
-
-    //Stellar Assets format and sort for display
-    Object.keys(accounts).map((key, index) => {
-      if (accounts[key].type === 'Stellar') {
-        //Stellar type accounts will have multiple balances
-        const stellarAccount = accounts[Object.keys(accounts)[index]]
-        stellarAccount.balances.map((acc, index) => {
-          if (acc.asset_type === 'native') {
-            const displayNativeAcc = {
-              asset_code: 'XLM',
-              asset_name: 'Stellar',
-              asset_type: 'native',
-              asset_balance: acc.balance,
-              is_selected: true
-            }
-            stellarAccounts.splice(0, 0, displayNativeAcc)
-          } else {
-            const displayOtherAcc = {
-              asset_code: acc.asset_code,
-              asset_name: response[acc.asset_code.toLowerCase()].asset_name,
-              asset_type: 'credit_alphanum4',
-              asset_balance: acc.balance,
-              is_selected: false
-            }
-            stellarAccounts.push(displayOtherAcc)
-          }
-        })
-      }
-    })
-
-    if (stellarAccounts.length > 1) {
-      for (var i = 0; i < list.length; i ++ ) {
-        const supportedAsset = list[i]
-        const code = supportedAsset.asset_code
-        for (var j = 0; j < stellarAccounts.length; j ++ ) {
-          const stellarAsset = stellarAccounts[j]
-          console.log(`Supported Asset Code: ${code} || Stellar Asset ${JSON.stringify(stellarAsset)}`)
-          if (stellarAsset.asset_type !== 'native') {
-            if (code !== stellarAsset.asset_code) {
-              supportedDisplayAssets.push(supportedAsset)
-            }
-          }
-        }
-      }
-    } else {
-      supportedDisplayAssets = list
-    }
-
-    this.setState({
-      supportedAssets: supportedDisplayAssets,
-      assets: stellarAccounts
-    })
   }
 
   render() {
@@ -182,9 +180,14 @@ class AccountList extends Component {
 
   renderAssets() {
     return this.state.assets.map((asset, index) => {
+      const selected = this.state.assetSelected === index ? true : false
       return (
-        <MenuItem className={materialStyles.menuItem} key={index} selected={ asset.is_selected }>
-          {this.renderAccountListLabel(asset.asset_name, asset.asset_balance)}
+        <MenuItem
+          className={ materialStyles.menuItem }
+          key={ index }
+          selected={ selected }
+          onClick={ this.handleStellarAssetSelection(asset, index) }>
+          {this.renderAccountListLabel(asset.asset_name, asset.balance)}
         </MenuItem>
       )
     })
@@ -225,6 +228,14 @@ class AccountList extends Component {
         {value}
       </label>
     )
+  }
+
+  handleStellarAssetSelection = (asset, index) => event => {
+    event.preventDefault()
+    this.setState({
+      assetSelected: index
+    })
+    this.props.setCurrentAccount(asset)
   }
 
 }
