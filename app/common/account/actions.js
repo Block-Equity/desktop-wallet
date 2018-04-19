@@ -151,8 +151,8 @@ export function fetchSupportedAssets () {
     dispatch(supportedAssetsRequest())
 
     try {
-      const { list } = await getSupportedAssets()
-      return dispatch(supportedAssetsSuccess(list))
+      const { list, response } = await getSupportedAssets()
+      return dispatch(supportedAssetsSuccess(list, response))
     } catch (e) {
       return dispatch(supportedAssetsFailure(e))
     }
@@ -240,10 +240,10 @@ export function supportedAssetsRequest () {
   }
 }
 
-export function supportedAssetsSuccess (list) {
+export function supportedAssetsSuccess (list, response) {
   return {
     type: Types.ACCOUNT_SUPPORTED_ASSETS_SUCCESS,
-    payload: { list }
+    payload: { list, response }
   }
 }
 

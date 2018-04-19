@@ -4,6 +4,7 @@ import styles from './style.css'
 import PropTypes from 'prop-types'
 
 import isEmpty from 'lodash/isEmpty'
+import has from 'lodash/has'
 
 import Paper from 'material-ui/Paper'
 import { withStyles } from 'material-ui/styles'
@@ -72,7 +73,6 @@ class AccountList extends Component {
       assets: [],
       supportedAssets: []
     })
-    this.displaySupportedAccounts = this.displaySupportedAccounts.bind(this)
   }
 
   componentDidMount () {
@@ -95,7 +95,7 @@ class AccountList extends Component {
   }
 
   async registerForNotifications () {
-    if (!this.state.userAccountDetailFailed) {
+    if (!this.props.userAccountDetailFailed) {
       await this.props.streamPayments()
       if (this.props.incomingPayment.from !== this.props.currentAccount.pKey || this.props.incomingPayment.from !== undefined ) {
         new Notification('Payment Received',
@@ -106,68 +106,62 @@ class AccountList extends Component {
   }
 
   displaySupportedAccounts () {
-    const { accounts } = this.props
+    const { accounts, supportedStellarAccounts } = this.props
+    const { list, response } = supportedStellarAccounts
     var supportedDisplayAssets = []
     var stellarAccounts = []
 
+    //Stellar Assets format and sort for display
     Object.keys(accounts).map((key, index) => {
       if (accounts[key].type === 'Stellar') {
         //Stellar type accounts will have multiple balances
         const stellarAccount = accounts[Object.keys(accounts)[index]]
-        if (stellarAccount.balances.length > 1) {
-          //If there is more than one type of balance, then check if trust line has been added
-          stellarAccount.balances.map(n => {
-            //If the asset type is native, then put it first in the list
-            if (n.asset_type === 'native') {
-              const stellarAccountObj = {
-                asset_code: 'XLM',
-                asset_name: 'Stellar',
-                asset_balance: n.balance
-              }
-              //Insert at index 0 without deleting any obj
-              stellarAccounts.splice(0, 0, stellarAccountObj)
-            } else {
-              this.props.supportedStellarAccounts.map((value, index) => {
-                if (value.asset_code !== n.asset_code) {
-                  supportedDisplayAssets.push(value)
-                } else {
-                  const stellarSuppAccObj = {
-                    asset_code: value.asset_code,
-                    asset_name: value.asset_name,
-                    asset_balance: n.balance
-                  }
-                  stellarAccounts.push(stellarSuppAccObj)
-                }
-              })
+        stellarAccount.balances.map((acc, index) => {
+          if (acc.asset_type === 'native') {
+            const displayNativeAcc = {
+              asset_code: 'XLM',
+              asset_name: 'Stellar',
+              asset_type: 'native',
+              asset_balance: acc.balance,
+              is_selected: true
             }
-          })
-        } else {
-          //Only Native Asset
-          const stellarAccount = accounts[Object.keys(accounts)[0]]
-          const stellarAccountObj = {
-            asset_code: 'XLM',
-            asset_name: 'Stellar',
-            asset_balance: stellarAccount.balances[0].balance
+            stellarAccounts.splice(0, 0, displayNativeAcc)
+          } else {
+            const displayOtherAcc = {
+              asset_code: acc.asset_code,
+              asset_name: response[acc.asset_code.toLowerCase()].asset_name,
+              asset_type: 'credit_alphanum4',
+              asset_balance: acc.balance,
+              is_selected: false
+            }
+            stellarAccounts.push(displayOtherAcc)
           }
-          stellarAccounts.push(stellarAccountObj)
-
-          //Add all supported assets in the list
-          this.props.supportedStellarAccounts.map((value, index) => {
-            const stellarSuppAccObj = {
-              asset_code: value.asset_code,
-              asset_name: value.asset_name
-            }
-            supportedDisplayAssets.push(stellarSuppAccObj)
-          })
-        }
+        })
       }
     })
+
+    if (stellarAccounts.length > 1) {
+      for (var i = 0; i < list.length; i ++ ) {
+        const supportedAsset = list[i]
+        const code = supportedAsset.asset_code
+        for (var j = 0; j < stellarAccounts.length; j ++ ) {
+          const stellarAsset = stellarAccounts[j]
+          console.log(`Supported Asset Code: ${code} || Stellar Asset ${JSON.stringify(stellarAsset)}`)
+          if (stellarAsset.asset_type !== 'native') {
+            if (code !== stellarAsset.asset_code) {
+              supportedDisplayAssets.push(supportedAsset)
+            }
+          }
+        }
+      }
+    } else {
+      supportedDisplayAssets = list
+    }
 
     this.setState({
       supportedAssets: supportedDisplayAssets,
       assets: stellarAccounts
     })
-
   }
 
   render() {
@@ -189,7 +183,7 @@ class AccountList extends Component {
   renderAssets() {
     return this.state.assets.map((asset, index) => {
       return (
-        <MenuItem className={materialStyles.menuItem} key={index}>
+        <MenuItem className={materialStyles.menuItem} key={index} selected={ asset.is_selected }>
           {this.renderAccountListLabel(asset.asset_name, asset.asset_balance)}
         </MenuItem>
       )
@@ -198,7 +192,6 @@ class AccountList extends Component {
 
   renderSupportedAssets() {
     return this.state.supportedAssets.map((asset, index) => {
-      const isSelected = index === 0 ? true : false
       return (
         <MenuItem className={materialStyles.menuItem} key={index}>
           {this.renderSupportedAssetListLabel(asset.asset_name)}
@@ -216,7 +209,7 @@ class AccountList extends Component {
   renderAccountListLabel (label, balance) {
     return (
       <div className={styles.assetContainer}>
-        <label style={{fontFamily: font, fontSize: '0.85rem', paddingTop: '0.3rem', marginBottom: '-0.4rem'}}>
+        <label style={{fontFamily: font, fontSize: '0.85rem', paddingTop: '0.45rem', marginBottom: '-0.4rem'}}>
           {label}
         </label>
         <label style={{fontFamily: font, fontSize: '0.65rem'}}>

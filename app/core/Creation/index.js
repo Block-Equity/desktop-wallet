@@ -527,7 +527,7 @@ class AccountCreation extends Component {
     const encrypted = encryption.encryptText(secretKey, pinValue)
     encryptedWallet.secretKey = encrypted
     encryptedWallet.publicKey = wallet.publicKey
-    encryptedWallet.balances = [{balance: '0.00', asset_type: 'native'}]
+    encryptedWallet.balances = [{balance: '0.00', asset_type: 'native', asset_code: 'XLM'}]
     encryptedWallet.sequence = 0
     encryptedWallet.type = 'Stellar' //TODO will depend on wallet creation drown down pick by the user
     this.setState({

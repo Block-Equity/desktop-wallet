@@ -7,7 +7,7 @@ export const INITIAL_STATE = {
   isFetching: false,
   error: undefined,
   accounts: undefined,
-  supportedAssets: [],
+  supportedAssets: undefined,
   currentAccount: undefined
 }
 
@@ -106,11 +106,11 @@ function accountSupportedAssetsRequest (state) {
 }
 
 function accountSupportedAssetsSuccess (state, payload) {
-  const { list } = payload
+  const { list, response } = payload
   const { supportedAssets } = state
   return {
     ...state,
-    supportedAssets: list
+    supportedAssets: { list, response }
   }
 }
 
