@@ -13,13 +13,30 @@ export function initializeDB () {
       let { accounts } = await db.initialize()
       dispatch(setAccounts(accounts))
       const currentAccount = accounts[Object.keys(accounts)[0]]
-      const modCurrentAccount = {
-        pKey: currentAccount.pKey,
-        sKey: currentAccount.sKey,
-        balance: '0',
-        sequence: '0',
-        asset_type: ''
+      var modCurrentAccount
+      if ('balances' in currentAccount) {
+        currentAccount.balances.map(n => {
+          //Get balance for XLM
+          if (n.asset_type === 'native') {
+            modCurrentAccount = {
+              pKey: currentAccount.pKey,
+              sKey: currentAccount.sKey,
+              sequence: currentAccount.sequence,
+              balance: n.balance,
+              asset_type: n.asset_type
+            }
+          }
+        })
+      } else {
+        modCurrentAccount = {
+          pKey: currentAccount.pKey,
+          sKey: currentAccount.sKey,
+          balance: '0',
+          sequence: '0',
+          asset_type: ''
+        }
       }
+
       dispatch(setCurrentAccount(modCurrentAccount))
 
       return dispatch(accountInitializationSuccess(accounts))
@@ -88,6 +105,8 @@ export function fetchAccountDetails () {
       }
       balances.map(n => {
         if (currentAccount.asset_type.length === 0) {
+          //First check if initial account's asset type is not set
+          //Set to native
           if (n.asset_type === 'native') {
             updateCurrentAccount = {
               ...updateCurrentAccount,
@@ -97,6 +116,7 @@ export function fetchAccountDetails () {
             }
           }
         } else {
+          //If account asset type is set, update other properties
           updateCurrentAccount = {
             ...updateCurrentAccount,
             balance: n.balance,

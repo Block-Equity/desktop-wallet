@@ -58,12 +58,6 @@ const materialStyles = theme => ({
   icon: {},
 })
 
-const supportedAssetData = [
-  { id: 0, stellar: { id: 0,  title: 'Stellar', ticker: 'XLM' }, title: 'Stellar', ticker: 'XLM' },
-  { id: 1, pts: { id: 1, title: 'BlockPoints', ticker: 'PTS'}, title: 'BlockPoints', ticker: 'PTS' },
-  { id: 2, cadtoken: { id: 2, title: 'CAD Token', ticker: 'CAD'}, title: 'CAD Token', ticker: 'CAD' }
-]
-
 const listSections = {
    wallet: { displayName: 'WALLET' },
    supported_assets: { displayName: 'SUPPORTED ASSETS' }
@@ -74,8 +68,8 @@ class AccountList extends Component {
   constructor (props) {
     super()
     this.state = ({
-      itemSelected: supportedAssetData[0],
-      assets: [{ asset_code: 'XLM', asset_name: 'Stellar'}],
+      itemSelected: 0,
+      assets: [],
       supportedAssets: []
     })
     this.displaySupportedAccounts = this.displaySupportedAccounts.bind(this)
@@ -91,19 +85,8 @@ class AccountList extends Component {
       if (!isEmpty(accounts)) {
         await this.props.fetchAccountDetails()
         await this.props.fetchSupportedAssets()
-        const { supportedDisplayAssets, stellarAccounts } = this.displaySupportedAccounts(accounts)
-        this.setState({
-          supportedAssets: supportedDisplayAssets,
-          assets: stellarAccounts
-        })
-        if (!this.state.userAccountDetailFailed) {
-          await this.props.streamPayments()
-          if (this.props.incomingPayment.from !== this.state.publicKey || this.props.incomingPayment.from !== undefined ) {
-            new Notification('Payment Received',
-              { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
-            )
-          }
-        }
+        await this.displaySupportedAccounts()
+        await this.registerForNotifications()
       }
     } catch (e) {
       console.log(e)
@@ -111,15 +94,30 @@ class AccountList extends Component {
     }
   }
 
-  displaySupportedAccounts (accounts) {
+  async registerForNotifications () {
+    if (!this.state.userAccountDetailFailed) {
+      await this.props.streamPayments()
+      if (this.props.incomingPayment.from !== this.props.currentAccount.pKey || this.props.incomingPayment.from !== undefined ) {
+        new Notification('Payment Received',
+          { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
+        )
+      }
+    }
+  }
+
+  displaySupportedAccounts () {
+    const { accounts } = this.props
     var supportedDisplayAssets = []
     var stellarAccounts = []
 
     Object.keys(accounts).map((key, index) => {
       if (accounts[key].type === 'Stellar') {
+        //Stellar type accounts will have multiple balances
         const stellarAccount = accounts[Object.keys(accounts)[index]]
         if (stellarAccount.balances.length > 1) {
+          //If there is more than one type of balance, then check if trust line has been added
           stellarAccount.balances.map(n => {
+            //If the asset type is native, then put it first in the list
             if (n.asset_type === 'native') {
               const stellarAccountObj = {
                 asset_code: 'XLM',
@@ -165,7 +163,11 @@ class AccountList extends Component {
       }
     })
 
-    return { supportedDisplayAssets, stellarAccounts }
+    this.setState({
+      supportedAssets: supportedDisplayAssets,
+      assets: stellarAccounts
+    })
+
   }
 
   render() {

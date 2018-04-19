@@ -442,8 +442,9 @@ class Restore extends Component {
     const encrypted = encryption.encryptText(secretKey, pinValue)
     encryptedWallet.secretKey = encrypted
     encryptedWallet.publicKey = wallet.publicKey
-    encryptedWallet.balance = 0
+    encryptedWallet.balances = [{balance: '0.00', asset_type: 'native'}]
     encryptedWallet.sequence = 0
+    encryptedWallet.type = 'Stellar'
     this.setState({
       wallet: encryptedWallet
     })
