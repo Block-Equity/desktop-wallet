@@ -162,8 +162,7 @@ function changeTrustRequest (state) {
 
 function changeTrustSuccess (state, payload) {
   return {
-    ...state,
-    changeTrustResponse: payload
+    ...state
   }
 }
 

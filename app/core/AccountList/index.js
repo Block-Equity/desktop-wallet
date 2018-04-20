@@ -8,6 +8,14 @@ import has from 'lodash/has'
 
 import Paper from 'material-ui/Paper'
 import { withStyles } from 'material-ui/styles'
+import { CircularProgress } from 'material-ui/Progress'
+import {
+  Modal,
+  ModalHeader,
+  ModalBody
+}
+from 'reactstrap'
+import Slide from 'material-ui/transitions/Slide'
 
 import {
   ListItemIcon,
@@ -69,13 +77,20 @@ const listSections = {
    supported_assets: { displayName: 'BlockEQ TOKENS' }
 }
 
+function Transition(props) {
+  return <Slide direction="up" {...props} />;
+}
+
 class AccountList extends Component {
 
   constructor (props) {
     super()
     this.state = ({
-      assetSelected: 0
+      assetSelected: 0,
+      changeTrustInProcess: false,
+      changeTrustAsset: undefined
     })
+    this.handleBlockEQTokenAddition = this.handleBlockEQTokenAddition.bind(this)
   }
 
   componentDidMount () {
@@ -121,6 +136,7 @@ class AccountList extends Component {
             { this.renderSupportedAssets() }
           </MenuList>
         </Paper>
+        { this.renderLoadingDialog() }
       </div>
     )
   }
@@ -184,6 +200,20 @@ class AccountList extends Component {
     )
   }
 
+  renderLoadingDialog () {
+    return (
+      <Modal isOpen={this.state.changeTrustInProcess} className={this.props.className} centered={true}>
+        <ModalHeader style={{boxShadow: 'none'}}>Please wait...</ModalHeader>
+        <ModalBody>
+          <div style={{display: 'flex', flexDirection: 'row'}}>
+            <CircularProgress style={{ color: '#000000', marginRight: '0.75rem', paddingTop: '0.1rem' }} thickness={ 5 } size={ 15 } />
+            Adding BlockEQ Token
+          </div>
+        </ModalBody>
+      </Modal>
+    )
+  }
+
   handleStellarAssetSelection = (asset, index) => event => {
     event.preventDefault()
     this.setState({
@@ -194,14 +224,23 @@ class AccountList extends Component {
 
   handleBlockEQTokenAddition = (asset, index) => event => {
     event.preventDefault()
+    console.log('Clicked!')
+    this.setState({
+      changeTrustInProcess: true,
+      changeTrustIndex: asset
+    })
+    /*this.timer = setTimeout(() => {
+      this.setState({ changeTrustInProcess: false })
+    }, 3000)*/
     this.changeTrust (asset)
   }
 
   async changeTrust (asset) {
     await this.props.changeTrustOperation(asset)
-    await fetchAccountDetails() //Update accounts
-    await fetchStellarAssetsForDisplay() //Update stellar display accounts
-    await fetchBlockEQTokensForDisplay() //Update BlockEQ Tokens for display
+    await this.props.fetchAccountDetails()
+    await this.props.fetchStellarAssetsForDisplay()
+    await this.props.fetchBlockEQTokensForDisplay()
+    this.setState({ changeTrustInProcess: false })
   }
 
 }

@@ -159,11 +159,8 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
 export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
   console.log(`SK: ${decryptSK} || PK: ${publicKey} || Issuer: ${issuerPK} || AssetType: ${assetType}`)
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
-
   var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
-  console.log(`BlockEQ Token: ${JSON.stringify(blockEQToken)}`)
   return new Promise((resolve, reject) => {
-    console.log('Promise')
     server.loadAccount(publicKey)
     .catch(error => {
       console.log(error.name)
@@ -185,9 +182,9 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
 
         server.submitTransaction(transaction)
         .then( transactionResult => {
-          console.log(JSON.stringify(transactionResult, null, 2));
-          console.log('\nSuccess! View the transaction at: ');
-          console.log(transactionResult._links.transaction.href);
+          //console.log(JSON.stringify(transactionResult, null, 2));
+          //console.log('\nSuccess! View the transaction at: ');
+          //console.log(transactionResult._links.transaction.href);
           resolve({
             payload: 'Success',
             error: false

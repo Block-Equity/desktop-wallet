@@ -206,23 +206,20 @@ export function fetchBlockEQTokensForDisplay () {
   return async (dispatch, getState) => {
     try {
       const supportedStellarAssets = getSupportedStellarAssets(getState())
-      const { list } = supportedStellarAssets
+      const { list, response } = supportedStellarAssets
       const stellarAccounts = getStellarAssetsForDisplay(getState())
-      var supportedDisplayAssets = []
-
-      for (var i = 0; i < list.length; i ++ ) {
-        const supportedAsset = list[i]
-        for (var j = 0; j < stellarAccounts.length; j ++ ) {
-          const stellarAsset = stellarAccounts[j]
-          if (stellarAsset.asset_type !== 'native')
-            if (supportedAsset.asset_code !== stellarAsset.asset_code)
-              supportedDisplayAssets.push(supportedAsset)
+      var supportedDisplayAssetsObj = { ...response }
+      for (var j = 0; j < stellarAccounts.length; j ++ ) {
+        const stellarAsset = stellarAccounts[j]
+        if (stellarAsset.asset_type !== 'native') {
+          const stellarAssetCode = stellarAsset.asset_code.toLowerCase()
+          if (stellarAssetCode in response) {
+            delete supportedDisplayAssetsObj[stellarAssetCode]
+          }
         }
       }
-
-      console.log(`Action Supported Display Asset: ${JSON.stringify(supportedDisplayAssets)}`)
-
-      return dispatch(blockEQTokensDisplaySuccess(supportedDisplayAssets))
+      var supportedDisplayAssets = Object.keys(supportedDisplayAssetsObj).map(function (key) { return supportedDisplayAssetsObj[key] })
+      return dispatch(blockEQTokensDisplaySuccess(stellarAccounts.length > 1 ? supportedDisplayAssets : list))
     } catch (e) {
       return dispatch(blockEQTokensDisplayFailure(e))
     }
