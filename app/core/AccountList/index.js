@@ -29,7 +29,8 @@ import {
   setCurrentAccount,
   fetchSupportedAssets,
   fetchStellarAssetsForDisplay,
-  fetchBlockEQTokensForDisplay
+  fetchBlockEQTokensForDisplay,
+  changeTrustOperation
 } from '../../common/account/actions'
 
 import {
@@ -193,7 +194,14 @@ class AccountList extends Component {
 
   handleBlockEQTokenAddition = (asset, index) => event => {
     event.preventDefault()
-    //this.props.changeTrust()
+    this.changeTrust (asset)
+  }
+
+  async changeTrust (asset) {
+    await this.props.changeTrustOperation(asset)
+    await fetchAccountDetails() //Update accounts
+    await fetchStellarAssetsForDisplay() //Update stellar display accounts
+    await fetchBlockEQTokensForDisplay() //Update BlockEQ Tokens for display
   }
 
 }
@@ -216,5 +224,6 @@ export default connect(mapStateToProps, {
   fetchSupportedAssets,
   streamPayments,
   fetchStellarAssetsForDisplay,
-  fetchBlockEQTokensForDisplay
+  fetchBlockEQTokensForDisplay,
+  changeTrustOperation
 })(AccountList)

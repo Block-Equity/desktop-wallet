@@ -7,7 +7,9 @@ import {
   getBlockEQTokensForDisplay
 } from './selectors'
 import * as horizon from '../../services/networking/horizon'
+import { getUserPIN } from '../../db'
 import { getSupportedAssets } from '../../services/networking/lists'
+import * as encryption from '../../services/security/encryption'
 import * as mnemonic from '../../services/security/mnemonic'
 import * as Types from './types'
 
@@ -230,17 +232,17 @@ export function fetchBlockEQTokensForDisplay () {
 export function changeTrustOperation ( asset ) {
   return async (dispatch, getState) => {
     try {
-      const {
-        sKey: decryptSK,
-        pKey: publicKey,
-        asset_issuer: issuerPK,
-        asset_code: assetType
-      } = asset
-      const { payload, error } = await horizon.changeTrust(decryptSK, publicKey, issuerPK, assetType)
-      await fetchAccountDetails() //Update accounts
-      await fetchStellarAssetsForDisplay() //Update stellar display accounts
-      await fetchBlockEQTokensForDisplay() //Update BlockEQ Tokens for display
-      return(dispatch(changeTrustSuccess(payload)))
+      const currentAccount = getCurrentAccount(getState())
+      const { pKey: publicKey, sKey: secretKey } = currentAccount
+
+      const { pin } = await getUserPIN()
+      const decryptSK = await encryption.decryptText(secretKey, pin)
+
+      const { asset_issuer: issuerPK, asset_code: assetType } = asset
+      console.log(`BlockEQ Asset: ${JSON.stringify(asset)}`)
+
+      const { payload, error } = await horizon.changeTrust({decryptSK, publicKey, issuerPK, assetType})
+      return(dispatch(changeTrustSuccess()))
     } catch (e) {
       return(dispatch(changeTrustFailure(e)))
     }
@@ -253,10 +255,10 @@ export function changeTrustRequest () {
   }
 }
 
-export function changeTrustSuccess (response) {
+export function changeTrustSuccess () {
   return {
     type: Types.CHANGE_TRUST_SUCCESS,
-    payload: { response }
+    payload: 'success'
   }
 }
 
