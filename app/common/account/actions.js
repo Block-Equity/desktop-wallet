@@ -227,6 +227,47 @@ export function fetchBlockEQTokensForDisplay () {
   }
 }
 
+export function changeTrustOperation ( asset ) {
+  return async (dispatch, getState) => {
+    try {
+      const {
+        sKey: decryptSK,
+        pKey: publicKey,
+        asset_issuer: issuerPK,
+        asset_code: assetType
+      } = asset
+      const { payload, error } = await horizon.changeTrust(decryptSK, publicKey, issuerPK, assetType)
+      await fetchAccountDetails() //Update accounts
+      await fetchStellarAssetsForDisplay() //Update stellar display accounts
+      await fetchBlockEQTokensForDisplay() //Update BlockEQ Tokens for display
+      return(dispatch(changeTrustSuccess(payload)))
+    } catch (e) {
+      return(dispatch(changeTrustFailure(e)))
+    }
+  }
+}
+
+export function changeTrustRequest () {
+  return {
+    type: Types.CHANGE_TRUST_REQUEST
+  }
+}
+
+export function changeTrustSuccess (response) {
+  return {
+    type: Types.CHANGE_TRUST_SUCCESS,
+    payload: { response }
+  }
+}
+
+export function changeTrustFailure (error) {
+  return {
+    type: Types.CHANGE_TRUST_FAILURE,
+    payload: error,
+    error
+  }
+}
+
 export function accountInitializationRequest () {
   return {
     type: Types.ACCOUNT_INITIALIZATION_REQUEST

@@ -116,7 +116,7 @@ class AccountList extends Component {
             { this.renderSubHeader(listSections.wallet.displayName)}
             { this.renderAssets() }
             <Divider style={{marginTop: '1rem'}}/>
-            { this.renderSubHeader(listSections.supported_assets.displayName)}
+            { (!isEmpty(this.props.blockEQTokens)) && this.renderSubHeader(listSections.supported_assets.displayName)}
             { this.renderSupportedAssets() }
           </MenuList>
         </Paper>
@@ -145,7 +145,10 @@ class AccountList extends Component {
     if (this.props.blockEQTokens) {
       return this.props.blockEQTokens.map((asset, index) => {
         return (
-          <MenuItem className={materialStyles.menuItem} key={index}>
+          <MenuItem
+            className={materialStyles.menuItem}
+            key={index}
+            onClick={this.handleBlockEQTokenAddition(asset, index)}>
             {this.renderSupportedAssetListLabel(asset.asset_name)}
           </MenuItem>
         )
@@ -186,6 +189,11 @@ class AccountList extends Component {
       assetSelected: index
     })
     this.props.setCurrentAccount(asset)
+  }
+
+  handleBlockEQTokenAddition = (asset, index) => event => {
+    event.preventDefault()
+    //this.props.changeTrust()
   }
 
 }

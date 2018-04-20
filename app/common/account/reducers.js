@@ -10,7 +10,8 @@ export const INITIAL_STATE = {
   supportedAssets: undefined,
   currentAccount: undefined,
   stellarAssetsDisplay: undefined,
-  blockeqTokensDisplay: undefined
+  blockeqTokensDisplay: undefined,
+  changeTrustResponse: undefined
 }
 
 export function accountInitializationRequest (state) {
@@ -131,7 +132,7 @@ function stellarAssetsForDisplaySuccess (state, payload) {
   }
 }
 
-function stellarAssetsForDisplayFailure (state, payload) {
+function stellarAssetsForDisplayFailure (state, error) {
   return {
     ...state,
     error
@@ -146,7 +147,27 @@ function blockeqTokensForDisplaySuccess (state, payload) {
   }
 }
 
-function blockeqTokensForDisplayFailure (state, payload) {
+function blockeqTokensForDisplayFailure (state, error) {
+  return {
+    ...state,
+    error
+  }
+}
+
+function changeTrustRequest (state) {
+  return {
+    ...state
+  }
+}
+
+function changeTrustSuccess (state, payload) {
+  return {
+    ...state,
+    changeTrustResponse: payload
+  }
+}
+
+function changeTrustFailure (state, error) {
   return {
     ...state,
     error
@@ -171,7 +192,10 @@ const reducers = {
   [Types.STELLAR_ACCOUNTS_DISPLAY_SUCCESS]: stellarAssetsForDisplaySuccess,
   [Types.STELLAR_ACCOUNTS_DISPLAY_FAILURE]: stellarAssetsForDisplayFailure,
   [Types.BLOCKEQ_TOKENS_DISPLAY_SUCCESS]: blockeqTokensForDisplaySuccess,
-  [Types.BLOCKEQ_TOKENS_DISPLAY_FAILURE]: blockeqTokensForDisplayFailure
+  [Types.BLOCKEQ_TOKENS_DISPLAY_FAILURE]: blockeqTokensForDisplayFailure,
+  [Types.CHANGE_TRUST_REQUEST]: changeTrustRequest,
+  [Types.CHANGE_TRUST_SUCCESS]: changeTrustSuccess,
+  [Types.CHANGE_TRUST_FAILURE]: changeTrustFailure
 }
 
 export default createReducer(INITIAL_STATE, reducers)

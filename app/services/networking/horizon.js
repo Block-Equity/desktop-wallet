@@ -166,7 +166,10 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
     server.loadAccount(sourceKeys.publicKey)
     .catch(error => {
       console.log(error.name)
-      reject({error: true, errorMessage: error.name})
+      reject({
+        error: true,
+        errorMessage: error.name
+      })
     })
     // If there was no error, load up-to-date information on your account.
     .then(sourceAccount => {
