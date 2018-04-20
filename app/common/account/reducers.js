@@ -8,7 +8,9 @@ export const INITIAL_STATE = {
   error: undefined,
   accounts: undefined,
   supportedAssets: undefined,
-  currentAccount: undefined
+  currentAccount: undefined,
+  stellarAssetsDisplay: undefined,
+  blockeqTokensDisplay: undefined
 }
 
 export function accountInitializationRequest (state) {
@@ -121,6 +123,36 @@ function accountSupportedAssetsFailure (state, error) {
   }
 }
 
+function stellarAssetsForDisplaySuccess (state, payload) {
+  const { accounts } = payload
+  return {
+    ...state,
+    stellarAssetsDisplay: accounts
+  }
+}
+
+function stellarAssetsForDisplayFailure (state, payload) {
+  return {
+    ...state,
+    error
+  }
+}
+
+function blockeqTokensForDisplaySuccess (state, payload) {
+  const { accounts } = payload
+  return {
+    ...state,
+    blockeqTokensDisplay: accounts
+  }
+}
+
+function blockeqTokensForDisplayFailure (state, payload) {
+  return {
+    ...state,
+    error
+  }
+}
+
 const reducers = {
   [Types.ACCOUNT_INITIALIZATION_REQUEST]: accountInitializationRequest,
   [Types.ACCOUNT_INITIALIZATION_SUCCESS]: accountInitializationSuccess,
@@ -135,7 +167,11 @@ const reducers = {
   [Types.ACCOUNT_DETAILS_FAILURE]: accountDetailsFailure,
   [Types.ACCOUNT_SUPPORTED_ASSETS_REQUEST]: accountSupportedAssetsRequest,
   [Types.ACCOUNT_SUPPORTED_ASSETS_SUCCESS]: accountSupportedAssetsSuccess,
-  [Types.ACCOUNT_SUPPORTED_ASSETS_FAILURE]: accountSupportedAssetsFailure
+  [Types.ACCOUNT_SUPPORTED_ASSETS_FAILURE]: accountSupportedAssetsFailure,
+  [Types.STELLAR_ACCOUNTS_DISPLAY_SUCCESS]: stellarAssetsForDisplaySuccess,
+  [Types.STELLAR_ACCOUNTS_DISPLAY_FAILURE]: stellarAssetsForDisplayFailure,
+  [Types.BLOCKEQ_TOKENS_DISPLAY_SUCCESS]: blockeqTokensForDisplaySuccess,
+  [Types.BLOCKEQ_TOKENS_DISPLAY_FAILURE]: blockeqTokensForDisplayFailure
 }
 
 export default createReducer(INITIAL_STATE, reducers)

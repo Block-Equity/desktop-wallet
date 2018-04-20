@@ -27,13 +27,17 @@ import { getSupportedAssets } from '../../services/networking/lists'
 import {
   fetchAccountDetails,
   setCurrentAccount,
-  fetchSupportedAssets
+  fetchSupportedAssets,
+  fetchStellarAssetsForDisplay,
+  fetchBlockEQTokensForDisplay
 } from '../../common/account/actions'
 
 import {
   getAccounts,
   getCurrentAccount,
-  getSupportedStellarAssets
+  getSupportedStellarAssets,
+  getStellarAssetsForDisplay,
+  getBlockEQTokensForDisplay
 } from '../../common/account/selectors'
 
 import {
@@ -61,14 +65,7 @@ const materialStyles = theme => ({
 
 const listSections = {
    wallet: { displayName: 'WALLET' },
-   supported_assets: { displayName: 'SUPPORTED ASSETS' }
-}
-
-const stellarAssetDesc = {
-  asset_order: 0,
-  asset_type: 'native',
-  asset_name: 'Stellar',
-  asset_code: 'XLM'
+   supported_assets: { displayName: 'BlockEQ TOKENS' }
 }
 
 class AccountList extends Component {
@@ -76,9 +73,7 @@ class AccountList extends Component {
   constructor (props) {
     super()
     this.state = ({
-      assetSelected: 0,
-      assets: [],
-      supportedAssets: []
+      assetSelected: 0
     })
   }
 
@@ -92,63 +87,14 @@ class AccountList extends Component {
       if (!isEmpty(accounts)) {
         await this.props.fetchAccountDetails()
         await this.props.fetchSupportedAssets()
-        await this.displayStellarAssets()
-        await this.displaySupportedAccounts()
+        await this.props.fetchStellarAssetsForDisplay()
+        await this.props.fetchBlockEQTokensForDisplay()
         await this.registerForNotifications()
       }
     } catch (e) {
       console.log(e)
       // TODO: display something on the UI
     }
-  }
-
-  displayStellarAssets () {
-    const { accounts, supportedStellarAccounts } = this.props
-    const { response } = supportedStellarAccounts
-    var stellarAccounts = []
-
-    Object.keys(accounts).map((key, index) => {
-      if (accounts[key].type === stellarAssetDesc.asset_name) {
-        const stellarAccount = accounts[Object.keys(accounts)[index]]
-        stellarAccount.balances.map((acc, index) => {
-          const displayAccount = {
-            asset_type: acc.asset_type,
-            balance: acc.balance,
-            asset_code: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_code : acc.asset_code,
-            asset_name: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_name : response[acc.asset_code.toLowerCase()].asset_name,
-            pKey: stellarAccount.pKey,
-            sKey: stellarAccount.sKey,
-            sequence: stellarAccount.sequence
-          }
-
-          if (acc.asset_type === stellarAssetDesc.asset_type) {
-            stellarAccounts.splice(stellarAssetDesc.asset_order, 0, displayAccount)
-          } else {
-            stellarAccounts.push(displayAccount)
-          }
-        })
-      }
-    })
-
-    this.setState({ assets: stellarAccounts })
-  }
-
-  displaySupportedAccounts () {
-    const { list } = this.props.supportedStellarAccounts
-    var supportedDisplayAssets = []
-    const stellarAccounts = this.state.assets
-
-    for (var i = 0; i < list.length; i ++ ) {
-      const supportedAsset = list[i]
-      for (var j = 0; j < stellarAccounts.length; j ++ ) {
-        const stellarAsset = stellarAccounts[j]
-        if (stellarAsset.asset_type !== 'native')
-          if (supportedAsset.asset_code !== stellarAsset.asset_code)
-            supportedDisplayAssets.push(supportedAsset)
-      }
-    }
-
-    this.setState({ supportedAssets: stellarAccounts.length > 1 ? supportedDisplayAssets : list })
   }
 
   async registerForNotifications () {
@@ -179,28 +125,32 @@ class AccountList extends Component {
   }
 
   renderAssets() {
-    return this.state.assets.map((asset, index) => {
-      const selected = this.state.assetSelected === index ? true : false
-      return (
-        <MenuItem
-          className={ materialStyles.menuItem }
-          key={ index }
-          selected={ selected }
-          onClick={ this.handleStellarAssetSelection(asset, index) }>
-          {this.renderAccountListLabel(asset.asset_name, asset.balance)}
-        </MenuItem>
-      )
-    })
+    if (this.props.assets) {
+      return this.props.assets.map((asset, index) => {
+        const selected = this.state.assetSelected === index ? true : false
+        return (
+          <MenuItem
+            className={ materialStyles.menuItem }
+            key={ index }
+            selected={ selected }
+            onClick={ this.handleStellarAssetSelection(asset, index) }>
+            {this.renderAccountListLabel(asset.asset_name, asset.balance)}
+          </MenuItem>
+        )
+      })
+    }
   }
 
   renderSupportedAssets() {
-    return this.state.supportedAssets.map((asset, index) => {
-      return (
-        <MenuItem className={materialStyles.menuItem} key={index}>
-          {this.renderSupportedAssetListLabel(asset.asset_name)}
-        </MenuItem>
-      )
-    })
+    if (this.props.blockEQTokens) {
+      return this.props.blockEQTokens.map((asset, index) => {
+        return (
+          <MenuItem className={materialStyles.menuItem} key={index}>
+            {this.renderSupportedAssetListLabel(asset.asset_name)}
+          </MenuItem>
+        )
+      })
+    }
   }
 
   renderSubHeader (value) {
@@ -245,7 +195,10 @@ const mapStateToProps = (state) => {
     accounts: getAccounts(state),
     currentAccount: getCurrentAccount(state),
     supportedStellarAccounts: getSupportedStellarAssets(state),
-    userAccountDetailFailed: state.account.fetchingFailed
+    userAccountDetailFailed: state.account.fetchingFailed,
+    incomingPayment: getIncomingPayment(state),
+    assets: getStellarAssetsForDisplay(state),
+    blockEQTokens: getBlockEQTokensForDisplay(state)
   }
 }
 
@@ -253,5 +206,7 @@ export default connect(mapStateToProps, {
   fetchAccountDetails,
   setCurrentAccount,
   fetchSupportedAssets,
-  streamPayments
+  streamPayments,
+  fetchStellarAssetsForDisplay,
+  fetchBlockEQTokensForDisplay
 })(AccountList)

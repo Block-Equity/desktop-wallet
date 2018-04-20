@@ -80,41 +80,18 @@ class Main extends Component {
       } else {
         clearInterval(this.pollUserAccount)
         await this.props.fetchPaymentOperationList()
-        await this.props.streamPayments()
-        if (this.props.incomingPayment.from !== this.state.publicKey || this.props.incomingPayment.from !== undefined ) {
-          new Notification('Payment Received',
-            { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
-          )
-        }
       }
     }
 
     if (nextProps.paymentSending !== this.props.paymentSending) {
-      if (this.props.paymentFailed) {
-        this.setState({
-          paymentFailed: true,
-          snackBarOpen: true,
-          snackBarMessage: 'Payment Failed'
-        })
-      } else {
-        await this.props.fetchAccountDetails()
-        await this.props.fetchPaymentOperationList()
-        await this.props.streamPayments()
-        if (this.props.incomingPayment.from !== this.state.publicKey || this.props.incomingPayment.from !== undefined ) {
-          new Notification('Payment Received',
-            { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
-          )
-        }
-
-        this.setState({
-          selectedMenuItem: INITIAL_NAVIGATION_INDEX,
-          sendAmount: '',
-          sendAddress: '',
-          paymentFailed: false,
-          snackBarOpen: true,
-          snackBarMessage: 'Payment Successful'
-        })
-      }
+      this.setState({
+        selectedMenuItem: INITIAL_NAVIGATION_INDEX,
+        sendAmount: '',
+        sendAddress: '',
+        paymentFailed: this.props.paymentFailed ? true : false,
+        snackBarOpen: true,
+        snackBarMessage: this.props.paymentFailed ? 'Payment Failed' : 'Payment Successful'
+      })
     }
 
   }
@@ -215,7 +192,7 @@ class Main extends Component {
     switch(this.state.selectedMenuItem) {
       case navigation.history:
         return (
-          <History paymentTransactions={this.props.paymentTransactions} pKey={this.state.publicKey} />
+          <History paymentTransactions={this.props.paymentTransactions} pKey={this.state.publicKey} currentAccount={this.props.currentAccount} />
         )
       break
       case navigation.send:

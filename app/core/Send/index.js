@@ -23,6 +23,7 @@ class Send extends Component {
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handlePinSubmission = this.handlePinSubmission.bind(this)
     this.togglePINModal = this.togglePINModal.bind(this)
   }
 

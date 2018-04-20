@@ -1,5 +1,11 @@
 import * as db from '../../db'
-import { getCurrentAccount, getAccounts } from './selectors'
+import {
+  getCurrentAccount,
+  getAccounts,
+  getSupportedStellarAssets,
+  getStellarAssetsForDisplay,
+  getBlockEQTokensForDisplay
+} from './selectors'
 import * as horizon from '../../services/networking/horizon'
 import { getSupportedAssets } from '../../services/networking/lists'
 import * as mnemonic from '../../services/security/mnemonic'
@@ -99,36 +105,22 @@ export function fetchAccountDetails () {
       const { balances, sequence: nextSequence, type } = details
 
       //Update current account info
-      var updateCurrentAccount = {
-        pKey: currentAccount.pKey,
-        sKey: currentAccount.sKey,
-        sequence: nextSequence
-      }
+      var updateCurrentAccount
+      var amount
+
       balances.map(n => {
-        if (currentAccount.asset_type.length === 0) {
-          //First check if initial account's asset type is not set
-          //Set to native
-          if (n.asset_type === 'native') {
-            updateCurrentAccount = {
-              ...updateCurrentAccount,
-              balance: n.balance,
-              asset_type: n.asset_type,
-              asset_code: 'XLM',
-              asset_name: 'Stellar'
-            }
-          }
+        if (currentAccount.asset_type === 'native') {
+          amount = n.balance
         } else {
-          //If account asset type is set, update other properties
-          updateCurrentAccount = {
-            ...updateCurrentAccount,
-            balance: n.balance,
-            asset_type: n.asset_type === currentAccount.asset_type ? currentAccount.asset_type : n.asset_type,
-            asset_code: n.asset_type === 'native' ? 'XLM' : n.asset_code,
-            asset_name: n.asset_type === 'native' ? 'Stellar' : ''
-          }
+          if (currentAccount.asset_code === n.asset_code)
+            amount = n.balance
         }
       })
-
+      updateCurrentAccount = {
+        ...currentAccount,
+        sequence: nextSequence,
+        balance: amount,
+      }
       dispatch(setCurrentAccount(updateCurrentAccount))
 
       //Update Database
@@ -158,6 +150,79 @@ export function fetchSupportedAssets () {
       return dispatch(supportedAssetsSuccess(list, response))
     } catch (e) {
       return dispatch(supportedAssetsFailure(e))
+    }
+  }
+}
+
+export function fetchStellarAssetsForDisplay () {
+  return async (dispatch, getState) => {
+    try {
+      const accounts = getAccounts(getState())
+      const supportedStellarAccounts = getSupportedStellarAssets(getState())
+      const { response } = supportedStellarAccounts
+      var stellarAccounts = []
+
+      const stellarAssetDesc = {
+        asset_order: 0,
+        asset_type: 'native',
+        asset_name: 'Stellar',
+        asset_code: 'XLM'
+      }
+
+      Object.keys(accounts).map((key, index) => {
+        if (accounts[key].type === stellarAssetDesc.asset_name) {
+          const stellarAccount = accounts[Object.keys(accounts)[index]]
+          stellarAccount.balances.map((acc, index) => {
+            const displayAccount = {
+              asset_type: acc.asset_type,
+              balance: acc.balance,
+              asset_code: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_code : acc.asset_code,
+              asset_name: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_name : response[acc.asset_code.toLowerCase()].asset_name,
+              asset_issuer: acc.asset_type === stellarAssetDesc.asset_type ? '' : acc.asset_issuer,
+              pKey: stellarAccount.pKey,
+              sKey: stellarAccount.sKey,
+              sequence: stellarAccount.sequence
+            }
+
+            if (acc.asset_type === stellarAssetDesc.asset_type) {
+              stellarAccounts.splice(stellarAssetDesc.asset_order, 0, displayAccount)
+            } else {
+              stellarAccounts.push(displayAccount)
+            }
+          })
+        }
+      })
+
+      return dispatch(stellarAccountsDisplaySuccess(stellarAccounts))
+    } catch (e) {
+      return dispatch(stellarAccountsDisplayFailure(e))
+    }
+  }
+}
+
+export function fetchBlockEQTokensForDisplay () {
+  return async (dispatch, getState) => {
+    try {
+      const supportedStellarAssets = getSupportedStellarAssets(getState())
+      const { list } = supportedStellarAssets
+      const stellarAccounts = getStellarAssetsForDisplay(getState())
+      var supportedDisplayAssets = []
+
+      for (var i = 0; i < list.length; i ++ ) {
+        const supportedAsset = list[i]
+        for (var j = 0; j < stellarAccounts.length; j ++ ) {
+          const stellarAsset = stellarAccounts[j]
+          if (stellarAsset.asset_type !== 'native')
+            if (supportedAsset.asset_code !== stellarAsset.asset_code)
+              supportedDisplayAssets.push(supportedAsset)
+        }
+      }
+
+      console.log(`Action Supported Display Asset: ${JSON.stringify(supportedDisplayAssets)}`)
+
+      return dispatch(blockEQTokensDisplaySuccess(supportedDisplayAssets))
+    } catch (e) {
+      return dispatch(blockEQTokensDisplayFailure(e))
     }
   }
 }
@@ -253,6 +318,36 @@ export function supportedAssetsSuccess (list, response) {
 export function supportedAssetsFailure (error) {
   return {
     type: Types.ACCOUNT_SUPPORTED_ASSETS_FAILURE,
+    payload: error,
+    error: true
+  }
+}
+
+export function stellarAccountsDisplaySuccess (accounts) {
+  return {
+    type: Types.STELLAR_ACCOUNTS_DISPLAY_SUCCESS,
+    payload: { accounts }
+  }
+}
+
+export function stellarAccountsDisplayFailure (error) {
+  return {
+    type: Types.STELLAR_ACCOUNTS_DISPLAY_FAILURE,
+    payload: error,
+    error: true
+  }
+}
+
+export function blockEQTokensDisplaySuccess (accounts) {
+  return {
+    type: Types.BLOCKEQ_TOKENS_DISPLAY_SUCCESS,
+    payload: { accounts }
+  }
+}
+
+export function blockEQTokensDisplayFailure (error) {
+  return {
+    type: Types.BLOCKEQ_TOKENS_DISPLAY_FAILURE,
     payload: error,
     error: true
   }

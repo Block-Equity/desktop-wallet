@@ -22,15 +22,10 @@ export const fundAccount = (publicKey) => {
 export const getAccountDetail = async (publicKey) => {
   let account = await server.loadAccount(publicKey)
 
-  // Just in case loading the account fails to retrieve the balances, immediately throw
-  // an exception
   if (!account.balances.length) {
     console.log('Account does not exist')
     throw new Error('Unable to retrieve balance')
   }
-
-  // Grab the latest one
-  let latest = account.balances[account.balances.length - 1]
 
   return {
     balances: account.balances,
@@ -62,9 +57,11 @@ export const receivePaymentStream = async (publicKey) => {
   })
 }
 
-export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount, memoID }) => {
+export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount, memoID, issuerPK, assetType }) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   let transaction
+
+  var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
 
   return new Promise((resolve, reject) => {
     server.loadAccount(destinationId)
@@ -88,12 +85,12 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
             destination: destinationId,
             // Because Stellar allows transaction in many currencies, you must
             // specify the asset type. The special "native" asset represents Lumens.
-            asset: StellarSdk.Asset.native(),
+            asset: assetType === 'XLM'? StellarSdk.Asset.native() : blockEQToken,
             amount: amount.toString()
           }))
           // A memo allows you to add your own metadata to a transaction. It's
           // optional and does not affect how Stellar treats the transaction.
-          .addMemo(memoID.length===0 ? StellarSdk.Memo.text('No memo defined') : StellarSdk.Memo.id(memoID))
+          .addMemo(memoID.length === 0 ? StellarSdk.Memo.text('No memo defined') : StellarSdk.Memo.id(memoID))
           .build()
 
         // Sign the transaction to prove you are actually the person sending it.

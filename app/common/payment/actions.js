@@ -1,5 +1,5 @@
 import { sendPayment, getPaymentOperationList, receivePaymentStream, createDestinationAccount } from '../../services/networking/horizon'
-import { fetchAccountDetails, setCurrentAccount } from '../account/actions'
+import { fetchAccountDetails, setCurrentAccount, fetchStellarAssetsForDisplay } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
 import * as Types from './types'
 import { getUserPIN } from '../../db'
@@ -12,8 +12,12 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
     const {
       pKey: publicKey,
       sKey: secretKey,
-      sequence
+      sequence,
+      asset_issuer: issuerPK,
+      asset_code: assetType
     } = currentAccount
+
+    console.log(`Send Payment Action: ${JSON.stringify(currentAccount)}`)
 
     const { pin } = await getUserPIN()
     const decryptSK = await encryption.decryptText(secretKey, pin)
@@ -28,7 +32,9 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
         sequence,
         destinationId: destination,
         amount,
-        memoID
+        memoID,
+        issuerPK,
+        assetType
       })
 
       if (!exists) {
@@ -40,10 +46,8 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
 
       // 2. Fetch the account details to get the updated balance
       await dispatch(fetchAccountDetails())
-
-      // 3. Update the current account (as this would not be automatically done otherwise)
-      currentAccount = getAccountByPublicKey(getState(), publicKey)
-      await dispatch(setCurrentAccount(currentAccount))
+      await dispatch(fetchStellarAssetsForDisplay())
+      await dispatch(fetchPaymentOperationList())
 
       // 4. And we're done!
       return dispatch(paymentSendSuccess({
@@ -89,6 +93,7 @@ export function streamPayments() {
 
       //Update Account Details
       await dispatch(fetchAccountDetails())
+      await dispatch(fetchStellarAssetsForDisplay())
 
       //Update Payment Operation list
       await dispatch(fetchPaymentOperationList())
