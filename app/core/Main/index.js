@@ -83,16 +83,18 @@ class Main extends Component {
       }
     }
 
-    if (nextProps.paymentSending !== this.props.paymentSending) {
+    /*if (nextProps.paymentSending !== this.props.paymentSending) {
+      console.log(`Payment Next Props: ${nextProps.paymentFailed}`)
+      const msg = nextProps.paymentFailed ? 'Payment Failed' : 'Payment Successful'
       this.setState({
         selectedMenuItem: INITIAL_NAVIGATION_INDEX,
         sendAmount: '',
         sendAddress: '',
-        paymentFailed: this.props.paymentFailed ? true : false,
-        snackBarOpen: true,
-        snackBarMessage: this.props.paymentFailed ? 'Payment Failed' : 'Payment Successful'
+        paymentFailed: nextProps.paymentFailed,
+        snackBarMessage: msg,
+        snackBarOpen: true
       })
-    }
+    }*/
 
   }
 
@@ -149,6 +151,15 @@ class Main extends Component {
         amount: formattedAmount,
         memoID: info.memoId
       })
+      const msg = this.props.paymentFailed ? 'Payment Failed' : 'Payment Successful'
+      this.setState({
+        selectedMenuItem: INITIAL_NAVIGATION_INDEX,
+        sendAmount: '',
+        sendAddress: '',
+        snackBarMessage: msg,
+        paymentFailed: this.props.paymentFailed,
+        snackBarOpen: true
+      })
     })().catch(err => {
         console.error(err);
     })
@@ -185,7 +196,7 @@ class Main extends Component {
       return;
     }
     this.setState({ snackBarOpen: false });
-  };
+  }
 
   renderContent() {
     console.log(`Render content || state: ${this.state.selectedMenuItem}`)

@@ -42,7 +42,7 @@ class PinModal extends Component {
   render () {
     var header = this.state.invalidPIN ? 'Invalid PIN. Please try again.' : 'Enter your PIN to complete the transaction.'
     return (
-      <Modal isOpen={this.props.showPINModal} toggle={this.togglePINModal} className={this.props.className} centered={true}>
+      <Modal isOpen={this.props.showPINModal} className={this.props.className} centered={true}>
         <ModalHeader style={{boxShadow: 'none'}} toggle={this.togglePINModal}>{header}</ModalHeader>
         <ModalBody>
           <Input type='password' name='pinValue' id='pinValue'
@@ -121,8 +121,7 @@ class PinModal extends Component {
         this.setState({
           retrieve: false,
           pinValue: '',
-          invalidPIN: false,
-          showPINModal: false
+          invalidPIN: false
         })
         this.props.pinSuccessful(true)
       }, 1000)

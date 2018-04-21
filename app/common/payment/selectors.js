@@ -5,3 +5,7 @@ export function getIncomingPayment (state) {
 export function getPaymentTransactions (state) {
   return state.payment.paymentTransactions
 }
+
+export function getSendPaymentStatus (state) {
+  return state.payment.isSending
+}

@@ -155,29 +155,8 @@ class Send extends Component {
 
   handlePinSubmission (success) {
     if (success) {
+      this.togglePINModal()
       this.props.receiveSendPaymentInfo(this.state.info)
-    }
-  }
-
-  async checkPIN() {
-    const { pin } = await getUserPIN()
-    console.log(`PIN Saved in DB: ${pin}`)
-    if (pin === this.state.pinValue) {
-      this.timer = setTimeout(() => {
-        this.setState({
-          retrieve: false,
-          pinValue: '',
-          invalidPIN: false,
-          showPINModal: false
-        })
-        this.props.receiveSendPaymentInfo(this.state.info)
-      }, 1000)
-    } else {
-      //Show alert for invalid PIN
-      this.setState({
-        retrieve: false,
-        invalidPIN: true
-      })
     }
   }
 

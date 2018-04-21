@@ -220,7 +220,6 @@ class AccountList extends Component {
       assetSelected: index
     })
     this.props.setCurrentAccount(asset)
-    //this.refreshAccounts()
   }
 
   handleBlockEQTokenAddition = (asset, index) => event => {
