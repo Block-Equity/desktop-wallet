@@ -3,7 +3,15 @@ import styles from './style.css'
 
 import { unlock } from '../../common/auth/actions'
 import { initializeDB } from '../../common/account/actions'
-import { getAccounts } from '../../common/account/selectors'
+import { getAccounts, getCurrentAccount } from '../../common/account/selectors'
+
+import {
+  streamPayments
+} from '../../common/payment/actions'
+
+import {
+  getIncomingPayment
+} from '../../common/payment/selectors'
 
 import { connect } from 'react-redux'
 import isEmpty from 'lodash/isEmpty'
@@ -35,6 +43,15 @@ class AppView extends Component {
     } catch (e) {
       console.log(e)
     }
+  }
+
+  async registerForNotifications () {
+      await this.props.streamPayments()
+      if (this.props.incomingPayment.from !== this.props.currentAccount.pKey || this.props.incomingPayment.from !== undefined ) {
+        new Notification('Payment Received',
+          { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
+        )
+      }
   }
 
   render() {
@@ -81,16 +98,18 @@ class AppView extends Component {
       settingsOpen: open
     })
   }
-
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    accounts: getAccounts(state)
+    accounts: getAccounts(state),
+    currentAccount: getCurrentAccount(state),
+    incomingPayment: getIncomingPayment(state)
   }
 }
 
 export default connect(null, {
   unlock,
-  initializeDB
+  initializeDB,
+  streamPayments
 })(AppView)

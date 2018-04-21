@@ -33,7 +33,7 @@
   "browserslist": "electron 1.6",
   "build": {
     "productName": "BlockEQ",
-    "appId": "org.develar.BlockEQ",
+    "appId": "com.blockequity.wallet",
     "files": [
       "dist/",
       "node_modules/",

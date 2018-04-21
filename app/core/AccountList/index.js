@@ -220,6 +220,7 @@ class AccountList extends Component {
       assetSelected: index
     })
     this.props.setCurrentAccount(asset)
+    this.refreshAccounts()
   }
 
   handleBlockEQTokenAddition = (asset, index) => event => {
@@ -229,18 +230,19 @@ class AccountList extends Component {
       changeTrustInProcess: true,
       changeTrustIndex: asset
     })
-    /*this.timer = setTimeout(() => {
-      this.setState({ changeTrustInProcess: false })
-    }, 3000)*/
     this.changeTrust (asset)
   }
 
   async changeTrust (asset) {
     await this.props.changeTrustOperation(asset)
+    await this.refreshAccounts()
+    this.setState({ changeTrustInProcess: false })
+  }
+
+  async refreshAccounts () {
     await this.props.fetchAccountDetails()
     await this.props.fetchStellarAssetsForDisplay()
     await this.props.fetchBlockEQTokensForDisplay()
-    this.setState({ changeTrustInProcess: false })
   }
 
 }
