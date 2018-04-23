@@ -17,3 +17,15 @@ export function getAccountByPublicKey (state, publicKey) {
 
   return accounts[publicKey]
 }
+
+export function getSupportedStellarAssets (state) {
+  return state.account.supportedAssets
+}
+
+export function getStellarAssetsForDisplay (state) {
+  return state.account.stellarAssetsDisplay
+}
+
+export function getBlockEQTokensForDisplay (state) {
+  return state.account.blockeqTokensDisplay
+}

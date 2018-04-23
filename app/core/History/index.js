@@ -39,40 +39,48 @@ const tableRowStyle = {
 
 const TRANSACTION_TYPE = {
   Payment: 'payment',
-  CreateAccount: 'create_account'
+  CreateAccount: 'create_account',
+  Changetrust: 'change_trust'
 }
 
 class History extends Component {
-  renderTableBody() {
-    return this.props.paymentTransactions.map(n => {
-      const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow();
-      const formattedDate = moment(n.created_at).format('lll')
-      const displayDate = `${formattedNowTime}${formattedDate}`
-      var displayAddress
-      var displayAmount
-      var displayTypeLabel
-      if (n.type === TRANSACTION_TYPE.Payment) {
-        displayAddress = n.from === this.props.pKey ? n.to : n.from
-        displayAmount = n.from === this.props.pKey ? numeral(`-${n.amount}`).format('(0,0.00)') : numeral(n.amount).format('0,0.00')
-        displayTypeLabel = n.from === this.props.pKey ? 'Payment sent' : 'Payment received'
-      } else if (n.type === TRANSACTION_TYPE.CreateAccount) {
-        displayAddress = n.source_account === this.props.pKey ? n.account : n.source_account
-        displayAmount = n.source_account === this.props.pKey ? numeral(`-${n.starting_balance}`).format('(0,0.00)') : numeral(n.starting_balance).format('0,0.00')
-        displayTypeLabel = n.source_account === this.props.pKey ? 'Account created for' : 'Account created by'
-      }
 
+  renderTableBody() {
+
+    const { currentAccount } = this.props
+    const type = currentAccount.asset_type
+    const code = currentAccount.asset_code
+    console.log(`Current Account Type: ${type} || Asset Code: ${code}`)
+    var displayData = []
+
+    this.props.paymentTransactions.map(n => {
+      if (n.type !== TRANSACTION_TYPE.Changetrust) {
+        if (currentAccount.asset_type === 'native') {
+          if (n.asset_type === 'native') {
+            const obj = this.getDisplayObject(n)
+            displayData.push(obj)
+          }
+        } else {
+          if (currentAccount.asset_code === n.asset_code) {
+            const obj = this.getDisplayObject(n)
+            displayData.push(obj)
+          }
+        }
+      }
+    })
+
+    return displayData.map(data => {
+      const { id, formattedNowTime, formattedDate, displayDate, displayAddress, displayAmount, displayTypeLabel } = data
       return (
-        <TableRow key={n.id}>
+        <TableRow key={id}>
           <TableCell style={tableRowStyle}>
             <div className={styles.tableCellMultiLine}>
-              <div><b>{formattedNowTime}</b></div>
-              <div style={{marginTop: '0.5rem'}}>{formattedDate}</div>
-            </div>
-          </TableCell>
-          <TableCell style={tableRowStyle}>
-            <div className={styles.tableCellMultiLine}>
-              <div><b>{displayTypeLabel}</b></div>
-              <div style={{marginTop: '0.5rem', fontSize: '0.57rem'}}>{displayAddress}</div>
+              <div style={{display: 'flex', flexDirection: 'row'}}>
+                <b>{displayTypeLabel}</b>
+                <i className="fa fa-circle" style={{color:'#A1A1A1', marginRight: '0.5rem', marginLeft: '0.5rem', marginTop: '0.45rem', fontSize: '0.4rem'}}></i>
+                <div style={{color:'#A1A1A1', fontWeight: '300'}}>{formattedNowTime}</div>
+              </div>
+              <div style={{marginTop: '0.5rem', fontSize: '0.65rem'}}>{displayAddress}</div>
             </div>
           </TableCell>
           <TableCell style={tableRowStyle}>{ displayAmount }</TableCell>
@@ -81,13 +89,39 @@ class History extends Component {
     })
   }
 
+  getDisplayObject(n) {
+    const id = n.id
+    const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow();
+    const formattedDate = moment(n.created_at).format('lll')
+    const displayDate = `${formattedNowTime}${formattedDate}`
+    var displayAddress, displayAmount, displayTypeLabel
+    if (n.type === TRANSACTION_TYPE.Payment) {
+      displayAddress = n.from === this.props.pKey ? n.to : n.from
+      displayAmount = n.from === this.props.pKey ? numeral(`-${n.amount}`).format('(0,0.00)') : numeral(n.amount).format('0,0.00')
+      displayTypeLabel = n.from === this.props.pKey ? `Payment sent ` : `Payment received `
+    } else if (n.type === TRANSACTION_TYPE.CreateAccount) {
+      displayAddress = n.source_account === this.props.pKey ? n.account : n.source_account
+      displayAmount = n.source_account === this.props.pKey ? numeral(`-${n.starting_balance}`).format('(0,0.00)') : numeral(n.starting_balance).format('0,0.00')
+      displayTypeLabel = n.source_account === this.props.pKey ? `Account created ` : `Account created by `
+    }
+    const displayObj = {
+      id,
+      formattedNowTime,
+      formattedDate,
+      displayDate,
+      displayAddress,
+      displayAmount,
+      displayTypeLabel
+    }
+    return displayObj
+  }
+
   render() {
     return (
       <Paper className={materialStyles.root} style={{width: 'inherit', height: '29rem', overflowY:'scroll'}}>
         <Table className={materialStyles.table}>
           <TableHead>
             <TableRow>
-              <TableCell style={tableHeaderStyle}>Date</TableCell>
               <TableCell style={tableHeaderStyle}>Description</TableCell>
               <TableCell style={tableHeaderStyle}>Amount</TableCell>
             </TableRow>

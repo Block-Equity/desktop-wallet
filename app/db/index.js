@@ -155,13 +155,14 @@ export const getPhrase = (pin) => {
   })
 }
 
-export const addUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
+export const addUserAccount = ({ publicKey, secretKey, balances, sequence, type }) => {
   const accountCreated = {
     [`accounts.${publicKey}`]: {
       pKey: publicKey,
       sKey: secretKey,
-      balance,
-      sequence
+      balances,
+      sequence,
+      type
     }
   }
 
@@ -178,12 +179,13 @@ export const addUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
   })
 }
 
-export const updateUserAccount = ({ publicKey, secretKey, balance, sequence }) => {
+export const updateUserAccount = ({ publicKey, secretKey, balances, sequence, type }) => {
   const updatedAccount = {
     pKey: publicKey,
     sKey: secretKey,
-    balance,
-    sequence
+    balances,
+    sequence,
+    type
   }
   return new Promise((resolve, reject) => {
     db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: { [publicKey]: updatedAccount } } },

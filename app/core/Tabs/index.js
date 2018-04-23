@@ -6,12 +6,12 @@ import Paper from 'material-ui/Paper'
 import Tabs, { Tab } from 'material-ui/Tabs'
 import Divider from 'material-ui/Divider'
 
-const font = "'Lato', sans-serif";
+const font = "'Lato', sans-serif"
 
 const materialStyles = theme => ({
   root: {
     flexGrow: 1,
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing.unit * 2,
     width: '100%',
   },
 })
@@ -42,13 +42,11 @@ class Navigation extends Component {
   renderTabs () {
     return (
       <Paper className={materialStyles.root} elevation={0} style={{borderRadius:'0'}}>
-        <Divider />
         <Tabs
           value={this.state.itemSelected}
           onChange={this.handleChange}
           indicatorColor='primary'
           textColor='primary'
-          style={{ paddingLeft: '2rem'}}
           centered>
           { this.renderTabItems() }
         </Tabs>

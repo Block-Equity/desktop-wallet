@@ -1,0 +1,9 @@
+.mainContainer {
+  display: flex;
+  height: 100vh;
+}
+
+.assetContainer {
+  display: flex;
+  flex-direction: column;
+}

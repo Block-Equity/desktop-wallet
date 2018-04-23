@@ -1,0 +1,18 @@
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.accountContentContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4.5rem;
+  width: 100%;
+  z-index: 1;
+}
+

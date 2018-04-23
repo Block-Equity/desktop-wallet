@@ -33,7 +33,7 @@
   "browserslist": "electron 1.6",
   "build": {
     "productName": "BlockEQ",
-    "appId": "org.develar.BlockEQ",
+    "appId": "com.blockequity.wallet",
     "files": [
       "dist/",
       "node_modules/",
@@ -200,8 +200,6 @@
     "electron-store": "^1.3.0",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
-    "keytar": "^4.1.0",
-    "keytar-prebuild": "^4.1.1",
     "material-ui": "^1.0.0-beta.35",
     "material-ui-icons": "^1.0.0-beta.36",
     "moment": "^2.20.1",

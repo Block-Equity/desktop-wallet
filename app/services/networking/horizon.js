@@ -22,21 +22,15 @@ export const fundAccount = (publicKey) => {
 export const getAccountDetail = async (publicKey) => {
   let account = await server.loadAccount(publicKey)
 
-  console.log('Balances for account:', publicKey)
-
-  // Just in case loading the account fails to retrieve the balances, immediately throw
-  // an exception
   if (!account.balances.length) {
     console.log('Account does not exist')
     throw new Error('Unable to retrieve balance')
   }
 
-  // Grab the latest one
-  let latest = account.balances[account.balances.length - 1]
-
   return {
-    balance: latest,
-    sequence: account.sequence
+    balances: account.balances,
+    sequence: account.sequence,
+    type: 'Stellar'
   }
 }
 
@@ -45,7 +39,7 @@ export const getPaymentOperationList = async (publicKey) => {
     server.operations()
       .forAccount(publicKey)
       .order('desc')
-      .limit(25)
+      .limit(100)
       .call()
       .then(({ records }) => resolve(records))
       .catch(error => reject(error));
@@ -63,9 +57,11 @@ export const receivePaymentStream = async (publicKey) => {
   })
 }
 
-export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount, memoID }) => {
+export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount, memoID, issuerPK, assetType }) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   let transaction
+
+  var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
 
   return new Promise((resolve, reject) => {
     server.loadAccount(destinationId)
@@ -89,12 +85,12 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
             destination: destinationId,
             // Because Stellar allows transaction in many currencies, you must
             // specify the asset type. The special "native" asset represents Lumens.
-            asset: StellarSdk.Asset.native(),
+            asset: assetType === 'XLM'? StellarSdk.Asset.native() : blockEQToken,
             amount: amount.toString()
           }))
           // A memo allows you to add your own metadata to a transaction. It's
           // optional and does not affect how Stellar treats the transaction.
-          .addMemo(memoID.length===0 ? StellarSdk.Memo.text('No memo defined') : StellarSdk.Memo.id(memoID))
+          .addMemo(memoID.length === 0 ? StellarSdk.Memo.text('No memo defined') : StellarSdk.Memo.id(memoID))
           .build()
 
         // Sign the transaction to prove you are actually the person sending it.
@@ -155,7 +151,51 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
           console.log('An error has occured:');
           console.log(err);
           reject({error: true, errorMessage: err})
-        });
+        })
     })
   })
+}
+
+export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
+  console.log(`SK: ${decryptSK} || PK: ${publicKey} || Issuer: ${issuerPK} || AssetType: ${assetType}`)
+  let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
+  var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
+  return new Promise((resolve, reject) => {
+    server.loadAccount(publicKey)
+    .catch(error => {
+      console.log(error.name)
+      reject({
+        error: true,
+        errorMessage: error.name
+      })
+    })
+    // If there was no error, load up-to-date information on your account.
+    .then(sourceAccount => {
+      console.log('Transaction Builder')
+      var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
+        .addOperation(StellarSdk.Operation.changeTrust({
+          asset: blockEQToken
+        }))
+        .build()
+
+        transaction.sign(sourceKeys)
+
+        server.submitTransaction(transaction)
+        .then( transactionResult => {
+          //console.log(JSON.stringify(transactionResult, null, 2));
+          //console.log('\nSuccess! View the transaction at: ');
+          //console.log(transactionResult._links.transaction.href);
+          resolve({
+            payload: 'Success',
+            error: false
+          })
+        })
+        .catch( err => {
+          console.log('An error has occured:');
+          console.log(err);
+          reject({error: true, errorMessage: err})
+        })
+    })
+  })
+
 }

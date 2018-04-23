@@ -7,7 +7,11 @@ export const INITIAL_STATE = {
   isFetching: false,
   error: undefined,
   accounts: undefined,
-  currentAccount: undefined
+  supportedAssets: undefined,
+  currentAccount: undefined,
+  stellarAssetsDisplay: undefined,
+  blockeqTokensDisplay: undefined,
+  changeTrustResponse: undefined
 }
 
 export function accountInitializationRequest (state) {
@@ -97,6 +101,78 @@ function accountDetailsFailure (state, error) {
     error
   }
 }
+
+function accountSupportedAssetsRequest (state) {
+  return {
+    ...state
+  }
+}
+
+function accountSupportedAssetsSuccess (state, payload) {
+  const { list, response } = payload
+  const { supportedAssets } = state
+  return {
+    ...state,
+    supportedAssets: { list, response }
+  }
+}
+
+function accountSupportedAssetsFailure (state, error) {
+  return {
+    ...state,
+    error
+  }
+}
+
+function stellarAssetsForDisplaySuccess (state, payload) {
+  const { accounts } = payload
+  return {
+    ...state,
+    stellarAssetsDisplay: accounts
+  }
+}
+
+function stellarAssetsForDisplayFailure (state, error) {
+  return {
+    ...state,
+    error
+  }
+}
+
+function blockeqTokensForDisplaySuccess (state, payload) {
+  const { accounts } = payload
+  return {
+    ...state,
+    blockeqTokensDisplay: accounts
+  }
+}
+
+function blockeqTokensForDisplayFailure (state, error) {
+  return {
+    ...state,
+    error
+  }
+}
+
+function changeTrustRequest (state) {
+  return {
+    ...state
+  }
+}
+
+function changeTrustSuccess (state, payload) {
+  return {
+    ...state
+  }
+}
+
+function changeTrustFailure (state, error) {
+  return {
+    ...state,
+    error
+  }
+}
+
 const reducers = {
   [Types.ACCOUNT_INITIALIZATION_REQUEST]: accountInitializationRequest,
   [Types.ACCOUNT_INITIALIZATION_SUCCESS]: accountInitializationSuccess,
@@ -108,7 +184,17 @@ const reducers = {
   [Types.SET_CURRENT_ACCOUNT]: setCurrentAccount,
   [Types.ACCOUNT_DETAILS_REQUEST]: accountDetailsRequest,
   [Types.ACCOUNT_DETAILS_SUCCESS]: accountDetailsSuccess,
-  [Types.ACCOUNT_DETAILS_FAILURE]: accountDetailsFailure
+  [Types.ACCOUNT_DETAILS_FAILURE]: accountDetailsFailure,
+  [Types.ACCOUNT_SUPPORTED_ASSETS_REQUEST]: accountSupportedAssetsRequest,
+  [Types.ACCOUNT_SUPPORTED_ASSETS_SUCCESS]: accountSupportedAssetsSuccess,
+  [Types.ACCOUNT_SUPPORTED_ASSETS_FAILURE]: accountSupportedAssetsFailure,
+  [Types.STELLAR_ACCOUNTS_DISPLAY_SUCCESS]: stellarAssetsForDisplaySuccess,
+  [Types.STELLAR_ACCOUNTS_DISPLAY_FAILURE]: stellarAssetsForDisplayFailure,
+  [Types.BLOCKEQ_TOKENS_DISPLAY_SUCCESS]: blockeqTokensForDisplaySuccess,
+  [Types.BLOCKEQ_TOKENS_DISPLAY_FAILURE]: blockeqTokensForDisplayFailure,
+  [Types.CHANGE_TRUST_REQUEST]: changeTrustRequest,
+  [Types.CHANGE_TRUST_SUCCESS]: changeTrustSuccess,
+  [Types.CHANGE_TRUST_FAILURE]: changeTrustFailure
 }
 
 export default createReducer(INITIAL_STATE, reducers)
