@@ -54,9 +54,9 @@ app.on('ready', async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 800,
-    height: 700,
-    resizable: false,
+    width: 790,
+    height: 665,
+    resizable: true,
     titleBarStyle: 'hiddenInset',
     frame: false
   })

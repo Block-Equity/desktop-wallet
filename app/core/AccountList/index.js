@@ -74,7 +74,7 @@ const materialStyles = theme => ({
 
 const listSections = {
    wallet: { displayName: 'WALLET' },
-   supported_assets: { displayName: 'BlockEQ TOKENS' }
+   supported_assets: { displayName: 'SUPPORTED ASSETS' }
 }
 
 function Transition(props) {

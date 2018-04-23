@@ -13,6 +13,7 @@ const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
 const BASE_URL_HORIZON_PUBLIC_NET = 'https://horizon.stellar.org'
 const BASE_URL = BASE_URL_HORIZON_PUBLIC_NET
 const server = new StellarSdk.Server(BASE_URL)
+const INFLATION_DESTINATION = 'GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT'
 
 export const fundAccount = (publicKey) => {
   // Friend Bot is only on Horizon Test Net
@@ -182,9 +183,6 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
 
         server.submitTransaction(transaction)
         .then( transactionResult => {
-          //console.log(JSON.stringify(transactionResult, null, 2));
-          //console.log('\nSuccess! View the transaction at: ');
-          //console.log(transactionResult._links.transaction.href);
           resolve({
             payload: 'Success',
             error: false
@@ -197,5 +195,39 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
         })
     })
   })
+}
 
+export const joinInflationOp = ({ publicKey }) => {
+  return new Promise((resolve, reject) => {
+    server.loadAccount(publicKey)
+    .catch(error => {
+      reject({
+        error: true,
+        errorMessage: error.name
+      })
+    })
+    .then(sourceAccount => {
+      console.log('Transaction Builder')
+      var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
+        .addOperation(StellarSdk.Operation.setOptions({
+          inflationDest: INFLATION_DESTINATION
+        }))
+        .build()
+
+        transaction.sign(sourceKeys)
+
+        server.submitTransaction(transaction)
+        .then( transactionResult => {
+          resolve({
+            payload: 'Success',
+            error: false
+          })
+        })
+        .catch( err => {
+          console.log('An error has occured:');
+          console.log(err);
+          reject({error: true, errorMessage: err})
+        })
+    })
+  })
 }
