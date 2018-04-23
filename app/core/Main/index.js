@@ -50,7 +50,8 @@ import ListSubheader from 'material-ui/List/ListSubheader'
 import Divider from 'material-ui/Divider'
 
 const navigation = { history: 0, send: 1, receive: 2 }
-const INITIAL_NAVIGATION_INDEX = navigation.history;
+const INITIAL_NAVIGATION_INDEX = navigation.history
+const font = "'Lato', sans-serif"
 
 class Main extends Component {
 
@@ -82,20 +83,6 @@ class Main extends Component {
         await this.props.fetchPaymentOperationList()
       }
     }
-
-    /*if (nextProps.paymentSending !== this.props.paymentSending) {
-      console.log(`Payment Next Props: ${nextProps.paymentFailed}`)
-      const msg = nextProps.paymentFailed ? 'Payment Failed' : 'Payment Successful'
-      this.setState({
-        selectedMenuItem: INITIAL_NAVIGATION_INDEX,
-        sendAmount: '',
-        sendAddress: '',
-        paymentFailed: nextProps.paymentFailed,
-        snackBarMessage: msg,
-        snackBarOpen: true
-      })
-    }*/
-
   }
 
   render () {
@@ -144,30 +131,32 @@ class Main extends Component {
 
   //Send Payment Call back
   receiveSendPaymentInfo = (info) => {
-    (async () => {
-      var formattedAmount = numeral(info.amount).format('0.0000000')
-      await this.props.sendPaymentToAddress({
-        destination: info.destination,
-        amount: formattedAmount,
-        memoID: info.memoId
-      })
-      const msg = this.props.paymentFailed ? 'Payment Failed' : 'Payment Successful'
-      this.setState({
-        selectedMenuItem: INITIAL_NAVIGATION_INDEX,
-        sendAmount: '',
-        sendAddress: '',
-        snackBarMessage: msg,
-        paymentFailed: this.props.paymentFailed,
-        snackBarOpen: true
-      })
-    })().catch(err => {
-        console.error(err);
+    this.sendPaymentOp(info)
+  }
+
+  async sendPaymentOp (info) {
+    var formattedAmount = numeral(info.amount).format('0.0000000')
+    await this.props.sendPaymentToAddress({
+      destination: info.destination,
+      amount: formattedAmount,
+      memoID: info.memoId
+    })
+    const msg = this.props.paymentFailed ? 'Payment Failed' : 'Payment Successful'
+    console.log(`Send Payment Message: ${msg}`)
+
+    this.setState({
+      selectedMenuItem: INITIAL_NAVIGATION_INDEX,
+      sendAmount: '',
+      sendAddress: '',
+      snackBarMessage: msg,
+      paymentFailed: this.props.paymentFailed,
+      snackBarOpen: true
     })
   }
 
   renderSnackBar() {
     return (
-      <div>
+      <div style={{zIndex: '3'}}>
         <Snackbar
           anchorOrigin={{
             vertical: 'bottom',
@@ -178,6 +167,11 @@ class Main extends Component {
           onClose={this.handleSnackBarClose}
           SnackbarContentProps={{
             'aria-describedby': 'message-id',
+            style: { fontFamily: font,
+              fontWeight:'400',
+              fontSize:'0.9rem',
+              paddingLeft: '13rem'
+            },
           }}
           message={<span id="message-id">{this.state.snackBarMessage}</span>}
           action={[

@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+
 import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
+
 import PinModal from '../PinModal'
-import { getUserPIN } from '../../db'
 
 class Send extends Component {
 

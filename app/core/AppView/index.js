@@ -45,15 +45,6 @@ class AppView extends Component {
     }
   }
 
-  async registerForNotifications () {
-      await this.props.streamPayments()
-      if (this.props.incomingPayment.from !== this.props.currentAccount.pKey || this.props.incomingPayment.from !== undefined ) {
-        new Notification('Payment Received',
-          { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
-        )
-      }
-  }
-
   render() {
     return (
       <div className={styles.mainContainer}>

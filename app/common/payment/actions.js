@@ -91,12 +91,20 @@ export function streamPayments() {
     try {
       let incomingPayment = await receivePaymentStream(publicKey)
 
+      dispatch(streamPaymentIncoming(true))
+
       //Update Account Details
       await dispatch(fetchAccountDetails())
       await dispatch(fetchStellarAssetsForDisplay())
 
       //Update Payment Operation list
       await dispatch(fetchPaymentOperationList())
+
+      if (incomingPayment.from !== publicKey || incomingPayment.from !== undefined ) {
+        new Notification('Payment Received',
+          { body: `You have received ${incomingPayment.amount} XLM from ${incomingPayment.from}`}
+        )
+      }
 
       //Finally, store incoming payment to local store
       return dispatch(streamPaymentSuccess(incomingPayment))
@@ -145,6 +153,13 @@ export function paymentOperationListFailure (error) {
     type: Types.PAYMENT_OPERATION_LIST_FAILURE,
     payload: error,
     error: true
+  }
+}
+
+export function streamPaymentIncoming (incoming) {
+  return {
+    type: Types.PAYMENT_STREAMING_INCOMING,
+    payload: incoming
   }
 }
 

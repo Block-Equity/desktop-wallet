@@ -105,22 +105,10 @@ class AccountList extends Component {
         await this.props.fetchSupportedAssets()
         await this.props.fetchStellarAssetsForDisplay()
         await this.props.fetchBlockEQTokensForDisplay()
-        await this.registerForNotifications()
       }
     } catch (e) {
       console.log(e)
       // TODO: display something on the UI
-    }
-  }
-
-  async registerForNotifications () {
-    if (!this.props.userAccountDetailFailed) {
-      await this.props.streamPayments()
-      if (this.props.incomingPayment.from !== this.props.currentAccount.pKey || this.props.incomingPayment.from !== undefined ) {
-        new Notification('Payment Received',
-          { body: `You have received ${this.props.incomingPayment.amount} XLM from ${this.props.incomingPayment.from}`}
-        )
-      }
     }
   }
 

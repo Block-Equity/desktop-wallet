@@ -6,6 +6,7 @@ import {
   getStellarAssetsForDisplay,
   getBlockEQTokensForDisplay
 } from './selectors'
+import { streamPayments } from '../payment/actions'
 import * as horizon from '../../services/networking/horizon'
 import { getUserPIN } from '../../db'
 import { getSupportedAssets } from '../../services/networking/lists'
@@ -135,6 +136,8 @@ export function fetchAccountDetails () {
       })
 
       dispatch(setAccounts(accounts))
+      dispatch(streamPayments())
+
     } catch (e) {
       return dispatch(accountDetailsFailure(e))
     }
