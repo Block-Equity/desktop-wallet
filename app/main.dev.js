@@ -56,12 +56,12 @@ app.on('ready', async () => {
     show: false,
     width: 800,
     height: 700,
-    resizable: true,
+    resizable: false,
     titleBarStyle: 'hiddenInset',
     frame: false
   })
 
-  //mainWindow.setContentProtection(true)
+  mainWindow.setContentProtection(true)
 
   mainWindow.loadURL(`file://${__dirname}/app.html`)
 
