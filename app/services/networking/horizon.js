@@ -115,7 +115,6 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
 }
 
 export const createDestinationAccount = ({ decryptSK, publicKey, destination, amount, sequence }) => {
-  console.log(`SK: ${decryptSK} || PK: ${publicKey} || Destination: ${destination} || Amount: ${amount} || Sequence: ${sequence}`)
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var transaction
   return new Promise((resolve, reject) => {
@@ -158,7 +157,6 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
 }
 
 export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
-  console.log(`SK: ${decryptSK} || PK: ${publicKey} || Issuer: ${issuerPK} || AssetType: ${assetType}`)
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
   return new Promise((resolve, reject) => {
@@ -197,37 +195,25 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
   })
 }
 
-export const joinInflationOp = ({ publicKey }) => {
+export const joinInflationDestination = ({ publicKey }) => {
   return new Promise((resolve, reject) => {
     server.loadAccount(publicKey)
     .catch(error => {
-      reject({
-        error: true,
-        errorMessage: error.name
-      })
+      reject({ errorMessage: error.name, error: true })
     })
     .then(sourceAccount => {
-      console.log('Transaction Builder')
       var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
-        .addOperation(StellarSdk.Operation.setOptions({
-          inflationDest: INFLATION_DESTINATION
-        }))
+        .addOperation(StellarSdk.Operation.setOptions({ inflationDest: INFLATION_DESTINATION }))
         .build()
+      transaction.sign(sourceKeys)
 
-        transaction.sign(sourceKeys)
-
-        server.submitTransaction(transaction)
-        .then( transactionResult => {
-          resolve({
-            payload: 'Success',
-            error: false
-          })
-        })
-        .catch( err => {
-          console.log('An error has occured:');
-          console.log(err);
-          reject({error: true, errorMessage: err})
-        })
+      server.submitTransaction(transaction)
+      .then( transactionResult => {
+        resolve({ payload: 'Success', error: false })
+      }).catch( err => {
+        console.log(err);
+        reject({ errorMessage: err, error: true })
+      })
     })
   })
 }

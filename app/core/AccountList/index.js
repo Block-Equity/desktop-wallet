@@ -119,7 +119,6 @@ class AccountList extends Component {
           <MenuList style={{marginTop: '2.5rem', height: '100vh'}}>
             { this.renderSubHeader(listSections.wallet.displayName)}
             { this.renderAssets() }
-            <Divider style={{marginTop: '1rem'}}/>
             { (!isEmpty(this.props.blockEQTokens)) && this.renderSubHeader(listSections.supported_assets.displayName)}
             { this.renderSupportedAssets() }
           </MenuList>
@@ -134,13 +133,15 @@ class AccountList extends Component {
       return this.props.assets.map((asset, index) => {
         const selected = this.state.assetSelected === index ? true : false
         return (
-          <MenuItem
-            className={ materialStyles.menuItem }
-            key={ index }
-            selected={ selected }
-            onClick={ this.handleStellarAssetSelection(asset, index) }>
-            {this.renderAccountListLabel(asset.asset_name, asset.balance)}
-          </MenuItem>
+          <div key={ index }>
+            <MenuItem style={{height: '2.25rem'}}
+              className={ materialStyles.menuItem }
+              selected={ selected }
+              onClick={ this.handleStellarAssetSelection(asset, index) }>
+              {this.renderAccountListLabel(asset)}
+            </MenuItem>
+            <Divider />
+          </div>
         )
       })
     }
@@ -163,19 +164,29 @@ class AccountList extends Component {
 
   renderSubHeader (value) {
     return (
-      <ListSubheader style={{fontFamily: font, outline: 'none', fontSize: '0.6rem', fontWeight: '700', letterSpacing: '0.05rem' }} component="div">{value}</ListSubheader>
+      <ListSubheader style={{fontFamily: font, outline: 'none', fontSize: '0.6rem', fontWeight: '700', letterSpacing: '0.04rem' }} component="div">
+        {value}
+      </ListSubheader>
     )
   }
 
-  renderAccountListLabel (label, balance) {
+  renderAccountListLabel (asset) {
+    const labelView = (
+      <label style={{fontFamily: font, fontSize: '0.85rem', marginTop: '0.8rem'}}>
+        { asset.asset_name }
+      </label>
+    )
+
+    const balanceView = (
+      <label style={{fontFamily: font, fontSize: '0.65rem', marginTop: '-1rem'}}>
+        { asset.balance }
+      </label>
+    )
+
     return (
       <div className={styles.assetContainer}>
-        <label style={{fontFamily: font, fontSize: '0.85rem', paddingTop: '0.45rem', marginBottom: '-0.4rem'}}>
-          {label}
-        </label>
-        <label style={{fontFamily: font, fontSize: '0.65rem'}}>
-          {balance}
-        </label>
+        { labelView }
+        { balanceView }
       </div>
     )
   }
