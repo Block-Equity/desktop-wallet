@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { joinInflationPoolOperation } from '../../common/account/actions'
+import { joinInflationPoolOperation, fetchAccountDetails } from '../../common/account/actions'
 
 import isEmpty from 'lodash/isEmpty'
 import numeral from 'numeral'
@@ -47,14 +47,12 @@ class AccountInfo extends Component {
 
   renderConditionForInflationPoolView() {
     const { currentAccount } = this.props
-    if (isEmpty(currentAccount.inflationDestination)) {
-      if (currentAccount.asset_type === 'native') {
-        return (
-          this.renderJoinInflationAlertContent()
-        )
-      } else {
-        return ( <div style={{height: '1.5rem'}} /> )
-      }
+    if (isEmpty(currentAccount.inflationDestination) && currentAccount.balance > 1.01) {
+        if (currentAccount.asset_type === 'native') {
+          return ( this.renderJoinInflationAlertContent() )
+        } else {
+          return ( <div style={{height: '1.5rem'}} /> )
+        }
     } else {
       return ( <div style={{height: '1.5rem'}} /> )
     }
@@ -125,11 +123,12 @@ class AccountInfo extends Component {
 
   async joinInflationPool () {
     await this.props.joinInflationPoolOperation()
+    await this.props.fetchAccountDetails()
     setTimeout(function(){
       this.setState({
         inProgress: false
       })
-    }, 1500);
+    }.bind(this), 1500);
   }
 
   toggleInfo() {
@@ -140,5 +139,6 @@ class AccountInfo extends Component {
 }
 
 export default connect(null, {
-  joinInflationPoolOperation
+  joinInflationPoolOperation,
+  fetchAccountDetails
 })(AccountInfo)

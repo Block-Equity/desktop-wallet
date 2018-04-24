@@ -114,8 +114,7 @@ export function fetchAccountDetails () {
 
       balances.map(n => {
         if (currentAccount.asset_type === 'native') {
-          amount = n.balance,
-          inflationDestination
+          amount = n.balance
         } else {
           if (currentAccount.asset_code === n.asset_code)
             amount = n.balance
@@ -125,6 +124,7 @@ export function fetchAccountDetails () {
         ...currentAccount,
         sequence: nextSequence,
         balance: amount,
+        inflationDestination
       }
       dispatch(setCurrentAccount(updateCurrentAccount))
 
@@ -264,10 +264,9 @@ export function joinInflationPoolOperation () {
       const decryptSK = await encryption.decryptText(secretKey, pin)
 
       const { payload, error } = await horizon.joinInflationDestination(decryptSK, publicKey)
-      await dispatch(fetchAccountDetails()) //Updates the account from Stellar wtih inflation destination
-      return(dispatch(changeTrustSuccess()))
+      return(dispatch(joinInflationSuccess()))
     } catch (e) {
-      return(dispatch(changeTrustFailure(e)))
+      return(dispatch(joinInflationFailure(e)))
     }
   }
 }
