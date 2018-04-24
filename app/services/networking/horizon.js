@@ -31,7 +31,8 @@ export const getAccountDetail = async (publicKey) => {
   return {
     balances: account.balances,
     sequence: account.sequence,
-    type: 'Stellar'
+    type: 'Stellar',
+    inflationDestination: account.inflation_destination
   }
 }
 

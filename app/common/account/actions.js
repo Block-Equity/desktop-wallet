@@ -34,7 +34,8 @@ export function initializeDB () {
               balance: n.balance,
               asset_type: n.asset_type,
               asset_name: 'Stellar',
-              asset_code: 'XLM'
+              asset_code: 'XLM',
+              inflationDestination: currentAccount.inflationDestination
             }
           }
         })
@@ -105,7 +106,7 @@ export function fetchAccountDetails () {
 
     try {
       let details = await horizon.getAccountDetail(publicKey)
-      const { balances, sequence: nextSequence, type } = details
+      const { balances, sequence: nextSequence, type, inflationDestination } = details
 
       //Update current account info
       var updateCurrentAccount
@@ -113,7 +114,8 @@ export function fetchAccountDetails () {
 
       balances.map(n => {
         if (currentAccount.asset_type === 'native') {
-          amount = n.balance
+          amount = n.balance,
+          inflationDestination
         } else {
           if (currentAccount.asset_code === n.asset_code)
             amount = n.balance
@@ -132,7 +134,8 @@ export function fetchAccountDetails () {
         secretKey,
         balances,
         sequence: nextSequence,
-        type
+        type,
+        inflationDestination
       })
 
       dispatch(setAccounts(accounts))

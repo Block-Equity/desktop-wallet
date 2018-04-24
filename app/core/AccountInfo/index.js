@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import { joinInflationPoolOperation } from '../../common/account/actions'
 
+import isEmpty from 'lodash/isEmpty'
 import numeral from 'numeral'
 
 import styles from './style.css'
@@ -31,8 +32,8 @@ class AccountInfo extends Component {
         <Card body
             style={{ backgroundColor: '#F9F9F9', borderColor: '#ECEEEF', marginBottom: '1rem', marginTop: '0.75rem', padding: '0rem'}}>
           <div className={styles.container}>
-            { currentAccount.asset_type === 'native' && this.renderJoinInflationAlertContent() }
-            { currentAccount.asset_type !== 'native' && <div style={{height: '1.5rem'}}/>}
+            { isEmpty(currentAccount.inflationDestination) && currentAccount.asset_type === 'native' && this.renderJoinInflationAlertContent() }
+            <div style={{height: '1.5rem'}} />
             <div className={styles.balanceTitle}>
               { assetDesc }
             </div>
