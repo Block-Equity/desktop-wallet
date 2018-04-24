@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 
 import isEmpty from 'lodash/isEmpty'
 import has from 'lodash/has'
+import numeral from 'numeral'
 
 import Paper from 'material-ui/Paper'
 import { withStyles } from 'material-ui/styles'
@@ -102,9 +103,6 @@ class AccountList extends Component {
       const { accounts } = this.props
       if (!isEmpty(accounts)) {
         await this.props.fetchAccountDetails()
-        await this.props.fetchSupportedAssets()
-        await this.props.fetchStellarAssetsForDisplay()
-        await this.props.fetchBlockEQTokensForDisplay()
       }
     } catch (e) {
       console.log(e)
@@ -179,7 +177,7 @@ class AccountList extends Component {
 
     const balanceView = (
       <label style={{fontFamily: font, fontSize: '0.65rem', marginTop: '-1rem'}}>
-        { asset.balance }
+        {numeral(asset.balance).format('0,0.00')}
       </label>
     )
 

@@ -90,19 +90,20 @@ export function streamPayments() {
 
     try {
       let incomingPayment = await receivePaymentStream(publicKey)
+      console.log(`Incoming Payment Obj: ${JSON.stringify(incomingPayment)}`)
 
       dispatch(streamPaymentIncoming(true))
 
       //Update Account Details
       await dispatch(fetchAccountDetails())
-      await dispatch(fetchStellarAssetsForDisplay())
 
       //Update Payment Operation list
       await dispatch(fetchPaymentOperationList())
 
       if (incomingPayment.from !== publicKey || incomingPayment.from !== undefined ) {
+        const currency = incomingPayment.asset_type === 'native' ? XLM : incomingPayment.asset_code
         new Notification('Payment Received',
-          { body: `You have received ${incomingPayment.amount} XLM from ${incomingPayment.from}`}
+          { body: `You have received ${incomingPayment.amount} ${currency} from ${incomingPayment.from}`}
         )
       }
 

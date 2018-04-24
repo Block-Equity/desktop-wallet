@@ -102,6 +102,7 @@ export function fetchAccountDetails () {
   return async (dispatch, getState) => {
     const currentAccount = getCurrentAccount(getState())
     const { pKey: publicKey, sKey: secretKey } = currentAccount
+    const supportedStellarAccounts = getSupportedStellarAssets(getState())
     dispatch(accountDetailsRequest())
 
     try {
@@ -137,15 +138,22 @@ export function fetchAccountDetails () {
         type,
         inflationDestination
       })
-
       dispatch(setAccounts(accounts))
+
+      if (!supportedStellarAccounts) {
+        await dispatch(fetchSupportedAssets())
+      }
+
+      await dispatch(fetchStellarAssetsForDisplay())
+      await dispatch(fetchBlockEQTokensForDisplay())
+
       dispatch(streamPayments())
 
+      return dispatch(accountDetailsSuccess())
     } catch (e) {
       return dispatch(accountDetailsFailure(e))
     }
 
-    return dispatch(accountDetailsSuccess())
   }
 }
 

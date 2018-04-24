@@ -20,12 +20,10 @@ export const databaseExists = async () => {
       }
 
       if (!doc) {
-        console.log('Document does not exist')
         resolve({
           exists: false
         })
       } else {
-        console.log('Document exists')
         resolve({
           exists: true,
           pin: doc.pin,

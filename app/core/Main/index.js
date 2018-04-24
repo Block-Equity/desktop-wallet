@@ -4,7 +4,9 @@ import { connect } from 'react-redux'
 import {
   createAccount,
   fetchAccountDetails,
-  setCurrentAccount
+  setCurrentAccount,
+  fetchStellarAssetsForDisplay,
+  fetchBlockEQTokensForDisplay
 } from '../../common/account/actions'
 
 import {
