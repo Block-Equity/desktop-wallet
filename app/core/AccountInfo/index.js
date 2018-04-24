@@ -32,8 +32,7 @@ class AccountInfo extends Component {
         <Card body
             style={{ backgroundColor: '#F9F9F9', borderColor: '#ECEEEF', marginBottom: '1rem', marginTop: '0.75rem', padding: '0rem'}}>
           <div className={styles.container}>
-            { isEmpty(currentAccount.inflationDestination) && currentAccount.asset_type === 'native' && this.renderJoinInflationAlertContent() }
-            <div style={{height: '1.5rem'}} />
+            { this.renderConditionForInflationPoolView() }
             <div className={styles.balanceTitle}>
               { assetDesc }
             </div>
@@ -44,6 +43,21 @@ class AccountInfo extends Component {
       </Card>
     </Col>
     )
+  }
+
+  renderConditionForInflationPoolView() {
+    const { currentAccount } = this.props
+    if (isEmpty(currentAccount.inflationDestination)) {
+      if (currentAccount.asset_type === 'native') {
+        return (
+          this.renderJoinInflationAlertContent()
+        )
+      } else {
+        return ( <div style={{height: '1.5rem'}} /> )
+      }
+    } else {
+      return ( <div style={{height: '1.5rem'}} /> )
+    }
   }
 
   renderJoinInflationAlertContent() {

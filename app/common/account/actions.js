@@ -174,7 +174,8 @@ export function fetchStellarAssetsForDisplay () {
         asset_order: 0,
         asset_type: 'native',
         asset_name: 'Stellar',
-        asset_code: 'XLM'
+        asset_code: 'XLM',
+        inflationDestination: ''
       }
 
       Object.keys(accounts).map((key, index) => {
@@ -189,7 +190,8 @@ export function fetchStellarAssetsForDisplay () {
               asset_issuer: acc.asset_type === stellarAssetDesc.asset_type ? '' : acc.asset_issuer,
               pKey: stellarAccount.pKey,
               sKey: stellarAccount.sKey,
-              sequence: stellarAccount.sequence
+              sequence: stellarAccount.sequence,
+              inflationDestination: acc.asset_type === stellarAssetDesc.asset_type ? stellarAccount.inflationDestination : ''
             }
 
             if (acc.asset_type === stellarAssetDesc.asset_type) {
