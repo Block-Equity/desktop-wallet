@@ -23,6 +23,18 @@
   font-weight: 100;
   color: #000000;
   font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+#linkContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+#linkContainer a:hover {
+  text-decoration: underline;
 }
 
 .buttonContainer {

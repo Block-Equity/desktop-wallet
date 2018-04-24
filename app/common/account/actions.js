@@ -249,24 +249,35 @@ export function changeTrustOperation ( asset ) {
   }
 }
 
-export function changeTrustRequest () {
-  return {
-    type: Types.CHANGE_TRUST_REQUEST
+export function joinInflationPoolOperation () {
+  return async (dispatch, getState) => {
+    try {
+      const currentAccount = getCurrentAccount(getState())
+      const { pKey: publicKey, sKey: secretKey } = currentAccount
+
+      const { pin } = await getUserPIN()
+      const decryptSK = await encryption.decryptText(secretKey, pin)
+
+      const { payload, error } = await horizon.joinInflationDestination(decryptSK, publicKey)
+      await dispatch(fetchAccountDetails()) //Updates the account from Stellar wtih inflation destination
+      return(dispatch(changeTrustSuccess()))
+    } catch (e) {
+      return(dispatch(changeTrustFailure(e)))
+    }
   }
 }
 
-export function changeTrustSuccess () {
+export function joinInflationSuccess () {
   return {
-    type: Types.CHANGE_TRUST_SUCCESS,
-    payload: 'success'
+    type: Types.JOIN_INFLATION_SUCCESS
   }
 }
 
-export function changeTrustFailure (error) {
+export function joinInflationFailure (error) {
   return {
-    type: Types.CHANGE_TRUST_FAILURE,
+    type: Types.JOIN_INFLATION_FAILURE,
     payload: error,
-    error
+    error: true
   }
 }
 
@@ -393,5 +404,26 @@ export function blockEQTokensDisplayFailure (error) {
     type: Types.BLOCKEQ_TOKENS_DISPLAY_FAILURE,
     payload: error,
     error: true
+  }
+}
+
+export function changeTrustRequest () {
+  return {
+    type: Types.CHANGE_TRUST_REQUEST
+  }
+}
+
+export function changeTrustSuccess () {
+  return {
+    type: Types.CHANGE_TRUST_SUCCESS,
+    payload: 'success'
+  }
+}
+
+export function changeTrustFailure (error) {
+  return {
+    type: Types.CHANGE_TRUST_FAILURE,
+    payload: error,
+    error
   }
 }

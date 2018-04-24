@@ -173,6 +173,19 @@ function changeTrustFailure (state, error) {
   }
 }
 
+function joinInflationPoolSuccess (state) {
+  return {
+    ...state
+  }
+}
+
+function joinInflationPoolFailure (state, error) {
+  return {
+    ...state,
+    error
+  }
+}
+
 const reducers = {
   [Types.ACCOUNT_INITIALIZATION_REQUEST]: accountInitializationRequest,
   [Types.ACCOUNT_INITIALIZATION_SUCCESS]: accountInitializationSuccess,
@@ -194,7 +207,9 @@ const reducers = {
   [Types.BLOCKEQ_TOKENS_DISPLAY_FAILURE]: blockeqTokensForDisplayFailure,
   [Types.CHANGE_TRUST_REQUEST]: changeTrustRequest,
   [Types.CHANGE_TRUST_SUCCESS]: changeTrustSuccess,
-  [Types.CHANGE_TRUST_FAILURE]: changeTrustFailure
+  [Types.CHANGE_TRUST_FAILURE]: changeTrustFailure,
+  [Types.JOIN_INFLATION_SUCCESS] : joinInflationPoolSuccess,
+  [Types.JOIN_INFLATION_FAILURE] : joinInflationPoolFailure
 }
 
 export default createReducer(INITIAL_STATE, reducers)

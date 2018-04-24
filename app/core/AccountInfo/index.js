@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 
-import { joinInflationDestination } from '../../services/networking/horizon'
+import { joinInflationPoolOperation } from '../../common/account/actions'
 
 import numeral from 'numeral'
 
 import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
 import Button from 'material-ui/Button'
-import { Card, Col, Popover, PopoverHeader, PopoverBody } from 'reactstrap'
+import { Card, Col, Popover, PopoverHeader, PopoverBody, Alert } from 'reactstrap'
 
 class AccountInfo extends Component {
 
@@ -25,56 +26,68 @@ class AccountInfo extends Component {
     const { currentAccount } = this.props
     const balance = currentAccount.balance
     const assetDesc = `${currentAccount.asset_name} (${currentAccount.asset_code})`
-
     return (
-      <Col sm='8'>
+      <Col sm='7'>
         <Card body
-            style={{ backgroundColor: '#F9F9F9', borderColor: '#ECEEEF', marginBottom: '1rem', marginTop: '0.75rem'}}>
+            style={{ backgroundColor: '#F9F9F9', borderColor: '#ECEEEF', marginBottom: '1rem', marginTop: '0.75rem', padding: '0rem'}}>
           <div className={styles.container}>
+            { currentAccount.asset_type === 'native' && this.renderJoinInflationAlertContent() }
+            { currentAccount.asset_type !== 'native' && <div style={{height: '1.5rem'}}/>}
             <div className={styles.balanceTitle}>
               { assetDesc }
             </div>
             <div className={styles.balanceLabel}>
               <b> {numeral(balance).format('0,0.00')} </b>
             </div>
-            { currentAccount.asset_type === 'native' && this.renderButtonContent() }
           </div>
       </Card>
     </Col>
     )
   }
 
-  renderButtonContent() {
-    const renderNormalButton = (
-      <div className={styles.buttonContainer}>
-        <button className='btn btn-success'
-                  type='submit'
-                  onClick={this.handleClick(this.props.currentAccount.pKey)}
-                  style={{width: 'inherit', height: '2.1rem', fontSize: '0.8rem'}}
-                  id="load">
-                  Join Inflation Pool
-        </button>
-        <a className={styles.info} onClick={this.toggleInfo} id="Popover1">What are inflation pools?</a>
+  renderJoinInflationAlertContent() {
+    const alert = (
+      <Alert color='success'
+              style={{ width: '100%',
+                       height: '2rem',
+                       padding: '0.45rem',
+                       fontSize: '0.75rem',
+                       marginTop: '-0.2rem',
+                       borderRadius: '3px 3px 0px 0px'
+                      }}>
+        <div id={styles.linkContainer}>
+          <a onClick={this.handleClick}><b>Join inflation pool</b></a>
+          <a onClick={this.toggleInfo} id="Popover1">
+            <i className='fa fa-info-circle' style={{marginLeft: '0.5rem'}}/>
+          </a>
+        </div>
         { this.renderInfo() }
-      </div>
+      </Alert>
     )
 
-    const renderLoadingButton = (
-      <div className={styles.buttonContainer}>
-        <button className='btn btn-success'
-                  type='submit'
-                  style={{width: 'inherit', height: '3rem'}}
-                  id="load" disabled>
-                  <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
-                  Joining Inflation Pool
-        </button>
-      </div>
+    const alertLoading = (
+      <Alert color='success'
+              style={{ width: '100%',
+                      height: '2rem',
+                      padding: '0.45rem',
+                      fontSize: '0.75rem',
+                      marginTop: '-0.2rem',
+                      borderRadius: '3px 3px 0px 0px'
+                      }}>
+        <div id={styles.linkContainer}>
+          <a><b>Joining inflation pool</b></a>
+          <CircularProgress
+            style={{ color: '#000000', marginLeft: '0.4rem', marginBottom: '0.3rem' }}
+            thickness={ 5 }
+            size={ 11 } />
+        </div>
+      </Alert>
     )
 
     if (this.state.inProgress) {
-      return renderLoadingButton
+      return alertLoading
     } else {
-      return renderNormalButton
+      return alert
     }
   }
 
@@ -82,21 +95,21 @@ class AccountInfo extends Component {
     return (
       <Popover placement="bottom" isOpen={this.state.infoOpen} target="Popover1" toggle={this.toggleInfo}>
         <PopoverHeader>What are inflation pools?</PopoverHeader>
-        <PopoverBody>Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</PopoverBody>
+        <PopoverBody>The Stellar distributed network has a built-in, fixed, nominal inflation mechanism. New lumens are added to the network at the rate of 1% each year. Each week, the protocol distributes these lumens to any account that gets over .05% of the “votes” from other accounts in the network.</PopoverBody>
       </Popover>
     )
   }
 
-  handleClick = ( publicKey ) => event => {
+  handleClick(event) {
     event.preventDefault()
     this.setState({
       inProgress: true
     })
-    this.joinInflationPool(publicKey)
+    this.joinInflationPool()
   }
 
-  async joinInflationPool ( publicKey ) {
-    const { payload, error } = await joinInflationDestination(publicKey)
+  async joinInflationPool () {
+    await this.props.joinInflationPoolOperation()
     setTimeout(function(){
       this.setState({
         inProgress: false
@@ -111,4 +124,6 @@ class AccountInfo extends Component {
   }
 }
 
-export default AccountInfo
+export default connect(null, {
+  joinInflationPoolOperation
+})(AccountInfo)

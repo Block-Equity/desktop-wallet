@@ -195,9 +195,10 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
   })
 }
 
-export const joinInflationDestination = ({ publicKey }) => {
+export const joinInflationDestination = ( sk, pk ) => {
+  let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
   return new Promise((resolve, reject) => {
-    server.loadAccount(publicKey)
+    server.loadAccount(pk)
     .catch(error => {
       reject({ errorMessage: error.name, error: true })
     })
