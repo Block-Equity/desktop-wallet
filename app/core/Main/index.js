@@ -25,6 +25,7 @@ import {
 
 import { joinInflationDestination } from '../../services/networking/horizon'
 
+import AccountInfo from '../AccountInfo'
 import History from '../History'
 import Tabs from '../Tabs'
 import Receive from '../Receive'
@@ -93,7 +94,7 @@ class Main extends Component {
     return (
       <div className={styles.mainPageContainer}>
         <div className={styles.mainPageContentContainer}>
-          { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
+          { !isEmpty(this.props.currentAccount) && <AccountInfo currentAccount={this.props.currentAccount} /> }
           <div style={{width: '100%'}}>
             <Tabs selectedItem={this.selectedItem} setItem={this.state.selectedMenuItem}/>
           </div>
@@ -133,7 +134,6 @@ class Main extends Component {
   }
 
   joinInflationPool = ( publicKey ) => event => {
-
     (async() => {
       const { payload, error } = await joinInflationDestination(publicKey)
     })

@@ -16,6 +16,7 @@ class AccountInfo extends Component {
     this.state = {
       inProgress: false
     }
+    this.handleClick = this.handleClick.bind(this)
   }
 
   render() {
@@ -34,22 +35,24 @@ class AccountInfo extends Component {
             <div className={styles.balanceLabel}>
               <b> {numeral(balance).format('0,0.00')} </b>
             </div>
-            { currentAccount.asset_type === 'native' && this.renderSendButtonContent }
+            { currentAccount.asset_type === 'native' && this.renderButtonContent() }
           </div>
       </Card>
     </Col>
     )
   }
 
-  renderSendButtonContent() {
+  renderButtonContent() {
     const renderNormalButton = (
       <div className={styles.buttonContainer}>
         <button className='btn btn-success'
                   type='submit'
-                  style={{width: 'inherit', height: '3rem'}}
+                  onClick={this.handleClick(this.props.currentAccount.pKey)}
+                  style={{width: 'inherit', height: '2.1rem', fontSize: '0.8rem'}}
                   id="load">
                   Join Inflation Pool
         </button>
+        <a className={styles.info}>What are inflation pools?</a>
       </div>
     )
 
@@ -72,8 +75,22 @@ class AccountInfo extends Component {
     }
   }
 
+  handleClick = ( publicKey ) => event => {
+    event.preventDefault()
+    this.setState({
+      inProgress: true
+    })
+    this.joinInflationPool(publicKey)
+  }
 
-
+  async joinInflationPool ( publicKey ) {
+    const { payload, error } = await joinInflationDestination(publicKey)
+    setTimeout(function(){
+      this.setState({
+        inProgress: false
+      })
+    }, 1500);
+  }
 }
 
 export default AccountInfo
