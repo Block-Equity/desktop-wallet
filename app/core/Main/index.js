@@ -23,6 +23,8 @@ import {
   getPaymentTransactions
 } from '../../common/payment/selectors'
 
+import { joinInflationDestination } from '../../services/networking/horizon'
+
 import History from '../History'
 import Tabs from '../Tabs'
 import Receive from '../Receive'
@@ -48,6 +50,7 @@ import Drawer from 'material-ui/Drawer'
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
 import ListSubheader from 'material-ui/List/ListSubheader'
 import Divider from 'material-ui/Divider'
+import { Card, Col } from 'reactstrap'
 
 const navigation = { history: 0, send: 1, receive: 2 }
 const INITIAL_NAVIGATION_INDEX = navigation.history
@@ -69,6 +72,7 @@ class Main extends Component {
       settingsOpen: false
     }
     this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
+    this.joinInflationPool = this.joinInflationPool.bind(this)
   }
 
   async componentWillUpdate(nextProps) {
@@ -109,11 +113,30 @@ class Main extends Component {
     const assetDesc = `${currentAccount.asset_name} (${currentAccount.asset_code})`
 
     return (
-      <div className={styles.mainPageHeaderContainer}>
-        <div className={styles.mainPageHeaderBalanceTitle}> { assetDesc } </div>
-        <div className={styles.mainPageHeaderBalanceLabel}><b> {numeral(balance).format('0,0.00')} </b> </div>
-      </div>
+      <Col sm='8'>
+        <Card body
+              style={{ backgroundColor: '#F9F9F9', borderColor: '#ECEEEF', marginBottom: '1rem', marginTop: '0.75rem'}}>
+          <div className={styles.mainPageHeaderContainer}>
+            <div className={styles.mainPageHeaderBalanceTitle}>
+              { assetDesc }
+            </div>
+            <div className={styles.mainPageHeaderBalanceLabel}>
+              <b> {numeral(balance).format('0,0.00')} </b>
+            </div>
+            { currentAccount.asset_type === 'native' &&
+              <a onClick={this.joinInflationPool(currentAccount.pKey)} className='badge badge-success'
+              style={{padding: '0.55rem', fontWeight: '300', marginTop: '0.5rem', color: '#FFFFFF'}}>Join Inflation Pool</a>}
+          </div>
+        </Card>
+      </Col>
     )
+  }
+
+  joinInflationPool = ( publicKey ) => event => {
+
+    (async() => {
+      const { payload, error } = await joinInflationDestination(publicKey)
+    })
   }
 
   toggleSettingsDrawer = (open) => () => {
