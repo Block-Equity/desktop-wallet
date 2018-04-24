@@ -7,16 +7,18 @@ import numeral from 'numeral'
 import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
 import Button from 'material-ui/Button'
-import { Card, Col } from 'reactstrap'
+import { Card, Col, Popover, PopoverHeader, PopoverBody } from 'reactstrap'
 
 class AccountInfo extends Component {
 
   constructor (props) {
     super()
     this.state = {
-      inProgress: false
+      inProgress: false,
+      infoOpen: false
     }
     this.handleClick = this.handleClick.bind(this)
+    this.toggleInfo = this.toggleInfo.bind(this)
   }
 
   render() {
@@ -52,7 +54,8 @@ class AccountInfo extends Component {
                   id="load">
                   Join Inflation Pool
         </button>
-        <a className={styles.info}>What are inflation pools?</a>
+        <a className={styles.info} onClick={this.toggleInfo} id="Popover1">What are inflation pools?</a>
+        { this.renderInfo() }
       </div>
     )
 
@@ -75,6 +78,15 @@ class AccountInfo extends Component {
     }
   }
 
+  renderInfo() {
+    return (
+      <Popover placement="bottom" isOpen={this.state.infoOpen} target="Popover1" toggle={this.toggleInfo}>
+        <PopoverHeader>What are inflation pools?</PopoverHeader>
+        <PopoverBody>Sed posuere consectetur est at lobortis. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum.</PopoverBody>
+      </Popover>
+    )
+  }
+
   handleClick = ( publicKey ) => event => {
     event.preventDefault()
     this.setState({
@@ -90,6 +102,12 @@ class AccountInfo extends Component {
         inProgress: false
       })
     }, 1500);
+  }
+
+  toggleInfo() {
+    this.setState({
+      infoOpen: !this.state.infoOpen
+    })
   }
 }
 
