@@ -55,13 +55,13 @@ app.on('ready', async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 790,
-    height: 665,
-    resizable: true,
+    height: 700,
+    resizable: process.env.NODE_ENV === 'development' ? true : false,
     titleBarStyle: 'hiddenInset',
     frame: false
   })
 
-  mainWindow.setContentProtection(false)
+  mainWindow.setContentProtection(process.env.NODE_ENV === 'development' ? false : true)
 
   mainWindow.loadURL(`file://${__dirname}/app.html`)
 
