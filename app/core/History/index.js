@@ -54,7 +54,7 @@ class History extends Component {
     var displayData = []
 
     this.props.paymentTransactions.map(n => {
-      //if (n.type !== TRANSACTION_TYPE.ChangeTrust && n.type !== TRANSACTION_TYPE.SetOptions) {
+      if (n.type !== TRANSACTION_TYPE.ChangeTrust && n.type !== TRANSACTION_TYPE.SetOptions) {
         if (currentAccount.asset_type === 'native') {
           if (n.asset_type === 'native') {
             console.log(`Transaction Types: ${n.type}`)
@@ -67,6 +67,7 @@ class History extends Component {
             displayData.push(obj)
           }
         }
+      }
     })
 
     return displayData.map(data => {
