@@ -103,6 +103,11 @@ class AccountList extends Component {
       const { accounts } = this.props
       if (!isEmpty(accounts)) {
         await this.props.fetchAccountDetails()
+        if (this.props.userAccountDetailFailed) {
+          await this.props.fetchSupportedAssets()
+          await this.props.fetchStellarAssetsForDisplay()
+          await this.props.fetchBlockEQTokensForDisplay()
+        }
       }
     } catch (e) {
       console.log(e)
