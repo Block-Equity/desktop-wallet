@@ -13,6 +13,7 @@ const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
 const BASE_URL_HORIZON_PUBLIC_NET = 'https://horizon.stellar.org'
 const BASE_URL = BASE_URL_HORIZON_PUBLIC_NET
 const server = new StellarSdk.Server(BASE_URL)
+const INFLATION_DESTINATION = 'GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT'
 
 export const fundAccount = (publicKey) => {
   // Friend Bot is only on Horizon Test Net
@@ -30,7 +31,8 @@ export const getAccountDetail = async (publicKey) => {
   return {
     balances: account.balances,
     sequence: account.sequence,
-    type: 'Stellar'
+    type: 'Stellar',
+    inflationDestination: account.inflation_destination
   }
 }
 
@@ -114,7 +116,6 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
 }
 
 export const createDestinationAccount = ({ decryptSK, publicKey, destination, amount, sequence }) => {
-  console.log(`SK: ${decryptSK} || PK: ${publicKey} || Destination: ${destination} || Amount: ${amount} || Sequence: ${sequence}`)
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var transaction
   return new Promise((resolve, reject) => {
@@ -157,7 +158,6 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
 }
 
 export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
-  console.log(`SK: ${decryptSK} || PK: ${publicKey} || Issuer: ${issuerPK} || AssetType: ${assetType}`)
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
   return new Promise((resolve, reject) => {
@@ -182,9 +182,6 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
 
         server.submitTransaction(transaction)
         .then( transactionResult => {
-          //console.log(JSON.stringify(transactionResult, null, 2));
-          //console.log('\nSuccess! View the transaction at: ');
-          //console.log(transactionResult._links.transaction.href);
           resolve({
             payload: 'Success',
             error: false
@@ -197,5 +194,28 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
         })
     })
   })
+}
 
+export const joinInflationDestination = ( sk, pk ) => {
+  let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
+  return new Promise((resolve, reject) => {
+    server.loadAccount(pk)
+    .catch(error => {
+      reject({ errorMessage: error.name, error: true })
+    })
+    .then(sourceAccount => {
+      var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
+        .addOperation(StellarSdk.Operation.setOptions({ inflationDest: INFLATION_DESTINATION }))
+        .build()
+      transaction.sign(sourceKeys)
+
+      server.submitTransaction(transaction)
+      .then( transactionResult => {
+        resolve({ payload: 'Success', error: false })
+      }).catch( err => {
+        console.log(err);
+        reject({ errorMessage: err, error: true })
+      })
+    })
+  })
 }

@@ -25,7 +25,7 @@ export const unlock = async ({ password = undefined }) => {
     let decrypted
     try {
       console.log('Encrypted database file found. Will descript.')
-      decrypted = decryptBuffer(buffer, password)
+      decrypted = await decryptBuffer(buffer, password)
     } catch (e) {
       throw new Error('Unable to decrypt database file')
     }
@@ -45,7 +45,7 @@ export const unlock = async ({ password = undefined }) => {
 export const lock = async ({ password = undefined }) => {
   try {
     let buffer = await promisifiedReadFile(DATABASE_PATH)
-    let encrypted = encryptBuffer(buffer, password)
+    let encrypted = await encryptBuffer(buffer, password)
     // Create an encrypted copy of the databaase
     await promisifiedWriteFile(DATABASE_PATH_ENCRYPTED, encrypted)
   } catch (e) {

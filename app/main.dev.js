@@ -12,7 +12,9 @@
  */
 import { app, BrowserWindow } from 'electron'
 import MenuBuilder from './menu'
-const { ipcMain } = require('electron');
+import * as locking from '../app/services/authentication/locking'
+import { DATABASE_PATH } from '../app/db/constants'
+const { ipcMain } = require('electron')
 //import keytar from 'keytar'
 
 var mainWindow = null
@@ -54,14 +56,14 @@ app.on('ready', async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 800,
+    width: 790,
     height: 700,
-    resizable: true,
+    resizable: process.env.NODE_ENV === 'development' ? true : false,
     titleBarStyle: 'hiddenInset',
     frame: false
   })
 
-  //mainWindow.setContentProtection(true)
+  mainWindow.setContentProtection(process.env.NODE_ENV === 'development' ? false : true)
 
   mainWindow.loadURL(`file://${__dirname}/app.html`)
 
@@ -76,6 +78,7 @@ app.on('ready', async () => {
   })
 
   mainWindow.on('closed', () => {
+    console.log('Main window closed')
     mainWindow = null
   })
 
@@ -88,15 +91,20 @@ app.on('ready', async () => {
   menuBuilder.buildMenu()
 })
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
+  console.log('Window All Closed')
+  await locking.lock({ password: DATABASE_PATH })
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
 
-app.on('before-quit', () => app.quitting = true)
+app.on('before-quit', () => {
+  console.log('App Quitting')
+  app.quitting = true
+})
 
 //app.on('activate', () => { mainWindow.show() })
 

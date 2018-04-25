@@ -40,13 +40,13 @@ const tableRowStyle = {
 const TRANSACTION_TYPE = {
   Payment: 'payment',
   CreateAccount: 'create_account',
-  Changetrust: 'change_trust'
+  ChangeTrust: 'change_trust',
+  SetOptions: 'set_options'
 }
 
 class History extends Component {
 
   renderTableBody() {
-
     const { currentAccount } = this.props
     const type = currentAccount.asset_type
     const code = currentAccount.asset_code
@@ -54,9 +54,10 @@ class History extends Component {
     var displayData = []
 
     this.props.paymentTransactions.map(n => {
-      if (n.type !== TRANSACTION_TYPE.Changetrust) {
+      if (n.type !== TRANSACTION_TYPE.ChangeTrust && n.type !== TRANSACTION_TYPE.SetOptions) {
         if (currentAccount.asset_type === 'native') {
           if (n.asset_type === 'native') {
+            console.log(`Transaction Types: ${n.type}`)
             const obj = this.getDisplayObject(n)
             displayData.push(obj)
           }

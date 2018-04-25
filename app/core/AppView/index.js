@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import styles from './style.css'
+import { connect } from 'react-redux'
 
+import isEmpty from 'lodash/isEmpty'
 import { unlock } from '../../common/auth/actions'
 import { initializeDB } from '../../common/account/actions'
 import { getAccounts, getCurrentAccount } from '../../common/account/selectors'
@@ -13,10 +14,8 @@ import {
   getIncomingPayment
 } from '../../common/payment/selectors'
 
-import { connect } from 'react-redux'
-import isEmpty from 'lodash/isEmpty'
-
-//Nav Bar
+//Style
+import styles from './style.css'
 import NavBar from '../NavBar'
 import AccountList from '../AccountList'
 import Main from '../Main'

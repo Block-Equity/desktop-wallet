@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.logo {
+  width: 40px;
+  height: 21px;
+  margin-top: 0.2rem;
+}
+
+.balanceTitle {
+  margin-bottom: 0.1rem;
+  color: #000000;
+  font-size: 0.9rem;
+  font-weight: 300;
+}
+
+.balanceLabel {
+  font-size: 1rem;
+  font-weight: 100;
+  color: #000000;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+#linkContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+#linkContainer a:hover {
+  text-decoration: underline;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.5rem;
+  width: 70%;
+}
+
+.info {
+  margin-top: 0.3rem;
+  font-size: 0.65rem;
+}

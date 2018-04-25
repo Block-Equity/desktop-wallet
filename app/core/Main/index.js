@@ -4,7 +4,9 @@ import { connect } from 'react-redux'
 import {
   createAccount,
   fetchAccountDetails,
-  setCurrentAccount
+  setCurrentAccount,
+  fetchStellarAssetsForDisplay,
+  fetchBlockEQTokensForDisplay
 } from '../../common/account/actions'
 
 import {
@@ -23,6 +25,7 @@ import {
   getPaymentTransactions
 } from '../../common/payment/selectors'
 
+import AccountInfo from '../AccountInfo'
 import History from '../History'
 import Tabs from '../Tabs'
 import Receive from '../Receive'
@@ -89,7 +92,7 @@ class Main extends Component {
     return (
       <div className={styles.mainPageContainer}>
         <div className={styles.mainPageContentContainer}>
-          { !isEmpty(this.props.currentAccount) && this.renderAccountInfoContent() }
+          { !isEmpty(this.props.currentAccount) && <AccountInfo currentAccount={this.props.currentAccount} /> }
           <div style={{width: '100%'}}>
             <Tabs selectedItem={this.selectedItem} setItem={this.state.selectedMenuItem}/>
           </div>
@@ -99,19 +102,6 @@ class Main extends Component {
           { this.renderSnackBar() }
           <Settings setOpen={this.toggleSettingsDrawer(!this.state.settingsOpen)} open={this.state.settingsOpen}/>
         </div>
-      </div>
-    )
-  }
-
-  renderAccountInfoContent () {
-    const { currentAccount } = this.props
-    const balance = currentAccount.balance
-    const assetDesc = `${currentAccount.asset_name} (${currentAccount.asset_code})`
-
-    return (
-      <div className={styles.mainPageHeaderContainer}>
-        <div className={styles.mainPageHeaderBalanceTitle}> { assetDesc } </div>
-        <div className={styles.mainPageHeaderBalanceLabel}><b> {numeral(balance).format('0,0.00')} </b> </div>
       </div>
     )
   }

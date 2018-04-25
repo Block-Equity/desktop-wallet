@@ -34,7 +34,8 @@ export function initializeDB () {
               balance: n.balance,
               asset_type: n.asset_type,
               asset_name: 'Stellar',
-              asset_code: 'XLM'
+              asset_code: 'XLM',
+              inflationDestination: currentAccount.inflationDestination
             }
           }
         })
@@ -101,11 +102,12 @@ export function fetchAccountDetails () {
   return async (dispatch, getState) => {
     const currentAccount = getCurrentAccount(getState())
     const { pKey: publicKey, sKey: secretKey } = currentAccount
+    const supportedStellarAccounts = getSupportedStellarAssets(getState())
     dispatch(accountDetailsRequest())
 
     try {
       let details = await horizon.getAccountDetail(publicKey)
-      const { balances, sequence: nextSequence, type } = details
+      const { balances, sequence: nextSequence, type, inflationDestination } = details
 
       //Update current account info
       var updateCurrentAccount
@@ -123,6 +125,7 @@ export function fetchAccountDetails () {
         ...currentAccount,
         sequence: nextSequence,
         balance: amount,
+        inflationDestination
       }
       dispatch(setCurrentAccount(updateCurrentAccount))
 
@@ -132,17 +135,25 @@ export function fetchAccountDetails () {
         secretKey,
         balances,
         sequence: nextSequence,
-        type
+        type,
+        inflationDestination
       })
-
       dispatch(setAccounts(accounts))
+
+      if (!supportedStellarAccounts) {
+        await dispatch(fetchSupportedAssets())
+      }
+
+      await dispatch(fetchStellarAssetsForDisplay())
+      await dispatch(fetchBlockEQTokensForDisplay())
+
       dispatch(streamPayments())
 
+      return dispatch(accountDetailsSuccess())
     } catch (e) {
       return dispatch(accountDetailsFailure(e))
     }
 
-    return dispatch(accountDetailsSuccess())
   }
 }
 
@@ -171,7 +182,8 @@ export function fetchStellarAssetsForDisplay () {
         asset_order: 0,
         asset_type: 'native',
         asset_name: 'Stellar',
-        asset_code: 'XLM'
+        asset_code: 'XLM',
+        inflationDestination: ''
       }
 
       Object.keys(accounts).map((key, index) => {
@@ -186,7 +198,8 @@ export function fetchStellarAssetsForDisplay () {
               asset_issuer: acc.asset_type === stellarAssetDesc.asset_type ? '' : acc.asset_issuer,
               pKey: stellarAccount.pKey,
               sKey: stellarAccount.sKey,
-              sequence: stellarAccount.sequence
+              sequence: stellarAccount.sequence,
+              inflationDestination: acc.asset_type === stellarAssetDesc.asset_type ? stellarAccount.inflationDestination : ''
             }
 
             if (acc.asset_type === stellarAssetDesc.asset_type) {
@@ -249,24 +262,34 @@ export function changeTrustOperation ( asset ) {
   }
 }
 
-export function changeTrustRequest () {
-  return {
-    type: Types.CHANGE_TRUST_REQUEST
+export function joinInflationPoolOperation () {
+  return async (dispatch, getState) => {
+    try {
+      const currentAccount = getCurrentAccount(getState())
+      const { pKey: publicKey, sKey: secretKey } = currentAccount
+
+      const { pin } = await getUserPIN()
+      const decryptSK = await encryption.decryptText(secretKey, pin)
+
+      const { payload, error } = await horizon.joinInflationDestination(decryptSK, publicKey)
+      return(dispatch(joinInflationSuccess()))
+    } catch (e) {
+      return(dispatch(joinInflationFailure(e)))
+    }
   }
 }
 
-export function changeTrustSuccess () {
+export function joinInflationSuccess () {
   return {
-    type: Types.CHANGE_TRUST_SUCCESS,
-    payload: 'success'
+    type: Types.JOIN_INFLATION_SUCCESS
   }
 }
 
-export function changeTrustFailure (error) {
+export function joinInflationFailure (error) {
   return {
-    type: Types.CHANGE_TRUST_FAILURE,
+    type: Types.JOIN_INFLATION_FAILURE,
     payload: error,
-    error
+    error: true
   }
 }
 
@@ -393,5 +416,26 @@ export function blockEQTokensDisplayFailure (error) {
     type: Types.BLOCKEQ_TOKENS_DISPLAY_FAILURE,
     payload: error,
     error: true
+  }
+}
+
+export function changeTrustRequest () {
+  return {
+    type: Types.CHANGE_TRUST_REQUEST
+  }
+}
+
+export function changeTrustSuccess () {
+  return {
+    type: Types.CHANGE_TRUST_SUCCESS,
+    payload: 'success'
+  }
+}
+
+export function changeTrustFailure (error) {
+  return {
+    type: Types.CHANGE_TRUST_FAILURE,
+    payload: error,
+    error
   }
 }

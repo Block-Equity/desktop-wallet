@@ -1,5 +1,6 @@
 import NeDB from 'nedb'
 import * as encryption from '../services/security/encryption'
+import * as locking from '../services/authentication/locking'
 
 import {
   DATABASE_PATH,
@@ -10,8 +11,8 @@ import {
 let db = null
 
 export const databaseExists = async () => {
+  await locking.unlock({ password: DATABASE_PATH})
   db = new NeDB({ filename: DATABASE_PATH, autoload: true })
-  console.log('DATABASE_PATH', DATABASE_PATH)
 
   return new Promise((resolve, reject) => {
     db.findOne({ type: DOCUMENT_TYPE_USER_INFO }, (err, doc) => {
@@ -21,12 +22,10 @@ export const databaseExists = async () => {
       }
 
       if (!doc) {
-        console.log('Document does not exist')
         resolve({
           exists: false
         })
       } else {
-        console.log('Document exists')
         resolve({
           exists: true,
           pin: doc.pin,
@@ -39,7 +38,6 @@ export const databaseExists = async () => {
 
 export const initialize = async () => {
   db = new NeDB({ filename: DATABASE_PATH, autoload: true })
-  console.log('DATABASE_PATH', DATABASE_PATH)
 
   return new Promise((resolve, reject) => {
     db.findOne({ type: DOCUMENT_TYPE_USER_INFO }, (err, doc) => {
@@ -47,24 +45,21 @@ export const initialize = async () => {
         reject(err)
         return
       }
-      console.log(`UserDB || Data: ${JSON.stringify(doc)}`)
 
       if (!doc) {
-        console.log('Create New Document')
         const newDoc = { type: DOCUMENT_TYPE_USER_INFO, accounts: {}, pin: '', phrase: '', appVersion: APP_VERSION }
         db.insert(newDoc, (err, newDocument) => {
           if (err) {
             reject(err)
             return
           }
-          console.log(`Created new document! || Data: ${JSON.stringify(newDocument)}`)
+
           resolve({
             accounts: newDocument.accounts,
             exists: false
           })
         })
       } else {
-        console.log('Document exists')
         resolve({
           accounts: doc.accounts,
           exists: true
@@ -86,7 +81,6 @@ export const setUserPIN = (value) => {
         reject(err)
         return
       }
-      console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`)
       resolve(affectedDocuments.pin)
     })
   })
@@ -115,7 +109,6 @@ export const getUserPIN = () => {
 }
 
 export const setPhrase = (value, pin) => {
-  console.log(`Save Phrase || Phrase: ${value} || Pin: ${pin}`)
   const encrypted = encryption.encryptText(value, pin)
   const phraseCreated = {
     phrase: encrypted
@@ -127,7 +120,6 @@ export const setPhrase = (value, pin) => {
         reject(err)
         return
       }
-      console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`)
       resolve()
     })
   })
@@ -173,19 +165,19 @@ export const addUserAccount = ({ publicKey, secretKey, balances, sequence, type 
         reject(err)
         return
       }
-      console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`)
       resolve(affectedDocuments.accounts)
     })
   })
 }
 
-export const updateUserAccount = ({ publicKey, secretKey, balances, sequence, type }) => {
+export const updateUserAccount = ({ publicKey, secretKey, balances, sequence, type, inflationDestination }) => {
   const updatedAccount = {
     pKey: publicKey,
     sKey: secretKey,
     balances,
     sequence,
-    type
+    type,
+    inflationDestination
   }
   return new Promise((resolve, reject) => {
     db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: { [publicKey]: updatedAccount } } },
@@ -194,7 +186,6 @@ export const updateUserAccount = ({ publicKey, secretKey, balances, sequence, ty
         reject(err)
         return
       }
-      console.log(`Updated: ${numReplaced} || Data: ${JSON.stringify(affectedDocuments)}`)
       resolve(affectedDocuments.accounts)
     })
   })
