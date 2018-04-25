@@ -1,5 +1,6 @@
 import NeDB from 'nedb'
 import * as encryption from '../services/security/encryption'
+import * as locking from '../services/authentication/locking'
 
 import {
   DATABASE_PATH,
@@ -10,6 +11,7 @@ import {
 let db = null
 
 export const databaseExists = async () => {
+  await locking.unlock({ password: DATABASE_PATH})
   db = new NeDB({ filename: DATABASE_PATH, autoload: true })
 
   return new Promise((resolve, reject) => {
