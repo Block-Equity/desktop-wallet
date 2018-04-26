@@ -50,6 +50,7 @@ export function initializeDB () {
       }
 
       dispatch(setCurrentAccount(modCurrentAccount))
+      dispatch(streamPayments())
 
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
@@ -149,8 +150,6 @@ export function fetchAccountDetails () {
 
       await dispatch(fetchStellarAssetsForDisplay())
       dispatch(fetchBlockEQTokensForDisplay())
-
-      dispatch(streamPayments(publicKey))
 
       return dispatch(accountDetailsSuccess())
     } catch (e) {

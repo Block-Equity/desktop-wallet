@@ -79,29 +79,28 @@ export function fetchPaymentOperationList() {
   }
 }
 
-export function streamPayments(publicKey) {
+export function streamPayments() {
   return async (dispatch, getState) => {
     try {
-      let incomingPayment = await receivePaymentStream(publicKey)
+      let currentAccount = getCurrentAccount(getState())
+      const { pKey } = currentAccount
+
+      let incomingPayment = await receivePaymentStream(pKey)
       console.log(`Incoming Payment Obj: ${JSON.stringify(incomingPayment)}`)
 
       dispatch(streamPaymentIncoming(true))
 
-      let currentAccount = getCurrentAccount(getState())
-      const { pKey } = currentAccount
-
       console.log(`Streaming Action - public key: ${pKey} || Incoming Payment From: ${incomingPayment.from}`)
 
       if (incomingPayment.from !== pKey) {
-        console.log(`Fire Notification!`)
         const currency = incomingPayment.asset_type === 'native' ? 'XLM' : incomingPayment.asset_code
-        new Notification('Payment Received',
+        await new Notification('Payment Received',
           { body: `You have received ${incomingPayment.amount} ${currency} from ${incomingPayment.from}`}
         )
-        //Update Account Details
         await dispatch(fetchAccountDetails())
       }
 
+      dispatch(streamPayments())
       //Finally, store incoming payment to local store
       return dispatch(streamPaymentSuccess(incomingPayment))
     } catch (e) {
