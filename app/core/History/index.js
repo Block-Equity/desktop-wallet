@@ -50,24 +50,36 @@ class History extends Component {
     const { currentAccount } = this.props
     const type = currentAccount.asset_type
     const code = currentAccount.asset_code
-    console.log(`Current Account Type: ${type} || Asset Code: ${code}`)
+    var displayDataAllAssets = []
     var displayData = []
 
     this.props.paymentTransactions.map(n => {
-        if (currentAccount.asset_type === 'native') {
-          if (n.asset_type === 'native') {
-            console.log(`Transaction Types: ${n.type}`)
-            const obj = this.getDisplayObject(n)
-            displayData.push(obj)
+      if (n.type === TRANSACTION_TYPE.CreateAccount || n.type === TRANSACTION_TYPE.Payment) {
+        var obj
+        if (n.type === TRANSACTION_TYPE.CreateAccount ) {
+          obj = {
+            ...n,
+            asset_type: 'native'
           }
+          displayDataAllAssets.push(obj)
         } else {
-          if (currentAccount.asset_code === n.asset_code) {
-            if (n.type !== TRANSACTION_TYPE.ChangeTrust && n.type !== TRANSACTION_TYPE.SetOptions) {
-              const obj = this.getDisplayObject(n)
-              displayData.push(obj)
-            }
-          }
+          displayDataAllAssets.push(n)
         }
+      }
+    })
+
+    displayDataAllAssets.map(n => {
+      if (currentAccount.asset_type === 'native') {
+        if (n.asset_type === 'native') {
+          const obj = this.getDisplayObject(n)
+          displayData.push(obj)
+        }
+      } else {
+        if (currentAccount.asset_code === n.asset_code) {
+          const obj = this.getDisplayObject(n)
+          displayData.push(obj)
+        }
+      }
     })
 
     return displayData.map(data => {
