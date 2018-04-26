@@ -6,7 +6,7 @@ import {
   getStellarAssetsForDisplay,
   getBlockEQTokensForDisplay
 } from './selectors'
-import { streamPayments } from '../payment/actions'
+import { streamPayments, fetchPaymentOperationList } from '../payment/actions'
 import * as horizon from '../../services/networking/horizon'
 import { getUserPIN } from '../../db'
 import { getSupportedAssets } from '../../services/networking/lists'
@@ -50,6 +50,7 @@ export function initializeDB () {
       }
 
       dispatch(setCurrentAccount(modCurrentAccount))
+      dispatch(streamPayments())
 
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
@@ -140,14 +141,15 @@ export function fetchAccountDetails () {
       })
       dispatch(setAccounts(accounts))
 
+      //Update Payment Operation list
+      await dispatch(fetchPaymentOperationList())
+
       if (!supportedStellarAccounts) {
         await dispatch(fetchSupportedAssets())
       }
 
       await dispatch(fetchStellarAssetsForDisplay())
-      await dispatch(fetchBlockEQTokensForDisplay())
-
-      dispatch(streamPayments())
+      dispatch(fetchBlockEQTokensForDisplay())
 
       return dispatch(accountDetailsSuccess())
     } catch (e) {

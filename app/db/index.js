@@ -211,14 +211,8 @@ export const getTransactionSequence = () => {
 }
 
 export const clearAllUserInfo = () => {
-  return new Promise((resolve, reject) => {
-    db.remove({ }, { multi: true }, (err, numRemoved) => {
-      if (err) {
-        reject(err)
-        return
-      }
-      console.log('Document successfully removed')
-      resolve()
-    })
+  return new Promise(async (resolve, reject) => {
+    await locking.destroy()
+    resolve()
   })
 }

@@ -44,16 +44,16 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
         }
       }
 
-      // 2. Fetch the account details to get the updated balance
-      await dispatch(fetchAccountDetails())
-      await dispatch(fetchStellarAssetsForDisplay())
-      await dispatch(fetchPaymentOperationList())
-
       // 4. And we're done!
-      return dispatch(paymentSendSuccess({
+      dispatch(paymentSendSuccess({
         destination,
         amount
       }))
+
+      // 2. Fetch the account details to get the updated balance
+      await dispatch(fetchAccountDetails())
+      dispatch(streamPayments())
+
     } catch (e) {
       console.log(`Send payment error: ${e}`)
       return dispatch(paymentSendFailure(e))
@@ -82,31 +82,25 @@ export function fetchPaymentOperationList() {
 
 export function streamPayments() {
   return async (dispatch, getState) => {
-    let currentAccount = getCurrentAccount(getState())
-
-    const {
-      pKey: publicKey,
-    } = currentAccount
-
     try {
-      let incomingPayment = await receivePaymentStream(publicKey)
+      let currentAccount = getCurrentAccount(getState())
+      const { pKey } = currentAccount
+
+      let incomingPayment = await receivePaymentStream(pKey)
       console.log(`Incoming Payment Obj: ${JSON.stringify(incomingPayment)}`)
 
       dispatch(streamPaymentIncoming(true))
 
-      //Update Account Details
-      await dispatch(fetchAccountDetails())
+      console.log(`Streaming Action - public key: ${pKey} || Incoming Payment From: ${incomingPayment.from}`)
 
-      //Update Payment Operation list
-      await dispatch(fetchPaymentOperationList())
-
-      if (incomingPayment.from !== publicKey || incomingPayment.from !== undefined ) {
-        const currency = incomingPayment.asset_type === 'native' ? XLM : incomingPayment.asset_code
-        new Notification('Payment Received',
+      if (incomingPayment.from !== pKey) {
+        const currency = incomingPayment.asset_type === 'native' ? 'XLM' : incomingPayment.asset_code
+        await new Notification('Payment Received',
           { body: `You have received ${incomingPayment.amount} ${currency} from ${incomingPayment.from}`}
         )
+        await dispatch(fetchAccountDetails())
       }
-
+      dispatch(streamPayments())
       //Finally, store incoming payment to local store
       return dispatch(streamPaymentSuccess(incomingPayment))
     } catch (e) {

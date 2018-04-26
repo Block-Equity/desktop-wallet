@@ -83,7 +83,6 @@ class Main extends Component {
         }, 7000);
       } else {
         clearInterval(this.pollUserAccount)
-        await this.props.fetchPaymentOperationList()
       }
     }
   }
