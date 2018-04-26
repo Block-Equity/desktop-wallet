@@ -81,9 +81,6 @@ class Main extends Component {
         this.pollUserAccount = setInterval(function() {
           self.props.fetchAccountDetails()
         }, 7000);
-      } else {
-        clearInterval(this.pollUserAccount)
-        await this.props.fetchPaymentOperationList()
       }
     }
   }
