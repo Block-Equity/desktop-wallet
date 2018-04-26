@@ -11,6 +11,10 @@ import {
 } from '../../common/payment/actions'
 
 import {
+  fetchAccountDetails
+} from '../../common/account/actions'
+
+import {
   getIncomingPayment
 } from '../../common/payment/selectors'
 
@@ -52,7 +56,7 @@ class AppView extends Component {
             { this.renderAccountListView() }
           </div>
           <div className={styles.accountContentContainer}>
-            <NavBar isMainView={true} openSettings={this.openSettings}/>
+            <NavBar isMainView={true} openSettings={this.openSettings} refresh={this.refresh}/>
             { this.renderMainView() }
           </div>
         </div>
@@ -83,6 +87,10 @@ class AppView extends Component {
     })
   }
 
+  refresh = () => {
+    this.props.fetchAccountDetails()
+  }
+
   toggleSettingsDrawer = (open) => () => {
     this.setState({
       settingsOpen: open
@@ -101,5 +109,6 @@ const mapStateToProps = (state, ownProps) => {
 export default connect(null, {
   unlock,
   initializeDB,
-  streamPayments
+  streamPayments,
+  fetchAccountDetails
 })(AppView)

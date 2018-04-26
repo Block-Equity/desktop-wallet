@@ -20,7 +20,6 @@ const submitButtonStyle = {
   outline:'none',
   height: '2.5rem',
   boxShadow: 'none',
-  color: '#000000',
   backgroundImage: 'linear-gradient(to bottom right, #07237A 0%, #0153B6 100%)'
 }
 

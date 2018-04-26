@@ -52,6 +52,7 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
 
       // 2. Fetch the account details to get the updated balance
       await dispatch(fetchAccountDetails())
+      dispatch(streamPayments())
 
     } catch (e) {
       console.log(`Send payment error: ${e}`)
@@ -99,8 +100,6 @@ export function streamPayments() {
         )
         await dispatch(fetchAccountDetails())
       }
-
-      //TODO: Implement own Event Source. This is to reset cursor to 'now'
       dispatch(streamPayments())
       //Finally, store incoming payment to local store
       return dispatch(streamPaymentSuccess(incomingPayment))

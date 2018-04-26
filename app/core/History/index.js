@@ -71,12 +71,12 @@ class History extends Component {
     displayDataAllAssets.map(n => {
       if (currentAccount.asset_type === 'native') {
         if (n.asset_type === 'native') {
-          const obj = this.getDisplayObject(n)
+          const obj = this.getDisplayObject(n, currentAccount)
           displayData.push(obj)
         }
       } else {
         if (currentAccount.asset_code === n.asset_code) {
-          const obj = this.getDisplayObject(n)
+          const obj = this.getDisplayObject(n, currentAccount)
           displayData.push(obj)
         }
       }
@@ -102,20 +102,20 @@ class History extends Component {
     })
   }
 
-  getDisplayObject(n) {
+  getDisplayObject(n, currentAccount) {
     const id = n.id
     const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow();
     const formattedDate = moment(n.created_at).format('lll')
     const displayDate = `${formattedNowTime}${formattedDate}`
     var displayAddress, displayAmount, displayTypeLabel
     if (n.type === TRANSACTION_TYPE.Payment) {
-      displayAddress = n.from === this.props.pKey ? n.to : n.from
-      displayAmount = n.from === this.props.pKey ? numeral(`-${n.amount}`).format('(0,0.00)') : numeral(n.amount).format('0,0.00')
-      displayTypeLabel = n.from === this.props.pKey ? `Payment sent ` : `Payment received `
+      displayAddress = n.from === currentAccount.pKey ? n.to : n.from
+      displayAmount = n.from === currentAccount.pKey ? numeral(`-${n.amount}`).format('(0,0.00)') : numeral(n.amount).format('0,0.00')
+      displayTypeLabel = n.from === currentAccount.pKey ? `Payment sent ` : `Payment received `
     } else if (n.type === TRANSACTION_TYPE.CreateAccount) {
-      displayAddress = n.source_account === this.props.pKey ? n.account : n.source_account
-      displayAmount = n.source_account === this.props.pKey ? numeral(`-${n.starting_balance}`).format('(0,0.00)') : numeral(n.starting_balance).format('0,0.00')
-      displayTypeLabel = n.source_account === this.props.pKey ? `Account created ` : `Account created by `
+      displayAddress = n.source_account === currentAccount.pKey ? n.account : n.source_account
+      displayAmount = n.source_account === currentAccount.pKey ? numeral(`-${n.starting_balance}`).format('(0,0.00)') : numeral(n.starting_balance).format('0,0.00')
+      displayTypeLabel = n.source_account === currentAccount.pKey ? `Account created ` : `Account created by `
     }
     const displayObj = {
       id,
