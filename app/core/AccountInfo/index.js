@@ -56,15 +56,21 @@ class AccountInfo extends Component {
 
   renderConditionForInflationPoolView() {
     const { currentAccount } = this.props
-    if (isEmpty(currentAccount.inflationDestination) && currentAccount.balance > 1.01) {
+
+    if (!isEmpty(currentAccount.inflationDestination)) {
+      console.log(`Inflation Pool Condition: Destination Specified`)
+      if (currentAccount.asset_type === 'native') {
+        return ( this.renderInflationPoolContent() )
+      } else {
+        return ( <div style={{height: '1.5rem'}} /> )
+      }
+    } else {
+      if (currentAccount.balance > 1.01) {
         if (currentAccount.asset_type === 'native') {
           return ( this.renderJoinInflationAlertContent() )
         } else {
           return ( <div style={{height: '1.5rem'}} /> )
         }
-    } else {
-      if (currentAccount.asset_type === 'native') {
-        return ( this.renderInflationPoolContent() )
       } else {
         return ( <div style={{height: '1.5rem'}} /> )
       }

@@ -82,6 +82,8 @@ class Main extends Component {
           self.props.fetchAccountDetails()
         }, 7000);
       }
+    } else {
+      clearInterval(this.pollUserAccount)
     }
   }
 
