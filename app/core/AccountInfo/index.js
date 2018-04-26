@@ -11,6 +11,15 @@ import { CircularProgress } from 'material-ui/Progress'
 import Button from 'material-ui/Button'
 import { Card, Col, Popover, PopoverHeader, PopoverBody, Alert } from 'reactstrap'
 
+const alertStyle = {
+  width: '100%',
+  height: '2rem',
+  padding: '0.45rem',
+  fontSize: '0.75rem',
+  marginTop: '-0.2rem',
+  borderRadius: '3px 3px 0px 0px'
+}
+
 class AccountInfo extends Component {
 
   constructor (props) {
@@ -54,20 +63,17 @@ class AccountInfo extends Component {
           return ( <div style={{height: '1.5rem'}} /> )
         }
     } else {
-      return ( <div style={{height: '1.5rem'}} /> )
+      if (currentAccount.asset_type === 'native') {
+        return ( this.renderInflationPoolContent() )
+      } else {
+        return ( <div style={{height: '1.5rem'}} /> )
+      }
     }
   }
 
   renderJoinInflationAlertContent() {
     const alert = (
-      <Alert color='success'
-              style={{ width: '100%',
-                       height: '2rem',
-                       padding: '0.45rem',
-                       fontSize: '0.75rem',
-                       marginTop: '-0.2rem',
-                       borderRadius: '3px 3px 0px 0px'
-                      }}>
+      <Alert color='success' style={ alertStyle }>
         <div id={styles.linkContainer}>
           <a onClick={this.handleClick}><b>Join inflation pool</b></a>
           <a onClick={this.toggleInfo} id="Popover1">
@@ -80,13 +86,7 @@ class AccountInfo extends Component {
 
     const alertLoading = (
       <Alert color='success'
-              style={{ width: '100%',
-                      height: '2rem',
-                      padding: '0.45rem',
-                      fontSize: '0.75rem',
-                      marginTop: '-0.2rem',
-                      borderRadius: '3px 3px 0px 0px'
-                      }}>
+              style={alertStyle}>
         <div id={styles.linkContainer}>
           <a><b>Joining inflation pool</b></a>
           <CircularProgress
@@ -102,6 +102,23 @@ class AccountInfo extends Component {
     } else {
       return alert
     }
+  }
+
+  renderInflationPoolContent() {
+    const alert = (
+      <Alert color='success'
+              style={alertStyle}>
+        <div id={styles.linkContainer}>
+          You are part of an inflation pool
+          <a onClick={this.toggleInfo} id="Popover1">
+            <i className='fa fa-info-circle' style={{marginLeft: '0.5rem'}}/>
+          </a>
+        </div>
+        { this.renderInfo() }
+      </Alert>
+    )
+
+    return alert
   }
 
   renderInfo() {
