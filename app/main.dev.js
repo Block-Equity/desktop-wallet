@@ -44,14 +44,17 @@ const installExtensions = async () => {
     .catch(console.log)
 }
 
-/**
- * Add event listeners...
- */
-app.on('ready', async () => {
-  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
-    await installExtensions()
-  }
+const handleCloseWindow = w => e => {
+  if (!forceClose) {
+    e.preventDefault()
 
+    if (w !== null) {
+      w.hide()
+    }
+  }
+}
+
+function createMainWindow() {
   const path = require('path')
 
   mainWindow = new BrowserWindow({
@@ -82,11 +85,35 @@ app.on('ready', async () => {
     mainWindow = null
   })
 
-  mainWindow.on('minimize',function(event){
+  mainWindow.on('close', (event) => {
+    console.log('Main window closed')
+    event.preventDefault()
+    mainWindow.hide()
+  })
+
+  mainWindow.on('minimize', function(event){
     event.preventDefault();
     mainWindow.minimize();
   })
 
+  mainWindow.on('ready-to-show', () => {
+    mainWindow.show()
+    setImmediate(() => {
+      mainWindow.focus()
+    })
+  })
+
+  return mainWindow
+}
+
+/**
+ * Add event listeners...
+ */
+app.on('ready', async () => {
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
+    await installExtensions()
+  }
+  mainWindow = createMainWindow()
   const menuBuilder = new MenuBuilder(mainWindow)
   menuBuilder.buildMenu()
 })
@@ -103,7 +130,18 @@ app.on('window-all-closed', async () => {
 
 app.on('before-quit', () => {
   console.log('App Quitting')
-  app.quitting = true
+  mainWindow.removeAllListeners('close')
+  mainWindow.close()
+})
+
+app.on('activate', () => {
+  // On macOS it is common to re-create a window
+  // even after all windows have been closed
+  if (mainWindow === null) {
+    mainWindow = createMainWindow()
+  } else {
+    mainWindow.show()
+  }
 })
 
 //app.on('activate', () => { mainWindow.show() })
