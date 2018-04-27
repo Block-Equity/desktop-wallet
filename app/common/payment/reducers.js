@@ -9,7 +9,8 @@ export const INITIAL_STATE = {
   paymentTransactionsFailed: false,
   paymentTransactions: [], //TODO: This is a duplication of payments
   incomingPaymentMessage: {},
-  incomingPaymentMessageFailed: false
+  incomingPaymentMessageFailed: false,
+  stellarPagingToken: undefined
 }
 
 function streamPaymentSuccess (state, payload) {
@@ -87,6 +88,26 @@ function paymentOperationListFailure (state, error) {
   }
 }
 
+function paymentStreamTokenRequest (state) {
+  return {
+    ...state
+  }
+}
+
+function paymentStreamTokenSuccess (state, payload) {
+  return {
+    ...state,
+    stellarPagingToken: payload
+  }
+}
+
+function paymentStreamTokenFailure (state, error) {
+  return {
+    ...state,
+    error
+  }
+}
+
 const paymentSendReducers = {
   [Types.PAYMENT_SEND_REQUEST]: paymentSendRequest,
   [Types.PAYMENT_SEND_SUCCESS]: paymentSendSuccess,
@@ -104,10 +125,17 @@ const paymentStreamReducers = {
   [Types.PAYMENT_STREAMING_FAILURE]: streamPaymentFailure
 }
 
+const paymentStreamTokenReducers = {
+  [Types.PAYMENT_STREAMING_TOKEN_REQUEST]: paymentStreamTokenRequest,
+  [Types.PAYMENT_STREAMING_TOKEN_SUCCESS]: paymentStreamTokenSuccess,
+  [Types.PAYMENT_STREAMING_TOKEN_FAILURE]: paymentStreamTokenFailure
+}
+
 export default createReducer (
   INITIAL_STATE, {
     ...paymentSendReducers,
     ...paymentOperationListReducers,
-    ...paymentStreamReducers
+    ...paymentStreamReducers,
+    ...paymentStreamTokenReducers
   }
 )

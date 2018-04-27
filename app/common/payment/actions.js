@@ -1,9 +1,12 @@
 import { sendPayment, getPaymentOperationList, createDestinationAccount, BASE_URL_HORIZON_PUBLIC_NET } from '../../services/networking/horizon'
 import { fetchAccountDetails, setCurrentAccount, fetchStellarAssetsForDisplay } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
+import { getStellarPaymentPagingToken } from '../payment/selectors'
 import * as Types from './types'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
+
+export const EVENT_SOURCE_CLOSED_STATE = 2
 
 export function sendPaymentToAddress ({ destination, amount, memoID }) {
   return async (dispatch, getState) => {
@@ -83,16 +86,21 @@ export function fetchPaymentOperationList() {
 export function streamPayments() {
   return async (dispatch, getState) => {
     try {
+      let token = getStellarPaymentPagingToken(getState())
       let currentAccount = getCurrentAccount(getState())
       const { pKey } = currentAccount
 
-      const url = `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments`
+      const pagingTokenExists = token === undefined ? false : true
+      const url = pagingTokenExists ? `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
+                    : `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
+
       var es = new EventSource(url)
       es.onmessage = message => {
         var payload = message.data ? JSON.parse(message.data) : message
-        console.log(`Incoming Payment Obj: ${JSON.stringify(payload)}`)
+        console.log(`Incoming Payment Paging Token: ${JSON.stringify(payload.paging_token)}`)
 
         dispatch(streamPaymentIncoming(true))
+        dispatch(updatePaymentPagingToken(payload.paging_token))
 
         if (payload.from !== undefined) {
           if (payload.from !== pKey) {
@@ -106,9 +114,47 @@ export function streamPayments() {
 
         return dispatch(streamPaymentSuccess(payload))
       }
+      es.onerror = error => {
+        if (es.readyState === EVENT_SOURCE_CLOSED_STATE) {
+          dispatch(streamPayments())
+        }
+      }
+
     } catch (e) {
       return dispatch(streamPaymentFailure(e))
     }
+  }
+}
+
+export function updatePaymentPagingToken(pagingToken) {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(updatePaymentPagingTokenRequest())
+      dispatch(updatePaymentPagingTokenSuccess(pagingToken))
+    } catch (e) {
+      dispatch(updatePaymentPagingTokenFailure(e))
+    }
+  }
+}
+
+export function updatePaymentPagingTokenRequest() {
+  return {
+    type: Types.PAYMENT_STREAMING_TOKEN_REQUEST
+  }
+}
+
+export function updatePaymentPagingTokenSuccess(pagingToken) {
+  return {
+    type: Types.PAYMENT_STREAMING_TOKEN_SUCCESS,
+    payload: pagingToken
+  }
+}
+
+export function updatePaymentPagingTokenFailure(error) {
+  return {
+    type: Types.PAYMENT_STREAMING_TOKEN_FAILURE,
+    payload: error,
+    error: true
   }
 }
 
