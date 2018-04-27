@@ -20,8 +20,6 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
       asset_code: assetType
     } = currentAccount
 
-    console.log(`Send Payment Action: ${JSON.stringify(currentAccount)}`)
-
     const { pin } = await getUserPIN()
     const decryptSK = await encryption.decryptText(secretKey, pin)
 
@@ -47,15 +45,12 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
         }
       }
 
-      // 4. And we're done!
       dispatch(paymentSendSuccess({
         destination,
         amount
       }))
 
-      // 2. Fetch the account details to get the updated balance
       dispatch(fetchAccountDetails())
-
 
     } catch (e) {
       console.log(`Send payment error: ${e}`)
