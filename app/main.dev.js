@@ -86,7 +86,7 @@ function createMainWindow() {
   })
 
   mainWindow.on('close', (event) => {
-    console.log('Main window closed')
+    console.log('Main window Hidden')
     event.preventDefault()
     mainWindow.hide()
   })
@@ -109,6 +109,18 @@ function createMainWindow() {
 /**
  * Add event listeners...
  */
+app.on('activate', (e, hasVisibleWindows) => {
+  // On macOS it is common to re-create a window
+  // even after all windows have been closed
+  if (mainWindow === null) {
+    if (!hasVisibleWindows) {
+      mainWindow = createMainWindow()
+    }
+  } else {
+    mainWindow.show()
+  }
+})
+
 app.on('ready', async () => {
   if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
     await installExtensions()
@@ -118,33 +130,19 @@ app.on('ready', async () => {
   menuBuilder.buildMenu()
 })
 
-app.on('window-all-closed', async () => {
+app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
   console.log('Window All Closed')
-  await locking.lock({ password: DATABASE_PATH })
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.quit()
 })
 
-app.on('before-quit', () => {
+app.on('before-quit', async () => {
   console.log('App Quitting')
+  await locking.lock({ password: DATABASE_PATH })
   mainWindow.removeAllListeners('close')
   mainWindow.close()
 })
-
-app.on('activate', () => {
-  // On macOS it is common to re-create a window
-  // even after all windows have been closed
-  if (mainWindow === null) {
-    mainWindow = createMainWindow()
-  } else {
-    mainWindow.show()
-  }
-})
-
-//app.on('activate', () => { mainWindow.show() })
 
 /*
 //TODO: Figure out how to do Production Build with C binding library

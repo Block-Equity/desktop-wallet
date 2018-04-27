@@ -142,7 +142,7 @@ export function fetchAccountDetails () {
       dispatch(setAccounts(accounts))
 
       //Update Payment Operation list
-      await dispatch(fetchPaymentOperationList())
+      dispatch(fetchPaymentOperationList())
 
       if (!supportedStellarAccounts) {
         await dispatch(fetchSupportedAssets())

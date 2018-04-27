@@ -1,4 +1,4 @@
-import { sendPayment, getPaymentOperationList, receivePaymentStream, createDestinationAccount } from '../../services/networking/horizon'
+import { sendPayment, getPaymentOperationList, createDestinationAccount, BASE_URL_HORIZON_PUBLIC_NET } from '../../services/networking/horizon'
 import { fetchAccountDetails, setCurrentAccount, fetchStellarAssetsForDisplay } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
 import * as Types from './types'
@@ -51,8 +51,8 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
       }))
 
       // 2. Fetch the account details to get the updated balance
-      await dispatch(fetchAccountDetails())
-      dispatch(streamPayments())
+      dispatch(fetchAccountDetails())
+
 
     } catch (e) {
       console.log(`Send payment error: ${e}`)
@@ -86,23 +86,26 @@ export function streamPayments() {
       let currentAccount = getCurrentAccount(getState())
       const { pKey } = currentAccount
 
-      let incomingPayment = await receivePaymentStream(pKey)
-      console.log(`Incoming Payment Obj: ${JSON.stringify(incomingPayment)}`)
+      const url = `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments`
+      var es = new EventSource(url)
+      es.onmessage = message => {
+        var payload = message.data ? JSON.parse(message.data) : message
+        console.log(`Incoming Payment Obj: ${JSON.stringify(payload)}`)
 
-      dispatch(streamPaymentIncoming(true))
+        dispatch(streamPaymentIncoming(true))
 
-      console.log(`Streaming Action - public key: ${pKey} || Incoming Payment From: ${incomingPayment.from}`)
+        if (payload.from !== undefined) {
+          if (payload.from !== pKey) {
+            const currency = payload.asset_type === 'native' ? 'XLM' : payload.asset_code
+            new Notification('Payment Received',
+              { body: `You have received ${payload.amount} ${currency} from ${payload.from}`}
+            )
+            dispatch(fetchAccountDetails())
+          }
+        }
 
-      if (incomingPayment.from !== pKey) {
-        const currency = incomingPayment.asset_type === 'native' ? 'XLM' : incomingPayment.asset_code
-        await new Notification('Payment Received',
-          { body: `You have received ${incomingPayment.amount} ${currency} from ${incomingPayment.from}`}
-        )
-        await dispatch(fetchAccountDetails())
+        return dispatch(streamPaymentSuccess(payload))
       }
-      dispatch(streamPayments())
-      //Finally, store incoming payment to local store
-      return dispatch(streamPaymentSuccess(incomingPayment))
     } catch (e) {
       return dispatch(streamPaymentFailure(e))
     }

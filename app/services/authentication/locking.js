@@ -46,6 +46,8 @@ export const lock = async ({ password = undefined }) => {
   try {
     let buffer = await promisifiedReadFile(DATABASE_PATH)
     let encrypted = await encryptBuffer(buffer, password)
+    console.log('Decrypted database file found. Will descript.')
+
     // Create an encrypted copy of the databaase
     await promisifiedWriteFile(DATABASE_PATH_ENCRYPTED, encrypted)
   } catch (e) {
@@ -53,7 +55,14 @@ export const lock = async ({ password = undefined }) => {
   }
 
   // Remove the decrypted database
-  await promisifiedUnlink(DATABASE_PATH)
+  console.log('Removing Descrypted file')
+
+  let p = await promisifiedUnlink(DATABASE_PATH).catch(e => {
+    console.log('No descrypted database file found. Will skip')
+    return true
+  })
+
+  return Promise.all([p])
 }
 
 export const destroy = async () => {

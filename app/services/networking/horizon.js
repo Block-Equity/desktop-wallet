@@ -3,6 +3,7 @@ import StellarSdk, { Config } from 'stellar-sdk'
 import { StellarWallet } from '../security/wallet'
 import { generate as generateMnemonic } from '../security/mnemonic'
 import axios from 'axios'
+var EventSource = require('eventsource')
 
 Config.setAllowHttp(true)
 StellarSdk.Network.usePublicNetwork()
@@ -10,7 +11,7 @@ StellarSdk.Network.usePublicNetwork()
 const BASE_URL_TEST_NET = 'https://stellar-testnet.blockeq.com/'
 const BASE_URL_HORIZON_TEST_NET = 'https://horizon-testnet.stellar.org'
 //const BASE_URL_HORIZON_PUBLIC_NET = 'https://stellar-pubnet.blockeq.com/'
-const BASE_URL_HORIZON_PUBLIC_NET = 'https://horizon.stellar.org'
+export const BASE_URL_HORIZON_PUBLIC_NET = 'https://horizon.stellar.org'
 const BASE_URL = BASE_URL_HORIZON_PUBLIC_NET
 const server = new StellarSdk.Server(BASE_URL)
 const INFLATION_DESTINATION = 'GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT'
@@ -45,17 +46,6 @@ export const getPaymentOperationList = async (publicKey) => {
       .call()
       .then(({ records }) => resolve(records))
       .catch(error => reject(error));
-  })
-}
-
-export const receivePaymentStream = async (publicKey) => {
-  return new Promise(resolve => {
-    server.payments()
-      .cursor('now')
-      .forAccount(publicKey)
-      .stream({
-        onmessage: message => resolve(message)
-      })
   })
 }
 
