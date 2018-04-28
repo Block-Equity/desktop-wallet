@@ -85,9 +85,11 @@ export function streamPayments() {
       let currentAccount = getCurrentAccount(getState())
       const { pKey } = currentAccount
 
-      const pagingTokenExists = token === undefined ? false : true
-      const url = pagingTokenExists ? `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
-                    : `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
+      //const pagingTokenExists = token === undefined ? false : true
+      /*const url = pagingTokenExists ? `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
+                    : `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`*/
+
+      const url = `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=${token}`
 
       var es = new EventSource(url)
       es.onmessage = message => {
@@ -99,11 +101,13 @@ export function streamPayments() {
 
         if (payload.from !== undefined) {
           if (payload.from !== pKey) {
-            const currency = payload.asset_type === 'native' ? 'XLM' : payload.asset_code
-            new Notification('Payment Received',
-              { body: `You have received ${payload.amount} ${currency} from ${payload.from}`}
-            )
-            dispatch(fetchAccountDetails())
+            if (payload.paging_token > token) {
+              const currency = payload.asset_type === 'native' ? 'XLM' : payload.asset_code
+              new Notification('Payment Received',
+                { body: `You have received ${payload.amount} ${currency} from ${payload.from}`}
+              )
+              dispatch(fetchAccountDetails())
+            }
           }
         }
 
