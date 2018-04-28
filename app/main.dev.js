@@ -60,7 +60,7 @@ function createMainWindow() {
   mainWindow = new BrowserWindow({
     show: false,
     width: 790,
-    height: 700,
+    height: 740,
     resizable: process.env.NODE_ENV === 'development' ? true : false,
     titleBarStyle: 'hiddenInset',
     frame: false

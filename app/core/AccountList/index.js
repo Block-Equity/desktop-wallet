@@ -140,6 +140,7 @@ class AccountList extends Component {
             <MenuItem style={{height: '2.25rem'}}
               className={ materialStyles.menuItem }
               selected={ selected }
+              disableRipple={ true }
               onClick={ this.handleStellarAssetSelection(asset, index) }>
               {this.renderAccountListLabel(asset)}
             </MenuItem>
@@ -155,8 +156,9 @@ class AccountList extends Component {
       return this.props.blockEQTokens.map((asset, index) => {
         return (
           <MenuItem
-            className={materialStyles.menuItem}
-            key={index}
+            className={ materialStyles.menuItem }
+            key={ index }
+            disableRipple={ true }
             onClick={this.handleBlockEQTokenAddition(asset, index)}>
             {this.renderSupportedAssetListLabel(asset.asset_name)}
           </MenuItem>

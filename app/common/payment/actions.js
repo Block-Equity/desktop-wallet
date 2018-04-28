@@ -5,6 +5,7 @@ import { getStellarPaymentPagingToken } from '../payment/selectors'
 import * as Types from './types'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
+import numeral from 'numeral'
 
 export const EVENT_SOURCE_CLOSED_STATE = 2
 
@@ -104,7 +105,7 @@ export function streamPayments() {
             if (payload.paging_token > token) {
               const currency = payload.asset_type === 'native' ? 'XLM' : payload.asset_code
               new Notification('Payment Received',
-                { body: `You have received ${payload.amount} ${currency} from ${payload.from}`}
+                { body: `You have received ${numeral(payload.amount).format('0,0.00')} ${currency} from ${payload.from}`}
               )
               dispatch(fetchAccountDetails())
             }

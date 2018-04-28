@@ -176,6 +176,7 @@ class Settings extends Component {
         <MenuItem selected={ isSelected }
                   className={ materialStyles.menuItem }
                   key={ index }
+                  disableRipple={ true }
                   onClick={() => this.handleItemClick(item) }>
                     <h6 style={listItemStyle}>{item.title}</h6>
         </MenuItem>
