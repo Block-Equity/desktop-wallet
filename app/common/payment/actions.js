@@ -85,11 +85,6 @@ export function streamPayments() {
       let token = getStellarPaymentPagingToken(getState())
       let currentAccount = getCurrentAccount(getState())
       const { pKey } = currentAccount
-
-      //const pagingTokenExists = token === undefined ? false : true
-      /*const url = pagingTokenExists ? `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
-                    : `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`*/
-
       const url = `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=${token}`
 
       var es = new EventSource(url)
