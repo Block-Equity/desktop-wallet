@@ -44,20 +44,23 @@ const installExtensions = async () => {
     .catch(console.log)
 }
 
-/**
- * Add event listeners...
- */
-app.on('ready', async () => {
-  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
-    await installExtensions()
-  }
+const handleCloseWindow = w => e => {
+  if (!forceClose) {
+    e.preventDefault()
 
+    if (w !== null) {
+      w.hide()
+    }
+  }
+}
+
+function createMainWindow() {
   const path = require('path')
 
   mainWindow = new BrowserWindow({
     show: false,
     width: 790,
-    height: 700,
+    height: 740,
     resizable: process.env.NODE_ENV === 'development' ? true : false,
     titleBarStyle: 'hiddenInset',
     frame: false
@@ -82,31 +85,64 @@ app.on('ready', async () => {
     mainWindow = null
   })
 
-  mainWindow.on('minimize',function(event){
+  mainWindow.on('close', (event) => {
+    console.log('Main window Hidden')
+    event.preventDefault()
+    mainWindow.hide()
+  })
+
+  mainWindow.on('minimize', function(event){
     event.preventDefault();
     mainWindow.minimize();
   })
 
+  mainWindow.on('ready-to-show', () => {
+    mainWindow.show()
+    setImmediate(() => {
+      mainWindow.focus()
+    })
+  })
+
+  return mainWindow
+}
+
+/**
+ * Add event listeners...
+ */
+app.on('activate', (e, hasVisibleWindows) => {
+  // On macOS it is common to re-create a window
+  // even after all windows have been closed
+  if (mainWindow === null) {
+    if (!hasVisibleWindows) {
+      mainWindow = createMainWindow()
+    }
+  } else {
+    mainWindow.show()
+  }
+})
+
+app.on('ready', async () => {
+  if (process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true') {
+    await installExtensions()
+  }
+  mainWindow = createMainWindow()
   const menuBuilder = new MenuBuilder(mainWindow)
   menuBuilder.buildMenu()
 })
 
-app.on('window-all-closed', async () => {
+app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
   console.log('Window All Closed')
-  await locking.lock({ password: DATABASE_PATH })
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.quit()
 })
 
-app.on('before-quit', () => {
+app.on('before-quit', async () => {
   console.log('App Quitting')
-  app.quitting = true
+  await locking.lock({ password: DATABASE_PATH })
+  mainWindow.removeAllListeners('close')
+  mainWindow.close()
 })
-
-//app.on('activate', () => { mainWindow.show() })
 
 /*
 //TODO: Figure out how to do Production Build with C binding library

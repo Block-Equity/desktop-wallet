@@ -1,9 +1,13 @@
-import { sendPayment, getPaymentOperationList, receivePaymentStream, createDestinationAccount } from '../../services/networking/horizon'
+import { sendPayment, getPaymentOperationList, createDestinationAccount, BASE_URL_HORIZON_PUBLIC_NET } from '../../services/networking/horizon'
 import { fetchAccountDetails, setCurrentAccount, fetchStellarAssetsForDisplay } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
+import { getStellarPaymentPagingToken } from '../payment/selectors'
 import * as Types from './types'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
+import numeral from 'numeral'
+
+export const EVENT_SOURCE_CLOSED_STATE = 2
 
 export function sendPaymentToAddress ({ destination, amount, memoID }) {
   return async (dispatch, getState) => {
@@ -16,8 +20,6 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
       asset_issuer: issuerPK,
       asset_code: assetType
     } = currentAccount
-
-    console.log(`Send Payment Action: ${JSON.stringify(currentAccount)}`)
 
     const { pin } = await getUserPIN()
     const decryptSK = await encryption.decryptText(secretKey, pin)
@@ -44,15 +46,12 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
         }
       }
 
-      // 4. And we're done!
       dispatch(paymentSendSuccess({
         destination,
         amount
       }))
 
-      // 2. Fetch the account details to get the updated balance
-      await dispatch(fetchAccountDetails())
-      dispatch(streamPayments())
+      dispatch(fetchAccountDetails())
 
     } catch (e) {
       console.log(`Send payment error: ${e}`)
@@ -83,29 +82,72 @@ export function fetchPaymentOperationList() {
 export function streamPayments() {
   return async (dispatch, getState) => {
     try {
+      let token = getStellarPaymentPagingToken(getState())
       let currentAccount = getCurrentAccount(getState())
       const { pKey } = currentAccount
+      const url = `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
 
-      let incomingPayment = await receivePaymentStream(pKey)
-      console.log(`Incoming Payment Obj: ${JSON.stringify(incomingPayment)}`)
+      var es = new EventSource(url)
+      es.onmessage = message => {
+        var payload = message.data ? JSON.parse(message.data) : message
+        console.log(`Incoming Payment Paging Token: ${JSON.stringify(payload.paging_token)}`)
 
-      dispatch(streamPaymentIncoming(true))
+        dispatch(streamPaymentIncoming(true))
+        dispatch(updatePaymentPagingToken(payload.paging_token))
 
-      console.log(`Streaming Action - public key: ${pKey} || Incoming Payment From: ${incomingPayment.from}`)
+        if (payload.from !== undefined) {
+          if (payload.from !== pKey) {
+            const currency = payload.asset_type === 'native' ? 'XLM' : payload.asset_code
+            new Notification('Payment Received',
+              { body: `You have received ${numeral(payload.amount).format('0,0.00')} ${currency} from ${payload.from}`}
+            )
+            dispatch(fetchAccountDetails())
+          }
+        }
 
-      if (incomingPayment.from !== pKey) {
-        const currency = incomingPayment.asset_type === 'native' ? 'XLM' : incomingPayment.asset_code
-        await new Notification('Payment Received',
-          { body: `You have received ${incomingPayment.amount} ${currency} from ${incomingPayment.from}`}
-        )
-        await dispatch(fetchAccountDetails())
+        return dispatch(streamPaymentSuccess(payload))
       }
-      dispatch(streamPayments())
-      //Finally, store incoming payment to local store
-      return dispatch(streamPaymentSuccess(incomingPayment))
+      es.onerror = error => {
+        if (es.readyState === EVENT_SOURCE_CLOSED_STATE) {
+          dispatch(streamPayments())
+        }
+      }
+
     } catch (e) {
       return dispatch(streamPaymentFailure(e))
     }
+  }
+}
+
+export function updatePaymentPagingToken(pagingToken) {
+  return async (dispatch, getState) => {
+    try {
+      dispatch(updatePaymentPagingTokenRequest())
+      dispatch(updatePaymentPagingTokenSuccess(pagingToken))
+    } catch (e) {
+      dispatch(updatePaymentPagingTokenFailure(e))
+    }
+  }
+}
+
+export function updatePaymentPagingTokenRequest() {
+  return {
+    type: Types.PAYMENT_STREAMING_TOKEN_REQUEST
+  }
+}
+
+export function updatePaymentPagingTokenSuccess(pagingToken) {
+  return {
+    type: Types.PAYMENT_STREAMING_TOKEN_SUCCESS,
+    payload: pagingToken
+  }
+}
+
+export function updatePaymentPagingTokenFailure(error) {
+  return {
+    type: Types.PAYMENT_STREAMING_TOKEN_FAILURE,
+    payload: error,
+    error: true
   }
 }
 

@@ -9,3 +9,7 @@ export function getPaymentTransactions (state) {
 export function getSendPaymentStatus (state) {
   return state.payment.isSending
 }
+
+export function getStellarPaymentPagingToken (state) {
+  return state.payment.stellarPagingToken
+}

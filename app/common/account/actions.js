@@ -6,7 +6,14 @@ import {
   getStellarAssetsForDisplay,
   getBlockEQTokensForDisplay
 } from './selectors'
-import { streamPayments, fetchPaymentOperationList } from '../payment/actions'
+import {
+  getStellarPaymentPagingToken
+} from '../payment/selectors'
+import {
+  streamPayments,
+  fetchPaymentOperationList,
+  updatePaymentPagingToken
+} from '../payment/actions'
 import * as horizon from '../../services/networking/horizon'
 import { getUserPIN } from '../../db'
 import { getSupportedAssets } from '../../services/networking/lists'
@@ -50,6 +57,7 @@ export function initializeDB () {
       }
 
       dispatch(setCurrentAccount(modCurrentAccount))
+      await dispatch(updatePaymentPagingToken(currentAccount.pagingToken))
       dispatch(streamPayments())
 
       return dispatch(accountInitializationSuccess(accounts))
@@ -104,6 +112,7 @@ export function fetchAccountDetails () {
     const currentAccount = getCurrentAccount(getState())
     const { pKey: publicKey, sKey: secretKey } = currentAccount
     const supportedStellarAccounts = getSupportedStellarAssets(getState())
+    const token = getStellarPaymentPagingToken(getState())
     dispatch(accountDetailsRequest())
 
     try {
@@ -137,12 +146,13 @@ export function fetchAccountDetails () {
         balances,
         sequence: nextSequence,
         type,
-        inflationDestination
+        inflationDestination,
+        pagingToken: token
       })
       dispatch(setAccounts(accounts))
 
       //Update Payment Operation list
-      await dispatch(fetchPaymentOperationList())
+      dispatch(fetchPaymentOperationList())
 
       if (!supportedStellarAccounts) {
         await dispatch(fetchSupportedAssets())

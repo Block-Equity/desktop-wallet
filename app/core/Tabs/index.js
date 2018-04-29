@@ -59,7 +59,9 @@ class Navigation extends Component {
     return navigation.map((item, index) => {
         var idBuilder = `${item.title}-tab`;
         return (
-          <Tab key={ idBuilder } label={ item.title }
+          <Tab key={ idBuilder }
+              label={ item.title }
+              disableRipple={true}
               style={{ fontFamily: font, outline: 'none', marginLeft:'2rem', marginRight: '2rem', paddingLeft:'2rem', paddingRight:'2rem' }}/>
         )
     });
