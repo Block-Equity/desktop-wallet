@@ -85,7 +85,7 @@ export function streamPayments() {
       let token = getStellarPaymentPagingToken(getState())
       let currentAccount = getCurrentAccount(getState())
       const { pKey } = currentAccount
-      const url = `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=${token}`
+      const url = `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
 
       var es = new EventSource(url)
       es.onmessage = message => {
@@ -97,13 +97,11 @@ export function streamPayments() {
 
         if (payload.from !== undefined) {
           if (payload.from !== pKey) {
-            if (payload.paging_token > token) {
-              const currency = payload.asset_type === 'native' ? 'XLM' : payload.asset_code
-              new Notification('Payment Received',
-                { body: `You have received ${numeral(payload.amount).format('0,0.00')} ${currency} from ${payload.from}`}
-              )
-              dispatch(fetchAccountDetails())
-            }
+            const currency = payload.asset_type === 'native' ? 'XLM' : payload.asset_code
+            new Notification('Payment Received',
+              { body: `You have received ${numeral(payload.amount).format('0,0.00')} ${currency} from ${payload.from}`}
+            )
+            dispatch(fetchAccountDetails())
           }
         }
 
