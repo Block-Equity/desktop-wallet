@@ -8,6 +8,7 @@ import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
 
 import PinModal from '../PinModal'
+import ActionButton from '../Shared/ActionButton'
 
 class Send extends Component {
 
@@ -47,6 +48,11 @@ class Send extends Component {
       formStyle = `form-control sendAssetFormDisplayErrors`
     }
 
+    const btnTitle = {
+      default: 'Send',
+      processing: 'Sending'
+    }
+
     return (
       <div id={styles.sendAssetFormContainer}>
         <form id='sendAssetForm' onSubmit={this.handleSubmit}>
@@ -70,41 +76,10 @@ class Send extends Component {
             <input type='text' className={formStyle} placeholder='Amount in XLM'
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
-          { this.renderSendButtonContent() }
+          <ActionButton processing={this.props.paymentSending} title={btnTitle} />
         </form>
       </div>
     )
-  }
-
-  renderSendButtonContent() {
-    const renderNormalButton = (
-      <div className={styles.sendButtonContainer}>
-        <button className='btn btn-primary'
-                  type='submit'
-                  style={{width: 'inherit', height: '3rem'}}
-                  id="load">
-                  Send
-        </button>
-      </div>
-    )
-
-    const renderLoadingButton = (
-      <div className={styles.sendButtonContainer}>
-        <button className='btn btn-primary'
-                  type='submit'
-                  style={{width: 'inherit', height: '3rem'}}
-                  id="load" disabled>
-                  <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
-                  Sending
-        </button>
-      </div>
-    )
-
-    if (this.props.paymentSending) {
-      return renderLoadingButton
-    } else {
-      return renderNormalButton
-    }
   }
 
   handleChange (event) {
