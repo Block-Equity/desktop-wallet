@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
@@ -38,5 +39,15 @@ export default class ActionButton extends Component {
 
   handleClick(event) {
     event.preventDefault()
+    this.props.actionClicked()
   }
+}
+
+ActionButton.propTypes = {
+  processing: PropTypes.bool,
+  title: PropTypes.shape({
+    default: PropTypes.string.isRequired,
+    processing: PropTypes.string
+  }),
+  actionClicked: PropTypes.func
 }
