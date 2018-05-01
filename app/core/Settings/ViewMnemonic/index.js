@@ -3,12 +3,13 @@ import styles from './style.css'
 import { getUserPIN, getPhrase } from '../../../db'
 
 import MnemonicView from '../../Shared/Mnemonic'
+import ActionButton from '../../Shared/ActionButton'
 
 import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
 
-import { Form, FormGroup, Label, Input } from 'reactstrap';
+import { Form, FormGroup, Label, Input } from 'reactstrap'
 
 class ViewMnemonic extends Component {
 
@@ -41,50 +42,26 @@ class ViewMnemonic extends Component {
 
   renderContent () {
     const mnemonicView = ( <MnemonicView phrase={ this.state.phrase } /> )
+
+    const btnTitle = {
+      default: 'View Mnemonic Phrase',
+      processing: 'Retrieving Mnemonic Phrase'
+    }
+
     const pinView = (
       <Form onSubmit={this.handleSubmit}>
         <FormGroup>
           <Input type='password' placeholder='Your PIN' maxLength='4'
             id='pinValue' name='pinValue' value={this.state.pinValue} onChange={this.handleChange} required />
         </FormGroup>
-        { this.renderSaveButtonContent() }
+        <ActionButton processing={ this.state.retrieve } title={ btnTitle } isForm={ true } />
       </Form>
     )
+
     if (this.state.viewPhrase) {
       return mnemonicView
     } else {
       return pinView
-    }
-  }
-
-  renderSaveButtonContent() {
-    const renderNormalButton = (
-      <div className={styles.saveButtonContainer}>
-        <button className='btn btn-primary'
-                  type='submit'
-                  style={{width: 'inherit', height: '3rem'}}
-                  id="load">
-                  View Mnemonic
-        </button>
-      </div>
-    )
-
-    const renderLoadingButton = (
-      <div className={styles.saveButtonContainer}>
-        <button className='btn btn-primary'
-                  type='submit'
-                  style={{width: 'inherit', height: '3rem'}}
-                  id="load" disabled>
-                  <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
-                  Retrieving Mnemonic
-        </button>
-      </div>
-    )
-
-    if (this.state.retrieve) {
-      return renderLoadingButton
-    } else {
-      return renderNormalButton
     }
   }
 

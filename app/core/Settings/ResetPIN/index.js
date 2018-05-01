@@ -5,6 +5,7 @@ import { getUserPIN, setUserPIN, getPhrase, setPhrase } from '../../../db'
 import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
+import ActionButton from '../../Shared/ActionButton'
 
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
@@ -25,6 +26,10 @@ class ResetPIN extends Component {
   }
 
   render() {
+    const btnTitle = {
+      default: 'Save new PIN',
+      processing: 'Saving new PIN'
+    }
     return (
       <div id={styles.formContainer}>
         <h6 style={{width: '28rem'}}>
@@ -46,42 +51,11 @@ class ResetPIN extends Component {
             <Input type='password' placeholder='Re-type new PIN' maxLength='4'
               id='newPINConfirm' name='newPINConfirm' value={this.state.newPINConfirm} onChange={this.handleChange} required />
           </FormGroup>
-          { this.renderSaveButtonContent() }
+          <ActionButton processing={ this.state.savingPIN } title={ btnTitle } isForm={ true } />
         </Form>
         { this.renderAlertView() }
       </div>
     )
-  }
-
-  renderSaveButtonContent() {
-    const renderNormalButton = (
-      <div className={styles.saveButtonContainer}>
-        <button className='btn btn-primary'
-                  type='submit'
-                  style={{width: 'inherit', height: '3rem'}}
-                  id="load">
-                  Save
-        </button>
-      </div>
-    )
-
-    const renderLoadingButton = (
-      <div className={styles.saveButtonContainer}>
-        <button className='btn btn-primary'
-                  type='submit'
-                  style={{width: 'inherit', height: '3rem'}}
-                  id="load" disabled>
-                  <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
-                  Saving PIN
-        </button>
-      </div>
-    )
-
-    if (this.state.savingPIN) {
-      return renderLoadingButton
-    } else {
-      return renderNormalButton
-    }
   }
 
   handleSubmit(event) {
@@ -93,7 +67,6 @@ class ResetPIN extends Component {
       newPINConfirm: this.state.newPINConfirm
     }
 
-    console.log(`Reset PIN Values: ${JSON.stringify(resetPINValues)}`)
     this.setState({
       savingPIN: true
     })
