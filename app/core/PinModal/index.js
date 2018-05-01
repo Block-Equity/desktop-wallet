@@ -4,6 +4,7 @@ import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
+import ActionButton from '../Shared/ActionButton'
 import { getUserPIN } from '../../db'
 
 import {
@@ -41,6 +42,11 @@ class PinModal extends Component {
 
   render () {
     var header = this.state.invalidPIN ? 'Invalid PIN. Please try again.' : 'Enter your PIN to complete the transaction.'
+    const btnTitle = {
+      default: 'Submit PIN',
+      processing: 'Checking PIN'
+    }
+
     return (
       <Modal isOpen={this.props.showPINModal} className={this.props.className} centered={true}>
         <ModalHeader style={{boxShadow: 'none'}} toggle={this.togglePINModal}>{header}</ModalHeader>
@@ -50,42 +56,15 @@ class PinModal extends Component {
             placeholder='Enter PIN' style={{boxShadow: 'none'}} required />
         </ModalBody>
         <ModalFooter>
-          { this.renderSaveButtonContent() }
+          <ActionButton
+            processing={ this.state.retrieve }
+            title={ btnTitle }
+            isForm={ false }
+            actionClicked={ this.handlePINSubmit }
+          />
         </ModalFooter>
       </Modal>
     )
-  }
-
-  renderSaveButtonContent() {
-    const renderNormalButton = (
-      <div className={styles.saveButtonContainer}>
-        <button className='btn btn-primary'
-                  type='submit'
-                  onClick={this.handlePINSubmit}
-                  style={submitButtonStyle}
-                  id="load">
-                  Submit PIN
-        </button>
-      </div>
-    )
-
-    const renderLoadingButton = (
-      <div className={styles.saveButtonContainer}>
-        <button className='btn btn-primary'
-                  type='submit'
-                  style={submitButtonStyle}
-                  id="load" disabled>
-                  <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
-                  Checking PIN
-        </button>
-      </div>
-    )
-
-    if (this.state.retrieve) {
-      return renderLoadingButton
-    } else {
-      return renderNormalButton
-    }
   }
 
   togglePINModal() {
@@ -103,8 +82,7 @@ class PinModal extends Component {
     })
   }
 
-  handlePINSubmit (event) {
-    event.preventDefault()
+  handlePINSubmit () {
     if (this.state.pinValue.length !== 0) {
       this.setState({
         retrieve: true
@@ -133,7 +111,6 @@ class PinModal extends Component {
       })
     }
   }
-
 }
 
 export default PinModal

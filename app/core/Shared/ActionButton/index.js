@@ -13,14 +13,13 @@ export default class ActionButton extends Component {
 
   render() {
     return (
-      <div className={styles.buttonContainer}>
+      <div className={ styles.buttonContainer }>
         { this.props.processing ? this.renderLoadingButton() : this.renderDefaultButton() }
       </div>
     )
   }
 
   renderDefaultButton() {
-
     var baseInputProps = {
       className: 'btn btn-primary',
       type: 'submit',
@@ -29,7 +28,10 @@ export default class ActionButton extends Component {
     }
 
     const buttonWithHandler = (
-      <button { ...baseInputProps } onClick={this.handleClick}>
+      <button
+        { ...baseInputProps }
+        onClick={ this.handleClick }
+      >
         { this.props.title.default }
       </button>
     )

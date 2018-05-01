@@ -251,7 +251,7 @@ class AccountCreation extends Component {
   renderMnemonicView() {
     const {progressValue, progressTitle} = accountCreationStages.mnemonic;
     var advancedSecurityLabel = this.state.passphraseSetSuccess ?
-      'Your passphrase has been set.' : 'Advanced Security >'
+      'Your passphrase has been set.' : (<div>Advanced Security <i className='fa fa-angle-right' style={{marginLeft: '0.25rem'}}/></div>)
     const btnTitle = { default: 'Yes, I have written it down'}
     return (
       <div id={styles.contentContainer}>
@@ -279,7 +279,7 @@ class AccountCreation extends Component {
           })}
         </div>
         <div id={styles.mnemonicActionContainer}>
-          <ActionButton processing={ false } title={ btnTitle } actionClicked={ this.handleWriteMnemonicSubmit }/>
+          <ActionButton processing={ false } title={ btnTitle } actionClicked={ this.handleWriteMnemonicSubmit }  isForm={ false }/>
           <a onClick={this.handleResetPassphrase}>{advancedSecurityLabel}</a>
           { this.renderPassphraseModal() }
         </div>

@@ -76,7 +76,7 @@ class Send extends Component {
             <input type='text' className={formStyle} placeholder='Amount in XLM'
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
-          <ActionButton processing={this.props.paymentSending} title={btnTitle} />
+          <ActionButton processing={ this.props.paymentSending } title={ btnTitle } isForm={ true } />
         </form>
       </div>
     )
