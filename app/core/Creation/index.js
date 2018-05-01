@@ -36,6 +36,7 @@ import Snackbar from 'material-ui/Snackbar'
 import { CircularProgress } from 'material-ui/Progress'
 
 import NavBar from '../NavBar'
+import ActionButton from '../Shared/ActionButton'
 import styles from './style.css'
 import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter,
@@ -251,6 +252,7 @@ class AccountCreation extends Component {
     const {progressValue, progressTitle} = accountCreationStages.mnemonic;
     var advancedSecurityLabel = this.state.passphraseSetSuccess ?
       'Your passphrase has been set.' : 'Advanced Security >'
+    const btnTitle = { default: 'Yes, I have written it down'}
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
@@ -277,9 +279,7 @@ class AccountCreation extends Component {
           })}
         </div>
         <div id={styles.mnemonicActionContainer}>
-          <button onClick={this.handleWriteMnemonicSubmit} style={{padding: '0.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem'}} type="button" className="btn btn-outline-dark">
-            Yes, I have written it down.
-          </button>
+          <ActionButton processing={ false } title={ btnTitle } actionClicked={ this.handleWriteMnemonicSubmit }/>
           <a onClick={this.handleResetPassphrase}>{advancedSecurityLabel}</a>
           { this.renderPassphraseModal() }
         </div>

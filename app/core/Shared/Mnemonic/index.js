@@ -5,9 +5,9 @@ import Paper from 'material-ui/Paper'
 import Typography from 'material-ui/Typography'
 import Avatar from 'material-ui/Avatar'
 import Chip from 'material-ui/Chip'
-import { verify } from '../../services/authentication/credentials';
+import { verify } from '../../../services/authentication/credentials'
 
-const font = "'Lato', sans-serif";
+const font = "'Lato', sans-serif"
 const materialStyles = theme => ({
   chip: {
     margin: theme.spacing.unit / 2,

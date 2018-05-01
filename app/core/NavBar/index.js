@@ -62,11 +62,11 @@ export default class NavBar extends Component {
       </AppBar>
     )
 
-    if (this.props.isMainView) {
-      return settingsButton
-    } else {
-      return closeButton
-    }
+    return (
+      <div>
+        { this.props.isMainView ? settingsButton : closeButton }
+      </div>
+    )
   }
 
   onClose (event) {

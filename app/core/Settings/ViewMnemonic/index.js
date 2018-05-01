@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import styles from './style.css'
 import { getUserPIN, getPhrase } from '../../../db'
 
-import MnemonicView from '../../Mnemonic'
+import MnemonicView from '../../Shared/Mnemonic'
 
 import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
