@@ -11,12 +11,6 @@ import moment from 'moment'
 const font = "'Lato', sans-serif";
 
 const materialStyles = theme => ({
-  root: {
-    width: '100%',
-    height: '90%',
-    marginTop: theme.spacing.unit * 2,
-    overflowY: undefined
-  },
   table: {
     minWidth: '100%'
   }
@@ -131,19 +125,17 @@ class History extends Component {
 
   render() {
     return (
-      <Paper className={materialStyles.root} style={{width: 'inherit', height: '29rem', overflowY:'scroll'}}>
-        <Table className={materialStyles.table}>
-          <TableHead>
-            <TableRow>
-              <TableCell style={tableHeaderStyle}>Description</TableCell>
-              <TableCell style={tableHeaderStyle}>Amount</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            { this.renderTableBody() }
-          </TableBody>
-        </Table>
-      </Paper>
+      <Table className={materialStyles.table} style={{height: '23rem'}}>
+        <TableHead>
+          <TableRow>
+            <TableCell style={tableHeaderStyle}>Description</TableCell>
+            <TableCell style={tableHeaderStyle}>Amount</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          { this.renderTableBody() }
+        </TableBody>
+      </Table>
     )
   }
 }

@@ -2,11 +2,18 @@
   height: 100%;
   background: #FFFFFF;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
-.navLogo {
-  width: 40px;
-  height: 21px;
+.content {
+  margin-top: 6rem;
+  text-align: center;
+  -webkit-app-region: no-drag;
+}
+
+.navHolder {
+  -webkit-app-region: drag;
 }
 
 .navContentContainer {
@@ -51,6 +58,15 @@
   font-size: 1.2rem;
 }
 
+#setPINForm {
+  width: 70% !important;
+}
+
+#setPINForm input::placeholder {
+  color: #C7C7C7;
+  font-size: 0.85rem;
+}
+
 .formContainer {
   display: flex;
   flex-direction: column;
@@ -75,14 +91,13 @@ textarea.mnemonicText:focus {
 
 #passphraseContainer a {
   color: #777777;
-  margin-top: 0.3rem;
+  margin-top: 0.75rem;
   font-size: 0.85rem;
   letter-spacing: 0.02rem;
 }
 
 #passphraseContainer a:hover {
   color: #229AB7;
-  text-decoration: underline;
 }
 
 .passphraseModalBody {

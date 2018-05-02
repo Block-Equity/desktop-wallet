@@ -36,6 +36,7 @@ import Snackbar from 'material-ui/Snackbar'
 import { CircularProgress } from 'material-ui/Progress'
 
 import NavBar from '../NavBar'
+import ActionButton from '../Shared/ActionButton'
 import styles from './style.css'
 import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter,
@@ -172,6 +173,8 @@ class AccountCreation extends Component {
   renderPINView() {
     const {progressValue, progressTitle, valueInitial} = accountCreationStages.pin
     var header = this.state.initialPINSet ? 'Re-enter your 4 digit PIN' : 'Create a 4 digit PIN'
+    const btnTitle = { default: 'Set PIN'}
+
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
@@ -179,14 +182,12 @@ class AccountCreation extends Component {
         <h6>
           PIN will used to encrypt your secret keys. Please make sure you choose a PIN that is difficult to guess for others.
         </h6>
-        <form id='setPINForm' onSubmit={this.handlePINSubmit}>
-          <div className='form-group input-group input-group-lg'>
-            <input type='password' maxLength='4' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}} className="form-control" placeholder='Enter PIN e.g. 3194'
+        <form id={styles.setPINForm} onSubmit={this.handlePINSubmit}>
+          <div className='form-group input-group'>
+            <input type='password' maxLength='4' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem'}} className="form-control" placeholder='Enter PIN'
               id='userEnteredPinValue' name='pinValue' value={this.state.pinValue} onChange={this.handleChange} required />
           </div>
-          <button style={{padding: '0.5rem', paddingLeft: '3.5rem', paddingRight: '3.5rem'}} type="submit" className="btn btn-outline-dark">
-            Done
-          </button>
+          <ActionButton processing={ false } title={ btnTitle } isForm={ true }/>
         </form>
       </div>
     )
@@ -250,7 +251,8 @@ class AccountCreation extends Component {
   renderMnemonicView() {
     const {progressValue, progressTitle} = accountCreationStages.mnemonic;
     var advancedSecurityLabel = this.state.passphraseSetSuccess ?
-      'Your passphrase has been set.' : 'Advanced Security >'
+      'Your passphrase has been set.' : (<div>Advanced Security <i className='fa fa-angle-right' style={{marginLeft: '0.25rem'}}/></div>)
+    const btnTitle = { default: 'Yes, I have written it down'}
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
@@ -277,9 +279,7 @@ class AccountCreation extends Component {
           })}
         </div>
         <div id={styles.mnemonicActionContainer}>
-          <button onClick={this.handleWriteMnemonicSubmit} style={{padding: '0.5rem', paddingLeft: '2.5rem', paddingRight: '2.5rem'}} type="button" className="btn btn-outline-dark">
-            Yes, I have written it down.
-          </button>
+          <ActionButton processing={ false } title={ btnTitle } actionClicked={ this.handleWriteMnemonicSubmit }/>
           <a onClick={this.handleResetPassphrase}>{advancedSecurityLabel}</a>
           { this.renderPassphraseModal() }
         </div>
@@ -287,8 +287,7 @@ class AccountCreation extends Component {
     )
   }
 
-  async handleWriteMnemonicSubmit (event) {
-    event.preventDefault()
+  async handleWriteMnemonicSubmit () {
     await this.pickRandomIndex()
     this.setState({
       currentStage: accountCreationStages.pin.key

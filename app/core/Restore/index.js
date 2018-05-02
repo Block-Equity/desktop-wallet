@@ -29,6 +29,8 @@ import {
 //Styles & UI
 import styles from './style.css'
 import NavBar from '../NavBar'
+import ActionButton from '../Shared/ActionButton'
+import MnemonicView from '../Shared/Mnemonic'
 import MaterialButton from 'material-ui/Button'
 import Snackbar from 'material-ui/Snackbar'
 import { CircularProgress } from 'material-ui/Progress'
@@ -37,9 +39,9 @@ import {
   Form, FormGroup, Label, Input }
 from 'reactstrap';
 
-import { withStyles } from 'material-ui/styles';
-import Chip from 'material-ui/Chip';
-import Paper from 'material-ui/Paper';
+import { withStyles } from 'material-ui/styles'
+import Chip from 'material-ui/Chip'
+import Paper from 'material-ui/Paper'
 
 const materialStyles = theme => ({
   root: {
@@ -120,8 +122,10 @@ class Restore extends Component {
 
     return (
       <div className={styles.container}>
-        <NavBar isMainView={false}/>
-        <div style={{margin: '1rem', textAlign: 'center'}}>
+        <div className={styles.navHolder}>
+          <NavBar isMainView={false}/>
+        </div>
+        <div className={styles.content}>
           { this.renderContent(this.state.currentStage) }
         </div>
         { this.renderAlertView() }
@@ -151,13 +155,13 @@ class Restore extends Component {
 
   //region Mnemonic View
   renderMnemonicView() {
-    var wordCountLabel = `Word Count: ${this.state.mnemonicInputLength}`
+    var wordCountLabel = `Word Count ${this.state.mnemonicInputLength}`
     var advancedSecurityLabel = this.state.passphraseSetSuccess ?
-    'Your passphrase has been set.' : 'Advanced Security >'
+      'Your passphrase has been set.' : (<div>Advanced Security <i className='fa fa-angle-right' style={{marginLeft: '0.25rem'}}/></div>)
     const {progressValue, progressTitle, valueInitial} = accountRestoreStages.mnemonic
+    const btnTitle = { default: 'Recover'}
     return (
       <div id={styles.contentContainer}>
-        { this.renderProgressView(progressValue, progressTitle)}
         <h4> Enter your Mnemonic Phrase </h4>
         <h6>
           Mnemonic phrase will be used to derive your Stellar address.
@@ -166,14 +170,13 @@ class Restore extends Component {
         <div className={styles.formContainer}>
           <form id='sendAssetForm' onSubmit={this.handleSubmit}>
             <div className='form-group'>
-              <label htmlFor='mnemonic'>{ wordCountLabel }</label>
+              { this.state.mnemonicInputLength > 0 && <label htmlFor='mnemonic'>{ wordCountLabel }</label>}
               <textarea style={{lineHeight:'1.75rem'}} rows="5" className='form-control' type='text'
                 placeholder='e.g. smoke ocean cake chair bike water upon toast' id='mnemonic' name='mnemonicInput'
                 value={this.state.mnemonicInput} onChange={this.handleChange}
                 ref={(input) => { this.mnemonicTextArea = input }}  required />
             </div>
-            <button style={{width: '15rem', marginTop:'0.5rem'}}
-              className='btn btn-outline-dark' type='submit'>Recover Wallet</button>
+            <ActionButton processing={ false } title={ btnTitle } isForm={ true }/>
           </form>
         </div>
         <div id={styles.passphraseContainer}>
@@ -311,27 +314,23 @@ class Restore extends Component {
   }
   //endregion
 
-  //endregion
-
   //region PIN View
   renderPINView() {
     const {progressValue, progressTitle, valueInitial} = accountRestoreStages.pin
     var header = this.state.initialPINSet ? 'Re-enter your 4 digit PIN' : 'Create a 4 digit PIN'
+    const btnTitle = { default: 'Set PIN'}
     return (
       <div id={styles.contentContainer}>
-        { this.renderProgressView(progressValue, progressTitle)}
         <h4> {header} </h4>
         <h6>
           PIN will used to encrypt your secret keys. Please make sure you choose a PIN that is difficult to guess for others.
         </h6>
-        <form id='setPINForm' onSubmit={this.handlePINSubmit}>
-          <div className='form-group input-group input-group-lg'>
-            <input type='password' maxLength='4' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}} className="form-control" placeholder='Enter PIN e.g. 3194'
+        <form id={styles.setPINForm} onSubmit={this.handlePINSubmit}>
+          <div className='form-group input-group'>
+            <input type='password' maxLength='4' style={{outline: 'none', textAlign: 'center', marginTop: '1rem'}} className="form-control" placeholder='Enter PIN'
               id='userEnteredPinValue' name='pinValue' value={this.state.pinValue} onChange={this.handleChange} required />
           </div>
-          <button style={{padding: '0.5rem', paddingLeft: '3.5rem', paddingRight: '3.5rem'}} type="submit" className="btn btn-outline-dark">
-            Done
-          </button>
+          <ActionButton processing={ false } title={ btnTitle } isForm={ true }/>
         </form>
       </div>
     )
