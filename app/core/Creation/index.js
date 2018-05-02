@@ -173,6 +173,8 @@ class AccountCreation extends Component {
   renderPINView() {
     const {progressValue, progressTitle, valueInitial} = accountCreationStages.pin
     var header = this.state.initialPINSet ? 'Re-enter your 4 digit PIN' : 'Create a 4 digit PIN'
+    const btnTitle = { default: 'Set PIN'}
+
     return (
       <div id={styles.contentContainer}>
         { this.renderProgressView(progressValue, progressTitle)}
@@ -180,14 +182,12 @@ class AccountCreation extends Component {
         <h6>
           PIN will used to encrypt your secret keys. Please make sure you choose a PIN that is difficult to guess for others.
         </h6>
-        <form id='setPINForm' onSubmit={this.handlePINSubmit}>
-          <div className='form-group input-group input-group-lg'>
-            <input type='password' maxLength='4' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem', marginLeft: '6rem', marginRight: '6rem'}} className="form-control" placeholder='Enter PIN e.g. 3194'
+        <form id={styles.setPINForm} onSubmit={this.handlePINSubmit}>
+          <div className='form-group input-group'>
+            <input type='password' maxLength='4' style={{outline: 'none', textAlign: 'center', marginTop: '1rem', marginBottom: '1rem'}} className="form-control" placeholder='Enter PIN'
               id='userEnteredPinValue' name='pinValue' value={this.state.pinValue} onChange={this.handleChange} required />
           </div>
-          <button style={{padding: '0.5rem', paddingLeft: '3.5rem', paddingRight: '3.5rem'}} type="submit" className="btn btn-outline-dark">
-            Done
-          </button>
+          <ActionButton processing={ false } title={ btnTitle } isForm={ true }/>
         </form>
       </div>
     )
@@ -279,7 +279,7 @@ class AccountCreation extends Component {
           })}
         </div>
         <div id={styles.mnemonicActionContainer}>
-          <ActionButton processing={ false } title={ btnTitle } actionClicked={ this.handleWriteMnemonicSubmit }  isForm={ false }/>
+          <ActionButton processing={ false } title={ btnTitle } actionClicked={ this.handleWriteMnemonicSubmit }/>
           <a onClick={this.handleResetPassphrase}>{advancedSecurityLabel}</a>
           { this.renderPassphraseModal() }
         </div>
@@ -287,8 +287,7 @@ class AccountCreation extends Component {
     )
   }
 
-  async handleWriteMnemonicSubmit (event) {
-    event.preventDefault()
+  async handleWriteMnemonicSubmit () {
     await this.pickRandomIndex()
     this.setState({
       currentStage: accountCreationStages.pin.key

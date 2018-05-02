@@ -86,3 +86,11 @@
   color: #229AB7;
 }
 
+#setPINForm {
+  width: 70% !important;
+}
+
+#setPINForm input::placeholder {
+  color: #C7C7C7;
+  font-size: 0.85rem;
+}

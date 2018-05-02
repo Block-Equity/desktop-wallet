@@ -30,8 +30,7 @@ export default class ActionButton extends Component {
     const buttonWithHandler = (
       <button
         { ...baseInputProps }
-        onClick={ this.handleClick }
-      >
+        onClick={ this.handleClick }>
         { this.props.title.default }
       </button>
     )
