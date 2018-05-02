@@ -29,3 +29,7 @@ export function getStellarAssetsForDisplay (state) {
 export function getBlockEQTokensForDisplay (state) {
   return state.account.blockeqTokensDisplay
 }
+
+export function getUserAccountFailedStatus (state) {
+  return state.account.fetchingFailed
+}
