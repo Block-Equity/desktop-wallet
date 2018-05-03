@@ -78,10 +78,12 @@ class Main extends Component {
     if (nextProps.userAccountDetailFailed !== this.props.userAccountDetailFailed) {
       if (nextProps.userAccountDetailFailed) {
         var self = this;
-        this.pollUserAccount = setInterval(function() {
-          self.props.fetchAccountDetails()
+        this.pollUserAccount = setInterval(async function() {
+          await self.props.fetchAccountDetails()
         }, 7000);
       } else {
+        console.log(`Account Fetching Details ${nextProps.userAccountDetailFailed}`)
+        this.props.streamPayments()
         clearInterval(this.pollUserAccount)
       }
     }
