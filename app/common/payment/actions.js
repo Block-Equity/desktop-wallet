@@ -1,6 +1,6 @@
 import { sendPayment, getPaymentOperationList, createDestinationAccount, BASE_URL_HORIZON_PUBLIC_NET } from '../../services/networking/horizon'
 import { fetchAccountDetails, setCurrentAccount, fetchStellarAssetsForDisplay } from '../account/actions'
-import { getCurrentAccount, getAccountByPublicKey } from '../account/selectors'
+import { getCurrentAccount, getAccountByPublicKey, getUserAccountFailedStatus } from '../account/selectors'
 import { getStellarPaymentPagingToken } from '../payment/selectors'
 import * as Types from './types'
 import { getUserPIN } from '../../db'
@@ -84,10 +84,12 @@ export function streamPayments() {
     try {
       let token = getStellarPaymentPagingToken(getState())
       let currentAccount = getCurrentAccount(getState())
+      let accountFailed = getUserAccountFailedStatus(getState())
       const { pKey } = currentAccount
-      const url = `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
 
+      const url = `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
       var es = new EventSource(url)
+
       es.onmessage = message => {
         var payload = message.data ? JSON.parse(message.data) : message
         console.log(`Incoming Payment Paging Token: ${JSON.stringify(payload.paging_token)}`)
@@ -107,12 +109,14 @@ export function streamPayments() {
 
         return dispatch(streamPaymentSuccess(payload))
       }
+
       es.onerror = error => {
         if (es.readyState === EVENT_SOURCE_CLOSED_STATE) {
-          dispatch(streamPayments())
+          if (!accountFailed) {
+            dispatch(streamPayments())
+          }
         }
       }
-
     } catch (e) {
       return dispatch(streamPaymentFailure(e))
     }

@@ -125,17 +125,19 @@ class History extends Component {
 
   render() {
     return (
-      <Table className={materialStyles.table} style={{height: '23rem'}}>
-        <TableHead>
-          <TableRow>
-            <TableCell style={tableHeaderStyle}>Description</TableCell>
-            <TableCell style={tableHeaderStyle}>Amount</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          { this.renderTableBody() }
-        </TableBody>
-      </Table>
+      <div style={{height: '25.5rem', width: '100%'}}>
+        <Table className={materialStyles.table} >
+          <TableHead>
+            <TableRow>
+              <TableCell style={tableHeaderStyle}>Description</TableCell>
+              <TableCell style={tableHeaderStyle}>Amount</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            { this.renderTableBody() }
+          </TableBody>
+        </Table>
+      </div>
     )
   }
 }

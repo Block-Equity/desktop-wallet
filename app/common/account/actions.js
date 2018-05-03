@@ -58,7 +58,6 @@ export function initializeDB () {
 
       dispatch(setCurrentAccount(modCurrentAccount))
       await dispatch(updatePaymentPagingToken(currentAccount.pagingToken))
-      dispatch(streamPayments())
 
       return dispatch(accountInitializationSuccess(accounts))
     } catch (e) {
