@@ -14,6 +14,7 @@ import { app, BrowserWindow } from 'electron'
 import MenuBuilder from './menu'
 import * as locking from '../app/services/authentication/locking'
 import { DATABASE_PATH } from '../app/db/constants'
+import { streamPayments } from '../app/common/payment/actions'
 const { ipcMain } = require('electron')
 //import keytar from 'keytar'
 
@@ -109,15 +110,17 @@ function createMainWindow() {
 /**
  * Add event listeners...
  */
-app.on('activate', (e, hasVisibleWindows) => {
+app.on('activate', async (e, hasVisibleWindows) => {
   // On macOS it is common to re-create a window
   // even after all windows have been closed
   if (mainWindow === null) {
     if (!hasVisibleWindows) {
-      mainWindow = createMainWindow()
+      mainWindow = await createMainWindow()
+      streamPayments()
     }
   } else {
-    mainWindow.show()
+    await mainWindow.show()
+    streamPayments()
   }
 })
 
