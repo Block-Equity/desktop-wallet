@@ -82,7 +82,6 @@ class Main extends Component {
           self.props.fetchAccountDetails()
         }, 7000);
       } else {
-        console.log(`Account Fetching Details ${nextProps.userAccountDetailFailed}`)
         this.props.streamPayments()
         clearInterval(this.pollUserAccount)
       }
