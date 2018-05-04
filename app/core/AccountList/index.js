@@ -8,14 +8,19 @@ import has from 'lodash/has'
 import numeral from 'numeral'
 
 import Paper from 'material-ui/Paper'
-import { withStyles } from 'material-ui/styles'
+import { withStyles, MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 import { CircularProgress } from 'material-ui/Progress'
 import {
   Modal,
   ModalHeader,
-  ModalBody
+  ModalBody,
+  ListGroup,
+  ListGroupItem,
+  ListGroupItemHeading,
+  ListGroupItemText
 }
 from 'reactstrap'
+
 import Slide from 'material-ui/transitions/Slide'
 
 import {
@@ -60,18 +65,12 @@ import {
 
 const font = "'Lato', sans-serif"
 
-const materialStyles = theme => ({
+const materialStyles = {
   menuItem: {
-    '&:focus': {
-      backgroundColor: theme.palette.primary.main,
-      '& $primary, & $icon': {
-        color: theme.palette.common.white,
-      },
-    },
+    background: 'red !important',
+    height: '2.25rem'
   },
-  primary: {},
-  icon: {},
-})
+}
 
 const listSections = {
    wallet: { displayName: 'WALLET' },
@@ -115,17 +114,25 @@ class AccountList extends Component {
     }
   }
 
+  /*
+
+  */
+
   render() {
     return (
-      <div style={{display: 'flex', flexDirection: 'row'}}>
-        <Paper elevation={2} style={{marginTop: '-0.5rem', width: '11.5rem'}}>
-          <MenuList style={{marginTop: '2.5rem', height: '100vh'}}>
-            { this.renderSubHeader(listSections.wallet.displayName)}
-            { this.renderAssets() }
+      <div>
+        <div style={{ width: '11.5rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.125)', boxShadow: '0 2px 12px 0 rgba(0, 0, 0, 0.15)', height: '100vh'}}>
+          <MenuList style={{ height: '100vh' }}>
+            <div style={{ marginTop: '1rem'}}>
+              { this.renderSubHeader(listSections.wallet.displayName)}
+            </div>
+            <ListGroup id={styles.listItem}>
+              { this.renderAssets() }
+            </ListGroup>
             { (!isEmpty(this.props.blockEQTokens)) && this.renderSubHeader(listSections.supported_assets.displayName)}
             { this.renderSupportedAssets() }
           </MenuList>
-        </Paper>
+        </div>
         { this.renderLoadingDialog() }
       </div>
     )
@@ -133,19 +140,20 @@ class AccountList extends Component {
 
   renderAssets() {
     if (this.props.assets) {
+      const listItemStyleNormal = {outline: 'none', borderRadius: '0', borderColor: 'rgba(0, 0, 0, 0.125)', borderRight: '0', borderLeft: '0' }
+      const listItemStyleActive = { ...listItemStyleNormal, backgroundColor: '#FAFAFA', color: '#002EC4' }
+
       return this.props.assets.map((asset, index) => {
         const selected = this.state.assetSelected === index ? true : false
         return (
-          <div key={ index }>
-            <MenuItem style={{height: '2.25rem'}}
-              className={ materialStyles.menuItem }
-              selected={ selected }
-              disableRipple={ true }
-              onClick={ this.handleStellarAssetSelection(asset, index) }>
-              {this.renderAccountListLabel(asset)}
-            </MenuItem>
-            <Divider />
-          </div>
+          <ListGroupItem
+            key = { index }
+            style={ selected ? listItemStyleActive : listItemStyleNormal }
+            active={ selected }
+            tag='button'
+            onClick={ this.handleStellarAssetSelection(asset, index) } action>
+            {this.renderAccountListLabel(asset, selected)}
+          </ListGroupItem>
         )
       })
     }
@@ -175,23 +183,26 @@ class AccountList extends Component {
     )
   }
 
-  renderAccountListLabel (asset) {
+  renderAccountListLabel (asset, isActive) {
     const labelView = (
-      <label style={{fontFamily: font, fontSize: '0.85rem', marginTop: '0.8rem'}}>
-        { asset.asset_name }
+      <label style={{fontSize: '0.85rem', marginBottom: '0rem'}}>
+        <b>{ asset.asset_name }</b>
       </label>
     )
 
     const balanceView = (
-      <label style={{fontFamily: font, fontSize: '0.65rem', marginTop: '-1rem'}}>
+      <label style={{fontSize: '0.65rem', marginBottom: '0rem'}}>
         {numeral(asset.balance).format('0,0.00')}
       </label>
     )
 
     return (
       <div className={styles.assetContainer}>
-        { labelView }
-        { balanceView }
+        { isActive && (<div className={styles.assetContainerActiveIndicator}/>)}
+        <div className={styles.assetLabelContainer}>
+          { labelView }
+          { balanceView }
+        </div>
       </div>
     )
   }
