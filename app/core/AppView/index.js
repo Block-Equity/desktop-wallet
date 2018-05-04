@@ -41,7 +41,7 @@ class AppView extends Component {
     return (
       <div className={styles.mainContainer}>
         <div className={styles.statusBarContainer} style={{zIndex: '3'}}>
-          <img src={ statusBarLogo } alt='' width='35' height='18'/>
+          <img src={ statusBarLogo } alt='' width='34' height='17'/>
         </div>
         <div className={styles.contentContainer}>
           <div style={{zIndex: '2'}}>
