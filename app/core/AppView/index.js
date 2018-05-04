@@ -4,19 +4,6 @@ import { connect } from 'react-redux'
 import isEmpty from 'lodash/isEmpty'
 import { unlock } from '../../common/auth/actions'
 import { initializeDB } from '../../common/account/actions'
-import { getAccounts, getCurrentAccount } from '../../common/account/selectors'
-
-import {
-  streamPayments
-} from '../../common/payment/actions'
-
-import {
-  fetchAccountDetails
-} from '../../common/account/actions'
-
-import {
-  getIncomingPayment
-} from '../../common/payment/selectors'
 
 //Style
 import styles from './style.css'
@@ -25,6 +12,7 @@ import AccountList from '../AccountList'
 import AppList from '../AppList'
 import Main from '../Main'
 import Settings from '../Settings'
+import statusBarLogo from '../Launch/logo-brand-color.png'
 
 class AppView extends Component {
 
@@ -53,7 +41,7 @@ class AppView extends Component {
     return (
       <div className={styles.mainContainer}>
         <div className={styles.statusBarContainer} style={{zIndex: '3'}}>
-          BlockEQ
+          <img src={ statusBarLogo } alt='' width='35' height='18'/>
         </div>
         <div className={styles.contentContainer}>
           <div style={{zIndex: '2'}}>
@@ -108,17 +96,7 @@ class AppView extends Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => {
-  return {
-    accounts: getAccounts(state),
-    currentAccount: getCurrentAccount(state),
-    incomingPayment: getIncomingPayment(state)
-  }
-}
-
 export default connect(null, {
   unlock,
-  initializeDB,
-  streamPayments,
-  fetchAccountDetails
+  initializeDB
 })(AppView)
