@@ -117,7 +117,7 @@ class AccountList extends Component {
   render() {
     return (
       <div>
-        <div style={{ width: '11.5rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.125)', boxShadow: '0 2px 12px 0 rgba(0, 0, 0, 0.15)', height: '100vh'}}>
+        <div style={{ width: '11rem', marginTop: '-0.55rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.125)', height: '100vh'}}>
           <MenuList style={{ height: '100vh' }}>
             <ListGroup id={styles.listItem}>
               { this.renderAssets() }
@@ -191,7 +191,6 @@ class AccountList extends Component {
 
     return (
       <div className={styles.assetContainer}>
-        { isActive && (<div className={styles.assetContainerActiveIndicator}/>)}
         <div className={styles.assetLabelContainer}>
           { labelView }
           { balanceView }

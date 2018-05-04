@@ -22,6 +22,7 @@ import {
 import styles from './style.css'
 import NavBar from '../NavBar'
 import AccountList from '../AccountList'
+import AppList from '../AppList'
 import Main from '../Main'
 import Settings from '../Settings'
 
@@ -51,16 +52,16 @@ class AppView extends Component {
   render() {
     return (
       <div className={styles.mainContainer}>
-        <div className={styles.statusBarContainer}>
+        <div className={styles.statusBarContainer} style={{zIndex: '3'}}>
           BlockEQ
         </div>
         <div className={styles.contentContainer}>
           <div style={{zIndex: '2'}}>
-            { this.renderAccountListView() }
+            <AppList />
           </div>
           <div className={styles.accountContentContainer}>
             <div className={styles.appContainer}>
-              <div style={{zIndex: '2'}}>
+              <div style={{zIndex: '1'}}>
                 { this.renderAccountListView() }
               </div>
               <div style={{marginTop: '2.5rem'}}>
