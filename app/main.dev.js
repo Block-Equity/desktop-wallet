@@ -63,7 +63,7 @@ function createMainWindow() {
     width: 790,
     height: 700,
     resizable: process.env.NODE_ENV === 'development' ? true : false,
-    titleBarStyle: 'hiddenInset',
+    titleBarStyle: 'hidden',
     frame: false
   })
 

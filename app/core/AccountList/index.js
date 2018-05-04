@@ -114,18 +114,11 @@ class AccountList extends Component {
     }
   }
 
-  /*
-
-  */
-
   render() {
     return (
       <div>
         <div style={{ width: '11.5rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.125)', boxShadow: '0 2px 12px 0 rgba(0, 0, 0, 0.15)', height: '100vh'}}>
           <MenuList style={{ height: '100vh' }}>
-            <div style={{ marginTop: '1rem'}}>
-              { this.renderSubHeader(listSections.wallet.displayName)}
-            </div>
             <ListGroup id={styles.listItem}>
               { this.renderAssets() }
             </ListGroup>

@@ -51,13 +51,22 @@ class AppView extends Component {
   render() {
     return (
       <div className={styles.mainContainer}>
+        <div className={styles.statusBarContainer}>
+          BlockEQ
+        </div>
         <div className={styles.contentContainer}>
           <div style={{zIndex: '2'}}>
             { this.renderAccountListView() }
           </div>
           <div className={styles.accountContentContainer}>
-            <NavBar isMainView={true} openSettings={this.openSettings} refresh={this.refresh}/>
-            { this.renderMainView() }
+            <div className={styles.appContainer}>
+              <div style={{zIndex: '2'}}>
+                { this.renderAccountListView() }
+              </div>
+              <div style={{marginTop: '2.5rem'}}>
+                { this.renderMainView() }
+              </div>
+            </div>
           </div>
         </div>
         <Settings setOpen={this.toggleSettingsDrawer(!this.state.settingsOpen)} open={this.state.settingsOpen}/>
