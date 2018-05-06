@@ -25,11 +25,11 @@ import {
   getPaymentTransactions
 } from '../../common/payment/selectors'
 
-import AccountInfo from '../AccountInfo'
-import History from '../History'
-import Tabs from '../Tabs'
-import Receive from '../Receive'
-import Send from '../Send'
+import AccountInfo from './AccountInfo'
+import History from './History'
+import Tabs from './Tabs'
+import Receive from './Receive'
+import Send from './Send'
 import Settings from '../Settings'
 import Alert from '../Shared/Alert'
 import * as alertTypes from '../Shared/Alert/types'

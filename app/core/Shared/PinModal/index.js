@@ -4,8 +4,8 @@ import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
-import ActionButton from '../Shared/ActionButton'
-import { getUserPIN } from '../../db'
+import ActionButton from '../ActionButton'
+import { getUserPIN } from '../../../db'
 
 import {
   Modal,

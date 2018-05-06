@@ -8,9 +8,9 @@ import { initializeDB } from '../../common/account/actions'
 //Style
 import styles from './style.css'
 import NavBar from '../NavBar'
-import AccountList from '../AccountList'
+import AccountList from '../Wallet/AccountList'
 import AppList from '../AppList'
-import Main from '../Main'
+import Wallet from '../Wallet'
 import Settings from '../Settings'
 import statusBarLogo from '../Launch/logo-brand-color.png'
 
@@ -53,7 +53,7 @@ class AppView extends Component {
                 { this.renderAccountListView() }
               </div>
               <div style={{marginTop: '2.5rem'}}>
-                { this.renderMainView() }
+                { this.renderWalletView() }
               </div>
             </div>
           </div>
@@ -63,10 +63,10 @@ class AppView extends Component {
     )
   }
 
-  renderMainView () {
+  renderWalletView () {
     if (this.state.dbInit) {
       return (
-        <Main />
+        <Wallet />
       )
     }
   }

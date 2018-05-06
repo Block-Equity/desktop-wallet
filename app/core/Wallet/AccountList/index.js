@@ -36,7 +36,7 @@ import {
 
 import Divider from 'material-ui/Divider'
 
-import { getSupportedAssets } from '../../services/networking/lists'
+import { getSupportedAssets } from '../../../services/networking/lists'
 
 import {
   fetchAccountDetails,
@@ -45,7 +45,7 @@ import {
   fetchStellarAssetsForDisplay,
   fetchBlockEQTokensForDisplay,
   changeTrustOperation
-} from '../../common/account/actions'
+} from '../../../common/account/actions'
 
 import {
   getAccounts,
@@ -53,24 +53,17 @@ import {
   getSupportedStellarAssets,
   getStellarAssetsForDisplay,
   getBlockEQTokensForDisplay
-} from '../../common/account/selectors'
+} from '../../../common/account/selectors'
 
 import {
   streamPayments
-} from '../../common/payment/actions'
+} from '../../../common/payment/actions'
 
 import {
   getIncomingPayment
-} from '../../common/payment/selectors'
+} from '../../../common/payment/selectors'
 
 const font = "'Lato', sans-serif"
-
-const materialStyles = {
-  menuItem: {
-    background: 'red !important',
-    height: '2.25rem'
-  },
-}
 
 const listSections = {
    wallet: { displayName: 'WALLET' },
@@ -157,7 +150,6 @@ class AccountList extends Component {
       return this.props.blockEQTokens.map((asset, index) => {
         return (
           <MenuItem
-            className={ materialStyles.menuItem }
             key={ index }
             disableRipple={ true }
             onClick={this.handleBlockEQTokenAddition(asset, index)}>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import { joinInflationPoolOperation, fetchAccountDetails } from '../../common/account/actions'
+import { joinInflationPoolOperation, fetchAccountDetails } from '../../../common/account/actions'
 
 import isEmpty from 'lodash/isEmpty'
 import numeral from 'numeral'

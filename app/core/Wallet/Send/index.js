@@ -7,8 +7,8 @@ import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
 
-import PinModal from '../PinModal'
-import ActionButton from '../Shared/ActionButton'
+import PinModal from '../../Shared/PinModal'
+import ActionButton from '../../Shared/ActionButton'
 
 class Send extends Component {
 
