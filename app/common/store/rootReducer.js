@@ -4,10 +4,12 @@ import { routerReducer } from 'react-router-redux'
 import auth from '../auth/reducers'
 import account from '../account/reducers'
 import payment from '../payment/reducers'
+import app from '../app/reducers'
 
 export default combineReducers({
   auth,
   account,
   payment,
+  app,
   router: routerReducer
 })

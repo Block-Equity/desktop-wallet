@@ -1,14 +1,16 @@
 .mainContainer {
-  display: flex;
+  width: 9rem;
+  background-color: #1942c9;
+  border-right: 1px solid rgba(0, 0, 0, 0.125);
   height: 100vh;
 }
 
-.assetContainer {
+.appContainer {
   display: flex;
   flex-direction: row;
 }
 
-.assetContainerActiveIndicator {
+.appContainerActiveIndicator {
   width: 0.2rem;
   background-color: #FFFFFF;
   border-top-right-radius: 1rem;
@@ -17,7 +19,7 @@
   margin-right: 1.1rem;
 }
 
-.assetLabelContainer {
+.appLabelContainer {
   display: flex;
   flex-direction: column;
   margin-left: 0.75rem;
@@ -25,6 +27,17 @@
   font-weight: 300;
 }
 
-.listItemActive {
-  background-color: brown !important;
+.listItemStyle {
+  outline: none !important;
+  border-radius: 0 !important;
+  background-color: #1942c9 !important;
+  border-color: rgba(0, 0, 0, 0.125) !important;
+  color: #F4F4F4 !important;
+  border-right: 0 !important;
+  border-left: 0 !important;
+}
+
+.listItemStyle .selected {
+  background-color: #0026A2 !important;
+  color: #FFFFFF !important;
 }
