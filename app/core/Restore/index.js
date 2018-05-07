@@ -28,7 +28,7 @@ import {
 
 //Styles & UI
 import styles from './style.css'
-import NavBar from '../NavBar'
+import NavBar from '../Shared/NavBar'
 import ActionButton from '../Shared/ActionButton'
 import MnemonicView from '../Shared/Mnemonic'
 import MaterialButton from 'material-ui/Button'

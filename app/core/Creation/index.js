@@ -35,7 +35,7 @@ import MaterialButton from 'material-ui/Button'
 import Snackbar from 'material-ui/Snackbar'
 import { CircularProgress } from 'material-ui/Progress'
 
-import NavBar from '../NavBar'
+import NavBar from '../Shared/NavBar'
 import ActionButton from '../Shared/ActionButton'
 import styles from './style.css'
 import {

@@ -8,6 +8,7 @@ import * as encryption from '../../services/security/encryption'
 import numeral from 'numeral'
 
 export const EVENT_SOURCE_CLOSED_STATE = 2
+export var es
 
 export function sendPaymentToAddress ({ destination, amount, memoID }) {
   return async (dispatch, getState) => {
@@ -88,7 +89,9 @@ export function streamPayments() {
       const { pKey } = currentAccount
 
       const url = `${BASE_URL_HORIZON_PUBLIC_NET}/accounts/${pKey}/payments?cursor=now`
-      var es = new EventSource(url)
+      if (!es) {
+        es = new EventSource(url)
+      }
 
       es.onmessage = message => {
         var payload = message.data ? JSON.parse(message.data) : message
@@ -113,6 +116,7 @@ export function streamPayments() {
       es.onerror = error => {
         if (es.readyState === EVENT_SOURCE_CLOSED_STATE) {
           if (!accountFailed) {
+            es = new EventSource(url)
             dispatch(streamPayments())
           }
         }

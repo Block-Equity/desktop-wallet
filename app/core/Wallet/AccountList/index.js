@@ -8,14 +8,17 @@ import has from 'lodash/has'
 import numeral from 'numeral'
 
 import Paper from 'material-ui/Paper'
-import { withStyles } from 'material-ui/styles'
+import { withStyles, MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 import { CircularProgress } from 'material-ui/Progress'
 import {
   Modal,
   ModalHeader,
-  ModalBody
+  ModalBody,
+  ListGroup,
+  ListGroupItem
 }
 from 'reactstrap'
+
 import Slide from 'material-ui/transitions/Slide'
 
 import {
@@ -31,7 +34,7 @@ import {
 
 import Divider from 'material-ui/Divider'
 
-import { getSupportedAssets } from '../../services/networking/lists'
+import { getSupportedAssets } from '../../../services/networking/lists'
 
 import {
   fetchAccountDetails,
@@ -40,7 +43,7 @@ import {
   fetchStellarAssetsForDisplay,
   fetchBlockEQTokensForDisplay,
   changeTrustOperation
-} from '../../common/account/actions'
+} from '../../../common/account/actions'
 
 import {
   getAccounts,
@@ -48,30 +51,17 @@ import {
   getSupportedStellarAssets,
   getStellarAssetsForDisplay,
   getBlockEQTokensForDisplay
-} from '../../common/account/selectors'
+} from '../../../common/account/selectors'
 
 import {
   streamPayments
-} from '../../common/payment/actions'
+} from '../../../common/payment/actions'
 
 import {
   getIncomingPayment
-} from '../../common/payment/selectors'
+} from '../../../common/payment/selectors'
 
 const font = "'Lato', sans-serif"
-
-const materialStyles = theme => ({
-  menuItem: {
-    '&:focus': {
-      backgroundColor: theme.palette.primary.main,
-      '& $primary, & $icon': {
-        color: theme.palette.common.white,
-      },
-    },
-  },
-  primary: {},
-  icon: {},
-})
 
 const listSections = {
    wallet: { displayName: 'WALLET' },
@@ -117,15 +107,16 @@ class AccountList extends Component {
 
   render() {
     return (
-      <div style={{display: 'flex', flexDirection: 'row'}}>
-        <Paper elevation={2} style={{marginTop: '-0.5rem', width: '11.5rem'}}>
-          <MenuList style={{marginTop: '2.5rem', height: '100vh'}}>
-            { this.renderSubHeader(listSections.wallet.displayName)}
-            { this.renderAssets() }
+      <div>
+        <div style={{ width: '9.5rem', marginTop: '-0.55rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.06)', height: '100vh'}}>
+          <MenuList style={{ height: '100vh' }}>
+            <ListGroup id={styles.listItem}>
+              { this.renderAssets() }
+            </ListGroup>
             { (!isEmpty(this.props.blockEQTokens)) && this.renderSubHeader(listSections.supported_assets.displayName)}
             { this.renderSupportedAssets() }
           </MenuList>
-        </Paper>
+        </div>
         { this.renderLoadingDialog() }
       </div>
     )
@@ -133,35 +124,37 @@ class AccountList extends Component {
 
   renderAssets() {
     if (this.props.assets) {
+      const listItemStyleNormal = {outline: 'none', borderRadius: '0', borderColor: 'rgba(0, 0, 0, 0.06)', borderRight: '0', borderLeft: '0' }
+      const listItemStyleActive = { ...listItemStyleNormal, backgroundColor: '#FAFAFA', color: '#002EC4' }
+
       return this.props.assets.map((asset, index) => {
         const selected = this.state.assetSelected === index ? true : false
         return (
-          <div key={ index }>
-            <MenuItem style={{height: '2.25rem'}}
-              className={ materialStyles.menuItem }
-              selected={ selected }
-              disableRipple={ true }
-              onClick={ this.handleStellarAssetSelection(asset, index) }>
-              {this.renderAccountListLabel(asset)}
-            </MenuItem>
-            <Divider />
-          </div>
+          <ListGroupItem
+            key = { index }
+            style={ selected ? listItemStyleActive : listItemStyleNormal }
+            active={ selected }
+            tag='button'
+            onClick={ this.handleStellarAssetSelection(asset, index) } action>
+            {this.renderAccountListLabel(asset, selected)}
+          </ListGroupItem>
         )
       })
     }
   }
 
   renderSupportedAssets() {
+    const listItemStyleNormal = {outline: 'none', borderRadius: '0', borderColor: 'rgba(0, 0, 0, 0.06)', borderRight: '0', borderLeft: '0' }
+
     if (this.props.blockEQTokens) {
       return this.props.blockEQTokens.map((asset, index) => {
         return (
-          <MenuItem
-            className={ materialStyles.menuItem }
+          <ListGroupItem
             key={ index }
-            disableRipple={ true }
+            style={ listItemStyleNormal }
             onClick={this.handleBlockEQTokenAddition(asset, index)}>
             {this.renderSupportedAssetListLabel(asset.asset_name)}
-          </MenuItem>
+          </ListGroupItem>
         )
       })
     }
@@ -175,23 +168,33 @@ class AccountList extends Component {
     )
   }
 
-  renderAccountListLabel (asset) {
+  renderAccountListLabel (asset, isActive) {
+
+    const imageView = (
+      <div className={styles.assetContainerImage}>
+        <img alt='' src={ asset.asset_image } height='21px' width='21px'/>
+      </div>
+    )
+
     const labelView = (
-      <label style={{fontFamily: font, fontSize: '0.85rem', marginTop: '0.8rem'}}>
+      <label style={{fontSize: '0.75rem', marginBottom: '0rem'}}>
         { asset.asset_name }
       </label>
     )
 
     const balanceView = (
-      <label style={{fontFamily: font, fontSize: '0.65rem', marginTop: '-1rem'}}>
+      <label style={{fontSize: '0.65rem', marginBottom: '0rem'}}>
         {numeral(asset.balance).format('0,0.00')}
       </label>
     )
 
     return (
       <div className={styles.assetContainer}>
-        { labelView }
-        { balanceView }
+        { imageView }
+        <div className={styles.assetLabelContainer}>
+          { labelView }
+          { balanceView }
+        </div>
       </div>
     )
   }

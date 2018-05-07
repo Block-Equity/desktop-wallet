@@ -21,6 +21,8 @@ import * as encryption from '../../services/security/encryption'
 import * as mnemonic from '../../services/security/mnemonic'
 import * as Types from './types'
 
+export const stellarAssetImageURL = 'https://firebasestorage.googleapis.com/v0/b/blockeq-wallet.appspot.com/o/icon-stellar.png?alt=media&token=38b70165-5255-4113-a15e-3c72bd4fab9f'
+
 export function initializeDB () {
   return async dispatch => {
     dispatch(accountInitializationRequest())
@@ -201,12 +203,16 @@ export function fetchStellarAssetsForDisplay () {
         if (accounts[key].type === stellarAssetDesc.asset_name) {
           const stellarAccount = accounts[Object.keys(accounts)[index]]
           stellarAccount.balances.map((acc, index) => {
+            const assetCodeLookUpValue = acc.asset_code === undefined ? '' : acc.asset_code.toLowerCase()
+            const checkIfDisplayNameExists = response[assetCodeLookUpValue] === undefined ? acc.asset_code : response[assetCodeLookUpValue].asset_name
+            const checkIfIconURLExists = response[assetCodeLookUpValue] === undefined ? stellarAssetImageURL : response[assetCodeLookUpValue].asset_image
             const displayAccount = {
               asset_type: acc.asset_type,
               balance: acc.balance,
               asset_code: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_code : acc.asset_code,
-              asset_name: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_name : response[acc.asset_code.toLowerCase()].asset_name,
+              asset_name: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_name : checkIfDisplayNameExists,
               asset_issuer: acc.asset_type === stellarAssetDesc.asset_type ? '' : acc.asset_issuer,
+              asset_image: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetImageURL : checkIfIconURLExists,
               pKey: stellarAccount.pKey,
               sKey: stellarAccount.sKey,
               sequence: stellarAccount.sequence,

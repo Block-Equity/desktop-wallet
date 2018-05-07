@@ -1,0 +1,33 @@
+.mainContainer {
+  display: flex;
+  height: 100vh;
+}
+
+.assetContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.assetContainerImage {
+  margin-right: 0.5rem;
+  margin-left: -0.6rem;
+  margin-top: 0.05rem;
+}
+
+.assetContainerActiveIndicator {
+  width: 0.2rem;
+  background-color: #002EC4;
+  border-top-right-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+  margin-left: -1.3rem;
+  margin-right: 1.1rem;
+}
+
+.assetLabelContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.listItemActive {
+  background-color: brown !important;
+}
