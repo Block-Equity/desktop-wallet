@@ -12,6 +12,7 @@ import NavBar from '../Shared/NavBar'
 import Settings from '../Settings'
 import AppList from '../AppList'
 import Wallet from '../Wallet'
+import Trade from '../Trade'
 import AccountList from '../Wallet/AccountList'
 
 import statusBarLogo from '../Launch/logo-brand-color.png'
@@ -94,11 +95,8 @@ class AppView extends Component {
   renderTradeView() {
     return (
       <div className={styles.appContainer}>
-        <div style={{zIndex: '1'}}>
-         <AccountList />
-        </div>
         <div style={{marginTop: '2.5rem'}}>
-          <Wallet />
+          <Trade />
         </div>
       </div>
     )
