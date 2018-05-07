@@ -50,7 +50,7 @@ class Navigation extends Component {
           centered>
           { this.renderTabItems() }
         </Tabs>
-        <Divider />
+        <Divider style={{ background: '1px solid rgba(0, 0, 0, 0.06)' }}/>
       </Paper>
     )
   }

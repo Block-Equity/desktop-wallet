@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import styles from './style.css'
 
+import Settings from '../Settings'
+
 import { ListGroup, ListGroupItem } from 'reactstrap'
 import walletIcon from './icons/menu-wallet.png'
 import tradingIcon from './icons/menu-trading.png'
@@ -20,8 +22,10 @@ class AppList extends Component {
   constructor (props) {
     super()
     this.state = ({
-      appSelected: 0
+      appSelected: 0,
+      settingsOpen: false,
     })
+    this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
   }
 
   render() {
@@ -30,12 +34,13 @@ class AppList extends Component {
         <ListGroup>
           { this.renderAppMenu() }
         </ListGroup>
+        <Settings setOpen={this.toggleSettingsDrawer(!this.state.settingsOpen)} open={this.state.settingsOpen}/>
       </div>
     )
   }
 
   renderAppMenu() {
-      const listItemStyleNormal = { outline: 'none', borderRadius: '0', backgroundColor: '#1942c9', borderColor: 'rgba(0, 0, 0, 0.125)', color: '#F4F4F4', borderRight: '0', borderLeft: '0' }
+      const listItemStyleNormal = { outline: 'none', borderRadius: '0', backgroundColor: '#1942c9', borderColor: 'rgba(256, 256, 256, 0.06)', color: '#F4F4F4', borderRight: '0', borderLeft: '0' }
       const listItemStyleActive = { ...listItemStyleNormal, backgroundColor: '#0026A2', color: '#FFFFFF' }
 
       return appItems.map((app, index) => {
@@ -46,7 +51,8 @@ class AppList extends Component {
             style={ selected ? listItemStyleActive : listItemStyleNormal }
             active={ selected }
             tag='button'
-            onClick={ this.handleAppSelection(app, index) } action>
+            onClick={ this.handleAppSelection(app, index) }
+            action >
             {this.renderAppLabel(app, selected)}
           </ListGroupItem>
         )
@@ -72,7 +78,23 @@ class AppList extends Component {
     this.setState({
       appSelected: index
     })
-    this.props.setCurrentApp(app)
+    if (index === 2) {
+      this.openSettings()
+    } else {
+      this.props.setCurrentApp(index)
+    }
+  }
+
+  openSettings = () => {
+    this.setState({
+      settingsOpen: true
+    })
+  }
+
+  toggleSettingsDrawer = (open) => () => {
+    this.setState({
+      settingsOpen: open
+    })
   }
 
 }

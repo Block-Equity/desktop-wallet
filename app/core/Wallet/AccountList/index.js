@@ -110,7 +110,7 @@ class AccountList extends Component {
   render() {
     return (
       <div>
-        <div style={{ width: '10rem', marginTop: '-0.55rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.125)', height: '100vh'}}>
+        <div style={{ width: '8.5rem', marginTop: '-0.55rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.06)', height: '100vh'}}>
           <MenuList style={{ height: '100vh' }}>
             <ListGroup id={styles.listItem}>
               { this.renderAssets() }
@@ -126,7 +126,7 @@ class AccountList extends Component {
 
   renderAssets() {
     if (this.props.assets) {
-      const listItemStyleNormal = {outline: 'none', borderRadius: '0', borderColor: 'rgba(0, 0, 0, 0.125)', borderRight: '0', borderLeft: '0' }
+      const listItemStyleNormal = {outline: 'none', borderRadius: '0', borderColor: 'rgba(0, 0, 0, 0.06)', borderRight: '0', borderLeft: '0' }
       const listItemStyleActive = { ...listItemStyleNormal, backgroundColor: '#FAFAFA', color: '#002EC4' }
 
       return this.props.assets.map((asset, index) => {
@@ -170,13 +170,13 @@ class AccountList extends Component {
 
   renderAccountListLabel (asset, isActive) {
     const labelView = (
-      <label style={{fontSize: '0.85rem', marginBottom: '0rem'}}>
+      <label style={{fontSize: '0.7rem', marginBottom: '0rem'}}>
         { asset.asset_name }
       </label>
     )
 
     const balanceView = (
-      <label style={{fontSize: '0.65rem', marginBottom: '0rem'}}>
+      <label style={{fontSize: '0.6rem', marginBottom: '0rem'}}>
         {numeral(asset.balance).format('0,0.00')}
       </label>
     )

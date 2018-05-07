@@ -4,25 +4,31 @@ import { connect } from 'react-redux'
 import isEmpty from 'lodash/isEmpty'
 import { unlock } from '../../common/auth/actions'
 import { initializeDB } from '../../common/account/actions'
+import { getCurrentApp } from '../../common/app/selectors'
 
 //Style
 import styles from './style.css'
-import NavBar from '../NavBar'
-import AccountList from '../Wallet/AccountList'
+import NavBar from '../Shared/NavBar'
+import Settings from '../Settings'
 import AppList from '../AppList'
 import Wallet from '../Wallet'
-import Settings from '../Settings'
+import AccountList from '../Wallet/AccountList'
+
 import statusBarLogo from '../Launch/logo-brand-color.png'
+
+const appItems = {
+  wallet: { displayLabel: 'Wallet', id: 0 } ,
+  trade: { displayLabel: 'Trading', id: 1 },
+  settings: { displayLabel: 'Settings', id: 2 }
+}
 
 class AppView extends Component {
 
   constructor (props) {
     super()
     this.state = {
-      settingsOpen: false,
       dbInit: false
     }
-    this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
   }
 
   async componentDidMount () {
@@ -47,56 +53,69 @@ class AppView extends Component {
           <div style={{zIndex: '2'}}>
             <AppList />
           </div>
-          <div className={styles.accountContentContainer}>
-            <div className={styles.appContainer}>
-              <div style={{zIndex: '1'}}>
-                { this.renderAccountListView() }
-              </div>
-              <div style={{marginTop: '2.5rem'}}>
-                { this.renderWalletView() }
-              </div>
-            </div>
-          </div>
+          { this.renderContent() }
         </div>
-        <Settings setOpen={this.toggleSettingsDrawer(!this.state.settingsOpen)} open={this.state.settingsOpen}/>
       </div>
     )
   }
 
+  renderContent () {
+    switch(this.props.app) {
+      case appItems.wallet.id:
+        return (
+          <div>
+            { this.state.dbInit && this.renderWalletView() }
+          </div>
+        )
+      break;
+      case appItems.trade.id:
+        return (
+          <div>
+            { this.state.dbInit && this.renderTradeView() }
+          </div>
+        )
+      break;
+    }
+  }
+
   renderWalletView () {
-    if (this.state.dbInit) {
-      return (
-        <Wallet />
-      )
-    }
+    return (
+      <div className={styles.appContainer}>
+        <div style={{zIndex: '1'}}>
+         <AccountList />
+        </div>
+        <div style={{marginTop: '2.5rem'}}>
+          <Wallet />
+        </div>
+      </div>
+    )
   }
 
-  renderAccountListView () {
-    if (this.state.dbInit) {
-      return (
-        <AccountList />
-      )
-    }
-  }
-
-  openSettings = () => {
-    this.setState({
-      settingsOpen: true
-    })
+  renderTradeView() {
+    return (
+      <div className={styles.appContainer}>
+        <div style={{zIndex: '1'}}>
+         <AccountList />
+        </div>
+        <div style={{marginTop: '2.5rem'}}>
+          <Wallet />
+        </div>
+      </div>
+    )
   }
 
   refresh = () => {
     this.props.fetchAccountDetails()
   }
+}
 
-  toggleSettingsDrawer = (open) => () => {
-    this.setState({
-      settingsOpen: open
-    })
+const mapStateToProps = (state) => {
+  return {
+    app: getCurrentApp(state)
   }
 }
 
-export default connect(null, {
+export default connect(mapStateToProps, {
   unlock,
   initializeDB
 })(AppView)

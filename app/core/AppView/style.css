@@ -22,15 +22,10 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.accountContentContainer {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  z-index: 1;
-}
-
 .appContainer {
   display: flex;
   flex-direction: row;
+  width: 100%;
+  z-index: 1;
 }
 
