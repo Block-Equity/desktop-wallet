@@ -17,9 +17,8 @@ const materialStyles = theme => ({
 })
 
 const navigation = [
-  {title: 'HISTORY'},
-  {title: 'SEND'},
-  {title: 'RECEIVE'}
+  {title: 'TRADE ASSET'},
+  {title: 'TRADE HISTORY'}
 ]
 
 class Navigation extends Component {
