@@ -201,11 +201,13 @@ export function fetchStellarAssetsForDisplay () {
         if (accounts[key].type === stellarAssetDesc.asset_name) {
           const stellarAccount = accounts[Object.keys(accounts)[index]]
           stellarAccount.balances.map((acc, index) => {
+            const assetCodeLookUpValue = acc.asset_code === undefined ? '' : acc.asset_code.toLowerCase()
+            const checkIfDisplayNameExists = response[assetCodeLookUpValue] === undefined ? acc.asset_code : response[assetCodeLookUpValue].asset_name
             const displayAccount = {
               asset_type: acc.asset_type,
               balance: acc.balance,
               asset_code: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_code : acc.asset_code,
-              asset_name: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_name : response[acc.asset_code.toLowerCase()].asset_name,
+              asset_name: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_name : checkIfDisplayNameExists,
               asset_issuer: acc.asset_type === stellarAssetDesc.asset_type ? '' : acc.asset_issuer,
               pKey: stellarAccount.pKey,
               sKey: stellarAccount.sKey,

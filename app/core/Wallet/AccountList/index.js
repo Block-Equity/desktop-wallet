@@ -144,15 +144,17 @@ class AccountList extends Component {
   }
 
   renderSupportedAssets() {
+    const listItemStyleNormal = {outline: 'none', borderRadius: '0', borderColor: 'rgba(0, 0, 0, 0.06)', borderRight: '0', borderLeft: '0' }
+
     if (this.props.blockEQTokens) {
       return this.props.blockEQTokens.map((asset, index) => {
         return (
-          <MenuItem
+          <ListGroupItem
             key={ index }
-            disableRipple={ true }
+            style={ listItemStyleNormal }
             onClick={this.handleBlockEQTokenAddition(asset, index)}>
             {this.renderSupportedAssetListLabel(asset.asset_name)}
-          </MenuItem>
+          </ListGroupItem>
         )
       })
     }
