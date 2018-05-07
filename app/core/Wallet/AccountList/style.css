@@ -8,6 +8,12 @@
   flex-direction: row;
 }
 
+.assetContainerImage {
+  margin-right: 0.5rem;
+  margin-left: -0.6rem;
+  margin-top: 0.05rem;
+}
+
 .assetContainerActiveIndicator {
   width: 0.2rem;
   background-color: #002EC4;

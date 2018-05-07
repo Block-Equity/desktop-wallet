@@ -108,7 +108,7 @@ class AccountList extends Component {
   render() {
     return (
       <div>
-        <div style={{ width: '8.5rem', marginTop: '-0.55rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.06)', height: '100vh'}}>
+        <div style={{ width: '9.5rem', marginTop: '-0.55rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.06)', height: '100vh'}}>
           <MenuList style={{ height: '100vh' }}>
             <ListGroup id={styles.listItem}>
               { this.renderAssets() }
@@ -169,20 +169,28 @@ class AccountList extends Component {
   }
 
   renderAccountListLabel (asset, isActive) {
+
+    const imageView = (
+      <div className={styles.assetContainerImage}>
+        <img alt='' src={ asset.asset_image } height='21px' width='21px'/>
+      </div>
+    )
+
     const labelView = (
-      <label style={{fontSize: '0.7rem', marginBottom: '0rem'}}>
+      <label style={{fontSize: '0.75rem', marginBottom: '0rem'}}>
         { asset.asset_name }
       </label>
     )
 
     const balanceView = (
-      <label style={{fontSize: '0.6rem', marginBottom: '0rem'}}>
+      <label style={{fontSize: '0.65rem', marginBottom: '0rem'}}>
         {numeral(asset.balance).format('0,0.00')}
       </label>
     )
 
     return (
       <div className={styles.assetContainer}>
+        { imageView }
         <div className={styles.assetLabelContainer}>
           { labelView }
           { balanceView }
