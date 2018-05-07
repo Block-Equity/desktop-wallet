@@ -12,8 +12,8 @@ class Trade extends Component {
 
   render() {
     return (
-      <div>
-        <h4>Trading View Placeholder</h4>
+      <div style={{ display: 'flex', flexDirection: 'column', alignContent: 'center', width: '100%' }}>
+        <h6>Trading View Placeholder</h6>
       </div>
     )
   }

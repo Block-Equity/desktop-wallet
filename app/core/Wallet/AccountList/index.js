@@ -15,9 +15,7 @@ import {
   ModalHeader,
   ModalBody,
   ListGroup,
-  ListGroupItem,
-  ListGroupItemHeading,
-  ListGroupItemText
+  ListGroupItem
 }
 from 'reactstrap'
 
