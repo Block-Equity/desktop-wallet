@@ -17,9 +17,9 @@ const materialStyles = theme => ({
 })
 
 const navigation = [
-  {title: 'HISTORY'},
-  {title: 'SEND'},
-  {title: 'RECEIVE'}
+  {title: 'History'},
+  {title: 'Send'},
+  {title: 'Receive'}
 ]
 
 class Navigation extends Component {
@@ -62,7 +62,7 @@ class Navigation extends Component {
           <Tab key={ idBuilder }
               label={ item.title }
               disableRipple={true}
-              style={{ fontFamily: font, color: '#1942c9', outline: 'none', marginLeft:'2rem', marginRight: '2rem', paddingLeft:'2rem', paddingRight:'2rem' }}/>
+              style={{ fontFamily: font, fontSize: '0.75rem', textTransform: 'none', color: '#1942c9', letterSpacing: '0.06rem', outline: 'none', marginLeft:'2.5rem', marginRight: '2.5rem', paddingLeft:'2rem', paddingRight:'2rem' }}/>
         )
     });
   }

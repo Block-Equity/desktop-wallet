@@ -51,7 +51,7 @@ class AppView extends Component {
           <img src={ statusBarLogo } alt='' width='34' height='17'/>
         </div>
         <div className={styles.contentContainer}>
-          <div style={{zIndex: '2'}}>
+          <div>
             <AppList />
           </div>
           { this.renderContent() }
@@ -64,14 +64,14 @@ class AppView extends Component {
     switch(this.props.app) {
       case appItems.wallet.id:
         return (
-          <div>
+          <div style={{width: '100vw'}}>
             { this.state.dbInit && this.renderWalletView() }
           </div>
         )
       break;
       case appItems.trade.id:
         return (
-          <div>
+          <div style={{width: '100vw'}}>
             { this.state.dbInit && this.renderTradeView() }
           </div>
         )
@@ -82,10 +82,10 @@ class AppView extends Component {
   renderWalletView () {
     return (
       <div className={styles.appContainer}>
-        <div style={{zIndex: '1'}}>
+        <div style={{zIndex: '2'}}>
          <AccountList />
         </div>
-        <div style={{marginTop: '2.5rem'}}>
+        <div>
           <Wallet />
         </div>
       </div>
@@ -95,9 +95,7 @@ class AppView extends Component {
   renderTradeView() {
     return (
       <div className={styles.appContainer}>
-        <div style={{marginTop: '2.5rem'}}>
-          <Trade />
-        </div>
+        <Trade />
       </div>
     )
   }
