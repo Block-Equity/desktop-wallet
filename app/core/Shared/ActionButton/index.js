@@ -24,7 +24,7 @@ export default class ActionButton extends Component {
       className: 'btn btn-primary',
       type: 'submit',
       id: 'load',
-      style: { width: 'inherit', height: '3rem' }
+      style: { width: 'inherit', boxShadow: 'none' }
     }
 
     const buttonWithHandler = (
