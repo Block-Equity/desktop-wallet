@@ -19,7 +19,7 @@
 
 .assetContainerTitle {
   margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
   color:rgba(0, 0, 0, 0.5);
   font-size: 1.25rem;
   font-weight: 700;
@@ -45,9 +45,11 @@
 
 .widgetTitle {
   margin-bottom: 0.5rem;
-  color:  rgba(0, 0, 0, 0.6);
-  font-size: 0.9rem;
-  font-weight: 400;
+  color:  rgba(0, 0, 0, 0.55);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.009rem;
+
 }
 
 .assetWidgetImageContainer {
@@ -78,8 +80,8 @@
 }
 
 .amountOptionTitle {
-  color:  rgba(0, 0, 0, 0.4);
-  font-size: 0.6rem;
+  color:  rgba(0, 0, 0, 0.65);
+  font-size: 0.68rem;
 }
 
 

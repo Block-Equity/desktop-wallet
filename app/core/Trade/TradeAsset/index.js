@@ -22,7 +22,7 @@ import {
 import ArrowRight from 'material-ui-icons/ArrowForward'
 import ActionButton from '../../Shared/ActionButton'
 
-class Trade extends Component {
+class TradeAsset extends Component {
 
   constructor (props) {
     super()
@@ -32,6 +32,8 @@ class Trade extends Component {
       offerAssetSelected: 0,
       receiveAssetSelected: 0
     }
+
+    this.handleChange = this.handleChange.bind(this)
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
   }
@@ -65,11 +67,11 @@ class Trade extends Component {
     )
     return (
       <div className={ styles.assetWidgetContainer }>
-        <h6 className={ styles.widgetTitle }>Offer</h6>
-        <InputGroup style={{width: '100%'}}>
-          <Input />
-          <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownOfferAssetOpen} toggle={this.toggleOfferDropDown}>
-            <DropdownToggle caret outline color="danger">
+        <h6 className={ styles.widgetTitle }>OFFER</h6>
+        <InputGroup style={{ width: '100%'}}>
+          <Input name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none'}}/>
+          <InputGroupButtonDropdown addonType='append' isOpen={this.state.dropdownOfferAssetOpen} toggle={this.toggleOfferDropDown}>
+            <DropdownToggle caret outline color='danger' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { selectedOfferAsset.asset_code }
             </DropdownToggle>
             <DropdownMenu>
@@ -85,11 +87,11 @@ class Trade extends Component {
   renderReceiveAsset() {
     return (
       <div className={ styles.assetWidgetContainer }>
-        <h6 className={ styles.widgetTitle }>Receive</h6>
+        <h6 className={ styles.widgetTitle }>RECEIVE</h6>
         <InputGroup style={{width: '100%'}}>
-          <Input />
+        <Input name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none'}}/>
           <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownReceiveAssetOpen} toggle={this.toggleReceiveDropDown}>
-            <DropdownToggle caret outline color="success">
+            <DropdownToggle caret outline color='success' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               PTS
             </DropdownToggle>
             <DropdownMenu>
@@ -105,8 +107,8 @@ class Trade extends Component {
   assetList() {
     return this.props.assets.map((asset, index) => {
       return (
-        <DropdownItem key = { index } >
-          { asset.asset_name }
+        <DropdownItem key = { index } style={{fontSize: '0.7rem'}}>
+          { `${ asset.asset_name } (${ asset.asset_code})` }
         </DropdownItem>
       )
     })
@@ -115,11 +117,11 @@ class Trade extends Component {
   renderBalanceAmountOptions() {
     const { assets } = this.props
     const selectedOfferAsset = assets[this.state.offerAssetSelected]
-    const buttonStyle = { boxShadow: 'none', fontSize: '0.75rem' }
+    const buttonStyle = { boxShadow: 'none', fontSize: '0.7rem' }
     return (
       <div className={ styles.amountOptionContainer }>
         <h6 className={ styles.amountOptionTitle }>
-          Your total {selectedOfferAsset.asset_code} balance is <b>{selectedOfferAsset.balance}</b>
+          Your total available {selectedOfferAsset.asset_code} balance is <b>{selectedOfferAsset.balance}</b>
         </h6>
         <ButtonGroup size='sm'>
           <Button outline style={buttonStyle}>10%</Button>
@@ -153,6 +155,16 @@ class Trade extends Component {
     })
   }
 
+  handleChange (event) {
+    const target = event.target
+    var value = target.value
+    const name = target.name
+    value = value.replace(/[^0.001-9]/g, '')
+    this.setState({
+      [name]: value
+    })
+  }
+
 }
 
 const mapStateToProps = (state) => {
@@ -161,4 +173,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default connect(mapStateToProps, null)(Trade)
+export default connect(mapStateToProps, null)(TradeAsset)
