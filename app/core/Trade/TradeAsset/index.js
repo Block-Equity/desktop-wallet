@@ -39,6 +39,11 @@ class TradeAsset extends Component {
     this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
+    this.buyAssetList = this.buyAssetList.bind(this)
+  }
+
+  componentDidMount() {
+    this.buyAssetList(0)
   }
 
   render() {
@@ -60,7 +65,7 @@ class TradeAsset extends Component {
     )
   }
 
-  renderOfferAsset() {
+  renderSellAsset() {
     const { assets } = this.props
     const selectedOfferAsset = assets[this.state.sellAssetSelected]
     const image = (
@@ -79,7 +84,7 @@ class TradeAsset extends Component {
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem header>Select Asset</DropdownItem>
-              { this.sellAssetList() }
+              { this.renderSellAssetList() }
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
@@ -87,7 +92,7 @@ class TradeAsset extends Component {
     )
   }
 
-  renderReceiveAsset() {
+  renderBuyAsset() {
     return (
       <div className={ styles.assetWidgetContainer }>
         <h6 className={ styles.widgetTitle }>BUY</h6>
@@ -99,7 +104,9 @@ class TradeAsset extends Component {
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem header>Select Asset</DropdownItem>
-              { this.buyAssetList() }
+              { this.renderBuyAssetList() }
+              <DropdownItem divider />
+              { this.renderAddAssetOption() }
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
@@ -107,7 +114,7 @@ class TradeAsset extends Component {
     )
   }
 
-  sellAssetList() {
+  renderSellAssetList() {
     return this.props.assets.map((asset, index) => {
       return (
         <DropdownItem
@@ -120,14 +127,22 @@ class TradeAsset extends Component {
     })
   }
 
-  buyAssetList() {
+  renderBuyAssetList() {
     return this.state.buyAssetList.map((asset, index) => {
       return (
-        <DropdownItem key = { index } style={{fontSize: '0.7rem'}}>
-          { `${ asset.asset_name } (${ asset.asset_code})` }
+        <DropdownItem
+          key = { index }
+          style={{fontSize: '0.7rem'}} >
+            { `${ asset.asset_name } (${ asset.asset_code})` }
         </DropdownItem>
       )
     })
+  }
+
+  renderAddAssetOption() {
+    return (
+      <DropdownItem style={{fontSize: '0.85rem'}}><i className='fa fa-plus-circle' style={{marginRight: '0.45rem', color: 'rgb(0, 0, 0, 0.25)'}}></i>Add Asset</DropdownItem>
+    )
   }
 
   renderBalanceAmountOptions() {
@@ -161,16 +176,22 @@ class TradeAsset extends Component {
 
   handleSellAssetSelection = (asset, index) => event => {
     event.preventDefault()
+    console.log(`Sell Asset Selected Index: ${index}`)
     this.setState({
       sellAssetSelected: index
     })
+    this.buyAssetList(index)
+  }
+
+  buyAssetList(index) {
+    const sellAsset = this.props.assets[index]
+    console.log(`Sell Asset Selected: ${JSON.stringify(sellAsset)}`)
     var tempArray = []
     this.props.assets.map((asset, index) => {
-      if (index !== this.state.sellAssetSelected) {
-        tempArray.buyAssetList.push(asset)
+      if (asset.asset_code !== sellAsset.asset_code) {
+        tempArray.push(asset)
       }
     })
-    tempArray.push({ asset_name: 'Add Asset' })
     this.setState({
       buyAssetList: tempArray
     })
