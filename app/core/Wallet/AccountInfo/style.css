@@ -19,11 +19,17 @@
 }
 
 .balanceLabel {
-  font-size: 1rem;
   font-weight: 100;
   color: #000000;
   font-size: 1.8rem;
+}
+
+.marketValueLabel {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.65);
   margin-bottom: 1rem;
+  margin-top: 0.5rem;
 }
 
 #linkContainer {

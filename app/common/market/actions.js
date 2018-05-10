@@ -8,7 +8,7 @@ export function fetchStellarMarketInfo() {
       const pollMarket = setInterval( async function() {
         const { info } = await coinmarketcap.getStellarMarketInfo()
         return dispatch(fetchStellarMarketInfoSuccess(info))
-      }, 240000)
+      }, 300000)
       const { info } = await coinmarketcap.getStellarMarketInfo()
       return dispatch(fetchStellarMarketInfoSuccess(info))
 

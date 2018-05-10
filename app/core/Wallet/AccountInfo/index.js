@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { joinInflationPoolOperation, fetchAccountDetails } from '../../../common/account/actions'
+import { getStellarMarketCADPrice } from '../../../common/market/selectors'
 
 import isEmpty from 'lodash/isEmpty'
 import numeral from 'numeral'
@@ -48,6 +49,7 @@ class AccountInfo extends Component {
             <div className={styles.balanceLabel}>
               <b> {numeral(balance).format('0,0.00')} </b>
             </div>
+            { this.renderMarketValue() }
           </div>
       </Card>
     </Col>
@@ -136,6 +138,16 @@ class AccountInfo extends Component {
     )
   }
 
+  renderMarketValue() {
+    const { currentAccount, stellarCADValue } = this.props
+    const balance = currentAccount.balance * stellarCADValue
+    return (
+      <div className={styles.marketValueLabel}>
+        { `CAD $${numeral(balance).format('0,0.00')}` }
+      </div>
+    )
+  }
+
   handleClick(event) {
     event.preventDefault()
     this.setState({
@@ -161,7 +173,13 @@ class AccountInfo extends Component {
   }
 }
 
-export default connect(null, {
+const mapStateToProps = (state) => {
+  return {
+    stellarCADValue: getStellarMarketCADPrice(state)
+  }
+}
+
+export default connect(mapStateToProps, {
   joinInflationPoolOperation,
   fetchAccountDetails
 })(AccountInfo)

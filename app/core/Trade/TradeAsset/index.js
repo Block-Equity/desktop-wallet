@@ -29,21 +29,15 @@ class TradeAsset extends Component {
     this.state = {
       dropdownOfferAssetOpen: false,
       dropdownReceiveAssetOpen: false,
-      offerAssetSelected: 0,
-      receiveAssetSelected: 0,
-      receiveAssetList: []
+      sellAssetSelected: 0,
+      sellAssetList: [],
+      buyAssetSelected: 0,
+      buyAssetList: []
     }
 
     this.handleChange = this.handleChange.bind(this)
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
-  }
-
-  async componentDidMount() {
-    /*const price = await getStellarCADPrice()
-    this.setState({
-      stellarCADprice: price
-    })*/
   }
 
   render() {
@@ -67,7 +61,7 @@ class TradeAsset extends Component {
 
   renderOfferAsset() {
     const { assets } = this.props
-    const selectedOfferAsset = assets[this.state.offerAssetSelected]
+    const selectedOfferAsset = assets[this.state.sellAssetSelected]
     const image = (
       <div className={ styles.assetWidgetImageContainer }>
         <img alt='' src={ selectedOfferAsset.asset_image } className={ styles.assetWidgetImage }/>
@@ -75,16 +69,16 @@ class TradeAsset extends Component {
     )
     return (
       <div className={ styles.assetWidgetContainer }>
-        <h6 className={ styles.widgetTitle }>OFFER</h6>
+        <h6 className={ styles.widgetTitle }>SELL</h6>
         <InputGroup style={{ width: '100%'}}>
           <Input name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none'}}/>
           <InputGroupButtonDropdown addonType='append' isOpen={this.state.dropdownOfferAssetOpen} toggle={this.toggleOfferDropDown}>
-            <DropdownToggle caret outline color='danger' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
+            <DropdownToggle caret color='danger' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { selectedOfferAsset.asset_code }
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem header>Select Asset</DropdownItem>
-              { this.assetList() }
+              { this.sellAssetList() }
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
@@ -95,16 +89,16 @@ class TradeAsset extends Component {
   renderReceiveAsset() {
     return (
       <div className={ styles.assetWidgetContainer }>
-        <h6 className={ styles.widgetTitle }>RECEIVE</h6>
+        <h6 className={ styles.widgetTitle }>BUY</h6>
         <InputGroup style={{width: '100%'}}>
         <Input name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none'}}/>
           <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownReceiveAssetOpen} toggle={this.toggleReceiveDropDown}>
-            <DropdownToggle caret outline color='success' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
+            <DropdownToggle caret color='success' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               PTS
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem header>Select Asset</DropdownItem>
-              { this.assetList() }
+              { this.buyAssetList() }
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
@@ -112,7 +106,23 @@ class TradeAsset extends Component {
     )
   }
 
-  assetList() {
+  buyAssetList() {
+    this.props.assets.map((asset, index) => {
+      if (index !== this.state.sellAssetSelected) {
+        this.state.buyAssetList.push(asset)
+      }
+    })
+    this.state.buyAssetList.push({ asset_name: 'Add Asset' })
+    return this.state.buyAssetList.map((asset, index) => {
+      return (
+        <DropdownItem key = { index } style={{fontSize: '0.7rem'}}>
+          { `${ asset.asset_name } (${ asset.asset_code})` }
+        </DropdownItem>
+      )
+    })
+  }
+
+  sellAssetList() {
     return this.props.assets.map((asset, index) => {
       return (
         <DropdownItem key = { index } style={{fontSize: '0.7rem'}}>
@@ -124,7 +134,7 @@ class TradeAsset extends Component {
 
   renderBalanceAmountOptions() {
     const { assets } = this.props
-    const selectedOfferAsset = assets[this.state.offerAssetSelected]
+    const selectedOfferAsset = assets[this.state.sellAssetSelected]
     const buttonStyle = { boxShadow: 'none', fontSize: '0.65rem' }
     return (
       <div className={ styles.amountOptionContainer }>
@@ -149,6 +159,10 @@ class TradeAsset extends Component {
         <ActionButton processing={ false } title={ btnTitle } actionClicked={ this.handleWriteMnemonicSubmit }/>
       </div>
     )
+  }
+
+  handleAppSelection = (asset, index) => event => {
+    event.preventDefault()
   }
 
   toggleOfferDropDown() {
