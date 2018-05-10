@@ -62,7 +62,7 @@ class Navigation extends Component {
           <Tab key={ idBuilder }
               label={ item.title }
               disableRipple={true}
-              style={{ fontFamily: font, fontSize: '0.75rem', textTransform: 'none', color: '#1942c9', letterSpacing: '0.06rem', outline: 'none', marginLeft:'2.5rem', marginRight: '2.5rem', paddingLeft:'2rem', paddingRight:'2rem' }}/>
+              style={{ fontFamily: font, fontSize: '0.75rem', textTransform: 'none', color: '#1942c9', letterSpacing: '0.01rem', outline: 'none', marginLeft:'1.8rem', marginRight: '1.8rem', paddingLeft:'2.1rem', paddingRight:'2.1rem' }}/>
         )
     });
   }

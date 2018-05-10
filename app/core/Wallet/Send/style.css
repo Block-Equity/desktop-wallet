@@ -1,6 +1,7 @@
 #sendAssetFormContainer {
   padding-bottom: 2rem;
   margin-top: 1.5rem;
+  width: 50vw;
 }
 
 #sendAssetFormContainer input:focus {

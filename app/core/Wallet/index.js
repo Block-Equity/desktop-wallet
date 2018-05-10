@@ -192,16 +192,12 @@ class Main extends Component {
       break
       case navigation.send:
         return (
-          <div style={{width: '60%'}}>
-            <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } paymentSending={ this.props.paymentSending } currentAddress={ this.state.publicKey } />
-          </div>
+          <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } paymentSending={ this.props.paymentSending } currentAddress={ this.state.publicKey } />
         )
       break
       case navigation.receive:
         return (
-          <div style={{width: '80%'}}>
-            <Receive currentAccount={ this.props.currentAccount } />
-          </div>
+          <Receive currentAccount={ this.props.currentAccount } />
         )
       break
     }

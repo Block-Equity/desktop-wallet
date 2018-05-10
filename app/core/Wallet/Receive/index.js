@@ -5,7 +5,7 @@ import Paper from 'material-ui/Paper'
 
 const { clipboard } = require('electron');
 
-const QR_CODE_CONTAINER_SIZE = 160
+const QR_CODE_CONTAINER_SIZE = 140
 
 const qrContainer = {
   padding: '1rem',

@@ -36,6 +36,7 @@ class TradeAsset extends Component {
     }
 
     this.handleChange = this.handleChange.bind(this)
+    this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
   }
@@ -106,24 +107,21 @@ class TradeAsset extends Component {
     )
   }
 
-  buyAssetList() {
-    this.props.assets.map((asset, index) => {
-      if (index !== this.state.sellAssetSelected) {
-        this.state.buyAssetList.push(asset)
-      }
-    })
-    this.state.buyAssetList.push({ asset_name: 'Add Asset' })
-    return this.state.buyAssetList.map((asset, index) => {
+  sellAssetList() {
+    return this.props.assets.map((asset, index) => {
       return (
-        <DropdownItem key = { index } style={{fontSize: '0.7rem'}}>
+        <DropdownItem
+          key = { index }
+          style={{fontSize: '0.7rem'}}
+          onClick={ this.handleSellAssetSelection(asset, index) }>
           { `${ asset.asset_name } (${ asset.asset_code})` }
         </DropdownItem>
       )
     })
   }
 
-  sellAssetList() {
-    return this.props.assets.map((asset, index) => {
+  buyAssetList() {
+    return this.state.buyAssetList.map((asset, index) => {
       return (
         <DropdownItem key = { index } style={{fontSize: '0.7rem'}}>
           { `${ asset.asset_name } (${ asset.asset_code})` }
@@ -161,8 +159,21 @@ class TradeAsset extends Component {
     )
   }
 
-  handleAppSelection = (asset, index) => event => {
+  handleSellAssetSelection = (asset, index) => event => {
     event.preventDefault()
+    this.setState({
+      sellAssetSelected: index
+    })
+    var tempArray = []
+    this.props.assets.map((asset, index) => {
+      if (index !== this.state.sellAssetSelected) {
+        tempArray.buyAssetList.push(asset)
+      }
+    })
+    tempArray.push({ asset_name: 'Add Asset' })
+    this.setState({
+      buyAssetList: tempArray
+    })
   }
 
   toggleOfferDropDown() {
