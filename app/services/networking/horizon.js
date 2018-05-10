@@ -42,7 +42,7 @@ export const getPaymentOperationList = async (publicKey) => {
     server.operations()
       .forAccount(publicKey)
       .order('desc')
-      .limit(100)
+      .limit(200)
       .call()
       .then(({ records }) => resolve(records))
       .catch(error => reject(error));

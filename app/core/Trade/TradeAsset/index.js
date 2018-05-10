@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import numeral from 'numeral'
 
-import {
-  getStellarAssetsForDisplay
-} from '../../../common/account/selectors'
+import { getStellarAssetsForDisplay } from '../../../common/account/selectors'
+import { getStellarCADPrice } from '../../../services/networking/coinmarketcap'
 
 import styles from './style.css'
 
@@ -30,12 +30,20 @@ class TradeAsset extends Component {
       dropdownOfferAssetOpen: false,
       dropdownReceiveAssetOpen: false,
       offerAssetSelected: 0,
-      receiveAssetSelected: 0
+      receiveAssetSelected: 0,
+      receiveAssetList: []
     }
 
     this.handleChange = this.handleChange.bind(this)
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
+  }
+
+  async componentDidMount() {
+    /*const price = await getStellarCADPrice()
+    this.setState({
+      stellarCADprice: price
+    })*/
   }
 
   render() {
@@ -117,11 +125,11 @@ class TradeAsset extends Component {
   renderBalanceAmountOptions() {
     const { assets } = this.props
     const selectedOfferAsset = assets[this.state.offerAssetSelected]
-    const buttonStyle = { boxShadow: 'none', fontSize: '0.7rem' }
+    const buttonStyle = { boxShadow: 'none', fontSize: '0.65rem' }
     return (
       <div className={ styles.amountOptionContainer }>
         <h6 className={ styles.amountOptionTitle }>
-          Your total available {selectedOfferAsset.asset_code} balance is <b>{selectedOfferAsset.balance}</b>
+          Your total available {selectedOfferAsset.asset_code} balance is <b>{numeral(selectedOfferAsset.balance).format('0,0.00')}</b>
         </h6>
         <ButtonGroup size='sm'>
           <Button outline style={buttonStyle}>10%</Button>

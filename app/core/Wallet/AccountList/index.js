@@ -184,7 +184,7 @@ class AccountList extends Component {
 
     const balanceView = (
       <label style={{fontSize: '0.65rem', marginBottom: '0rem'}}>
-        {numeral(asset.balance).format('0,0.00')}
+        {`${numeral(asset.balance).format('0,0.00')} (${ asset.asset_code })`}
       </label>
     )
 
