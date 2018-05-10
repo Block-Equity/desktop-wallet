@@ -39,11 +39,10 @@ class TradeAsset extends Component {
     this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
-    this.buyAssetList = this.buyAssetList.bind(this)
   }
 
   componentDidMount() {
-    this.buyAssetList(0)
+    this.initialBuyAssetList()
   }
 
   render() {
@@ -54,9 +53,9 @@ class TradeAsset extends Component {
             Choose which assets to trade
           </h5>
           <div className={styles.tradeWidgetContainer}>
-            { this.renderOfferAsset() }
+            { this.renderSellAsset() }
             <ArrowRight style={{marginLeft: '1.25rem', marginRight: '1.25rem', marginTop: '1.3rem', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 0.2)' }}/>
-            { this.renderReceiveAsset() }
+            { this.renderBuyAsset() }
           </div>
           { this.renderBalanceAmountOptions() }
           { this.renderSubmitButton() }
@@ -93,6 +92,7 @@ class TradeAsset extends Component {
   }
 
   renderBuyAsset() {
+    const currentBuyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
     return (
       <div className={ styles.assetWidgetContainer }>
         <h6 className={ styles.widgetTitle }>BUY</h6>
@@ -100,11 +100,11 @@ class TradeAsset extends Component {
         <Input name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none'}}/>
           <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownReceiveAssetOpen} toggle={this.toggleReceiveDropDown}>
             <DropdownToggle caret color='success' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
-              PTS
+              { this.state.buyAssetList.length > 0 && currentBuyAsset.asset_code }
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem header>Select Asset</DropdownItem>
-              { this.renderBuyAssetList() }
+              { this.state.buyAssetList.length > 0 && this.renderBuyAssetList() }
               <DropdownItem divider />
               { this.renderAddAssetOption() }
             </DropdownMenu>
@@ -132,7 +132,8 @@ class TradeAsset extends Component {
       return (
         <DropdownItem
           key = { index }
-          style={{fontSize: '0.7rem'}} >
+          style={{fontSize: '0.7rem'}}
+          onClick={ this.handleBuyAssetSelection(asset, index) }>
             { `${ asset.asset_name } (${ asset.asset_code})` }
         </DropdownItem>
       )
@@ -180,20 +181,45 @@ class TradeAsset extends Component {
     this.setState({
       sellAssetSelected: index
     })
-    this.buyAssetList(index)
+    this.updateBuyAssetList(index)
   }
 
-  buyAssetList(index) {
-    const sellAsset = this.props.assets[index]
-    console.log(`Sell Asset Selected: ${JSON.stringify(sellAsset)}`)
+  handleBuyAssetSelection = (asset, index) => event => {
+    event.preventDefault()
+    console.log(`Buy Asset Selected Index: ${index}`)
+    this.setState({
+      buyAssetSelected: index
+    })
+  }
+
+  initialBuyAssetList() {
+    const selectedSellAsset = this.props.assets[0]
     var tempArray = []
     this.props.assets.map((asset, index) => {
-      if (asset.asset_code !== sellAsset.asset_code) {
+      if (asset.asset_code !== selectedSellAsset.asset_code) {
         tempArray.push(asset)
       }
     })
+
+    this.setState({ buyAssetList: tempArray })
+  }
+
+  updateBuyAssetList(index) {
+    const selectedSellAsset = this.props.assets[index]
+    const selectedBuyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
+    console.log(`Sell Asset Selected: ${JSON.stringify(selectedSellAsset)}`)
+    var tempArray = []
+    this.props.assets.map((asset, index) => {
+      if (asset.asset_code !== selectedSellAsset.asset_code) {
+        tempArray.push(asset)
+      }
+    })
+
+    const updatedBuyAssetIndex = selectedSellAsset.asset_code === selectedBuyAsset.asset_code ? 0 : this.state.buyAssetSelected
+
     this.setState({
-      buyAssetList: tempArray
+      buyAssetList: tempArray,
+      buyAssetSelected: updatedBuyAssetIndex
     })
   }
 
