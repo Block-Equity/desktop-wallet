@@ -5,3 +5,19 @@
   margin-top: 1rem;
   width: 100%;
 }
+
+.custom-button {
+  width: inherit !important;
+  height: 3rem;
+  boxShadow: none;
+  backgroundColor: #1942c9;
+}
+
+.custom-button:hover {
+  width: inherit;
+  height: 3rem;
+  boxShadow: none;
+  backgroundColor: #0026A2;
+}
+
+

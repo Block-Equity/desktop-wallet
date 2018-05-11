@@ -6,9 +6,7 @@ import {
   getStellarAssetsForDisplay,
   getBlockEQTokensForDisplay
 } from './selectors'
-import {
-  getStellarPaymentPagingToken
-} from '../payment/selectors'
+import { getStellarPaymentPagingToken } from '../payment/selectors'
 import {
   streamPayments,
   fetchPaymentOperationList,
@@ -24,7 +22,7 @@ import * as Types from './types'
 export const stellarAssetImageURL = 'https://firebasestorage.googleapis.com/v0/b/blockeq-wallet.appspot.com/o/icon-stellar.png?alt=media&token=38b70165-5255-4113-a15e-3c72bd4fab9f'
 
 export function initializeDB () {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     dispatch(accountInitializationRequest())
 
     try {

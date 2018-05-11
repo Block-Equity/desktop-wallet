@@ -11,8 +11,8 @@
   align-items: center;
   background-color: #F7F7F7;
   padding-top: 1.2rem;
-  padding-left: 3rem;
-  padding-right: 3rem;
+  padding-left: 1.75rem;
+  padding-right: 1.75rem;
   padding-bottom: 0.75rem;
   border-radius: 5px;
   border-style: solid;
@@ -23,7 +23,7 @@
 #receiveContainer a {
   color: #0153B6;
   margin-top: 0.75rem;
-  font-size: 0.75rem;
+  font-size: 0.6rem;
   letter-spacing: 0.02rem;
   font-style: italic;
 }
@@ -34,7 +34,7 @@
 }
 
 .addressLabelHeader {
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   font-weight: 700;
   color: #777777;
   text-align: center;
@@ -42,6 +42,6 @@
 }
 
 .addressLabel {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 400;
 }

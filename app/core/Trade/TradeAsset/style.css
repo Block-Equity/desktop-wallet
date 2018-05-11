@@ -1,0 +1,89 @@
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  width: 100%;
+}
+
+.assetContainer {
+  display: flex;
+  flex-direction: column;
+  height: 23rem;
+  margin-left: 3rem;
+  margin-right: 3rem;
+  margin-top: 3rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  background:  rgba(0, 0, 0, 0.02);
+}
+
+.assetContainerTitle {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  color:rgba(0, 0, 0, 0.5);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+}
+
+.tradeWidgetContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.assetWidgetContainer {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  width: 40%;
+}
+
+.widgetTitle {
+  margin-bottom: 0.5rem;
+  color:  rgba(0, 0, 0, 0.55);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.009rem;
+
+}
+
+.assetWidgetImageContainer {
+  display: flex;
+  flex-direction: column;
+  height: 55px;
+  width: 55px;
+  align-content: center;
+  align-items: center;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: white;
+  margin-bottom: 1rem;
+}
+
+.assetWidgetImage {
+  height: 50px;
+  width: 50px;
+  margin: 0.2rem;
+}
+
+.amountOptionContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  width: 16rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  margin-left: 1.95rem;
+}
+
+.amountOptionTitle {
+  color:  rgba(0, 0, 0, 0.65);
+  font-size: 0.68rem;
+}
+
+

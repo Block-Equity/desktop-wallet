@@ -24,7 +24,7 @@ export default class ActionButton extends Component {
       className: 'btn btn-primary',
       type: 'submit',
       id: 'load',
-      style: { width: 'inherit', height: '3rem' }
+      style: { width: 'inherit',  height: '3rem', boxShadow: 'none', fontWeight: '300' }
     }
 
     const buttonWithHandler = (
@@ -52,7 +52,7 @@ export default class ActionButton extends Component {
     return (
       <button className='btn btn-primary'
         type='submit'
-        style={{width: 'inherit', height: '3rem'}}
+        style={{width: 'inherit', height: '3rem', boxShadow: 'none', fontWeight: '300' }}
         id='load' disabled>
         <CircularProgress style={{ color: '#FFFFFF', marginRight: '0.75rem' }} thickness={ 5 } size={ 15 } />
         { this.props.title.processing }

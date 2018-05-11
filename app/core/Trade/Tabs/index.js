@@ -5,6 +5,7 @@ import { withStyles } from 'material-ui/styles'
 import Paper from 'material-ui/Paper'
 import Tabs, { Tab } from 'material-ui/Tabs'
 import Divider from 'material-ui/Divider'
+import { truncate } from 'fs';
 
 const font = "'Lato', sans-serif"
 
@@ -17,9 +18,9 @@ const materialStyles = theme => ({
 })
 
 const navigation = [
-  {title: 'History'},
-  {title: 'Send'},
-  {title: 'Receive'}
+  {title: 'Trade Asset'},
+  {title: 'Open Orders'},
+  {title: 'History'}
 ]
 
 class Navigation extends Component {
@@ -50,7 +51,7 @@ class Navigation extends Component {
           centered>
           { this.renderTabItems() }
         </Tabs>
-        <Divider style={{ background: '1px solid rgba(0, 0, 0, 0.06)' }}/>
+        <Divider light={true}/>
       </Paper>
     )
   }
@@ -62,7 +63,7 @@ class Navigation extends Component {
           <Tab key={ idBuilder }
               label={ item.title }
               disableRipple={true}
-              style={{ fontFamily: font, fontSize: '0.75rem', textTransform: 'none', color: '#1942c9', letterSpacing: '0.01rem', outline: 'none', marginLeft:'1.8rem', marginRight: '1.8rem', paddingLeft:'2.1rem', paddingRight:'2.1rem' }}/>
+              style={{ fontFamily: font, fontSize: '0.75rem', textTransform: 'none', color: '#1942c9', letterSpacing: '0.04rem', outline: 'none', marginLeft:'2rem', marginRight: '2rem', paddingLeft:'2rem', paddingRight:'2rem' }}/>
         )
     });
   }

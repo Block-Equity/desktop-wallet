@@ -24,11 +24,21 @@ const tableHeaderStyle = {
   fontWeight: '400'
 }
 
+const tableHeaderAmountStyle = {
+  ...tableHeaderStyle,
+  textAlign: 'right'
+}
+
 const tableRowStyle = {
   fontFamily: font,
   fontSize: '0.8rem',
   fontWeight: '400',
   color: '#111111'
+}
+
+const tableAmountRowStyle = {
+  ...tableRowStyle,
+  textAlign: 'right'
 }
 
 const TRANSACTION_TYPE = {
@@ -90,7 +100,7 @@ class History extends Component {
               <div style={{marginTop: '0.5rem', fontSize: '0.65rem'}}>{displayAddress}</div>
             </div>
           </TableCell>
-          <TableCell style={tableRowStyle}>{ displayAmount }</TableCell>
+          <TableCell style={tableAmountRowStyle}>{ displayAmount }</TableCell>
         </TableRow>
       )
     })
@@ -130,7 +140,7 @@ class History extends Component {
           <TableHead>
             <TableRow>
               <TableCell style={tableHeaderStyle}>Description</TableCell>
-              <TableCell style={tableHeaderStyle}>Amount</TableCell>
+              <TableCell style={tableHeaderAmountStyle}>Amount</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
