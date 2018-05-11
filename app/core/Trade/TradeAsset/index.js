@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import numeral from 'numeral'
 
 import { getStellarAssetsForDisplay } from '../../../common/account/selectors'
-import { getStellarCADPrice } from '../../../services/networking/coinmarketcap'
+import { getStellarMarketInfo } from '../../../common/market/selectors'
 
 import styles from './style.css'
 
@@ -11,6 +11,8 @@ import {
   InputGroup,
   InputGroupButtonDropdown,
   Input,
+  InputGroupText,
+  InputGroupAddon,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
@@ -32,11 +34,14 @@ class TradeAsset extends Component {
       sellAssetSelected: 0,
       sellAssetList: [],
       buyAssetSelected: 0,
-      buyAssetList: []
+      buyAssetList: [],
+      offerAssetAmount: '',
+      offerAssetFiatValue: ''
     }
 
     this.handleChange = this.handleChange.bind(this)
     this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
+    this.handleAmountSelection = this.handleAmountSelection.bind(this)
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
   }
@@ -54,7 +59,7 @@ class TradeAsset extends Component {
           </h5>
           <div className={styles.tradeWidgetContainer}>
             { this.renderSellAsset() }
-            <ArrowRight style={{marginLeft: '1.25rem', marginRight: '1.25rem', marginTop: '1.3rem', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 0.2)' }}/>
+            <ArrowRight style={{marginLeft: '1.25rem', marginRight: '1.25rem', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 0.2)' }}/>
             { this.renderBuyAsset() }
           </div>
           { this.renderBalanceAmountOptions() }
@@ -74,9 +79,11 @@ class TradeAsset extends Component {
     )
     return (
       <div className={ styles.assetWidgetContainer }>
-        <h6 className={ styles.widgetTitle }>SELL</h6>
         <InputGroup style={{ width: '100%'}}>
-          <Input name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none'}}/>
+          <InputGroupAddon addonType='prepend'>
+            <InputGroupText style={{fontSize: '0.75rem'}}>I have</InputGroupText>
+          </InputGroupAddon>
+          <Input name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType='append' isOpen={this.state.dropdownOfferAssetOpen} toggle={this.toggleOfferDropDown}>
             <DropdownToggle caret color='danger' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { selectedOfferAsset.asset_code }
@@ -95,9 +102,11 @@ class TradeAsset extends Component {
     const currentBuyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
     return (
       <div className={ styles.assetWidgetContainer }>
-        <h6 className={ styles.widgetTitle }>BUY</h6>
         <InputGroup style={{width: '100%'}}>
-        <Input name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none'}}/>
+        <InputGroupAddon addonType='prepend'>
+            <InputGroupText style={{fontSize: '0.75rem'}}>I want</InputGroupText>
+        </InputGroupAddon>
+        <Input name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownReceiveAssetOpen} toggle={this.toggleReceiveDropDown}>
             <DropdownToggle caret color='success' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { this.state.buyAssetList.length > 0 && currentBuyAsset.asset_code }
@@ -148,19 +157,28 @@ class TradeAsset extends Component {
 
   renderBalanceAmountOptions() {
     const { assets } = this.props
+    const { stellarMarketInfo } = this.props
     const selectedOfferAsset = assets[this.state.sellAssetSelected]
     const buttonStyle = { boxShadow: 'none', fontSize: '0.65rem' }
+    console.log(`CAD: ${stellarMarketInfo.quotes.CAD.price}`)
     return (
       <div className={ styles.amountOptionContainer }>
-        <h6 className={ styles.amountOptionTitle }>
-          Your total available {selectedOfferAsset.asset_code} balance is <b>{numeral(selectedOfferAsset.balance).format('0,0.00')}</b>
-        </h6>
+        {this.state.offerAssetAmount.length === 0 && <h6 className={ styles.amountOptionTitle }>
+          { numeral(selectedOfferAsset.balance).format('0,0.00')} {selectedOfferAsset.asset_code}
+          <i className="fa fa-circle" style={{color:'#A1A1A1', marginRight: '0.5rem', marginLeft: '0.5rem', marginTop: '-0.1rem', fontSize: '0.4rem'}}></i>
+          CAD ${numeral(selectedOfferAsset.balance*this.props.stellarMarketInfo.quotes.CAD.price).format('0,0.00')}
+        </h6>}
+
+        {this.state.offerAssetAmount.length > 0 && <h6 className={ styles.amountOptionTitle }>
+        CAD Value ${numeral(this.state.offerAssetAmount * stellarMarketInfo.quotes.CAD.price).format('0,0.00')}
+        </h6>}
+
         <ButtonGroup size='sm'>
-          <Button outline style={buttonStyle}>10%</Button>
-          <Button outline style={buttonStyle}>25%</Button>
-          <Button outline style={buttonStyle}>50%</Button>
-          <Button outline style={buttonStyle}>75%</Button>
-          <Button outline style={buttonStyle}>100%</Button>
+          <Button outline style={buttonStyle} onClick={ this.handleAmountSelection(0.10)}>10%</Button>
+          <Button outline style={buttonStyle} onClick={ this.handleAmountSelection(0.25)}>25%</Button>
+          <Button outline style={buttonStyle} onClick={ this.handleAmountSelection(0.50)}>50%</Button>
+          <Button outline style={buttonStyle} onClick={ this.handleAmountSelection(0.75)}>75%</Button>
+          <Button outline style={buttonStyle} onClick={ this.handleAmountSelection(1)}>100%</Button>
         </ButtonGroup>
       </div>
     )
@@ -177,7 +195,6 @@ class TradeAsset extends Component {
 
   handleSellAssetSelection = (asset, index) => event => {
     event.preventDefault()
-    console.log(`Sell Asset Selected Index: ${index}`)
     this.setState({
       sellAssetSelected: index
     })
@@ -186,9 +203,18 @@ class TradeAsset extends Component {
 
   handleBuyAssetSelection = (asset, index) => event => {
     event.preventDefault()
-    console.log(`Buy Asset Selected Index: ${index}`)
     this.setState({
       buyAssetSelected: index
+    })
+  }
+
+  handleAmountSelection = (percentage) => event => {
+    const { assets } = this.props
+    const selectedOfferAsset = assets[this.state.sellAssetSelected]
+    const value = numeral(percentage * selectedOfferAsset.balance).format('0,0.00')
+    console.log(`Stellar Balance: ${selectedOfferAsset.balance} || Percentage: ${percentage}`)
+    this.setState({
+      offerAssetAmount:value
     })
   }
 
@@ -205,9 +231,8 @@ class TradeAsset extends Component {
   }
 
   updateBuyAssetList(index) {
+    //Update Buy List
     const selectedSellAsset = this.props.assets[index]
-    const selectedBuyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    console.log(`Sell Asset Selected: ${JSON.stringify(selectedSellAsset)}`)
     var tempArray = []
     this.props.assets.map((asset, index) => {
       if (asset.asset_code !== selectedSellAsset.asset_code) {
@@ -215,8 +240,11 @@ class TradeAsset extends Component {
       }
     })
 
+    //Update buy asset selection
+    const selectedBuyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
     const updatedBuyAssetIndex = selectedSellAsset.asset_code === selectedBuyAsset.asset_code ? 0 : this.state.buyAssetSelected
 
+    //Set state with updated data
     this.setState({
       buyAssetList: tempArray,
       buyAssetSelected: updatedBuyAssetIndex
@@ -250,6 +278,7 @@ class TradeAsset extends Component {
 const mapStateToProps = (state) => {
   return {
     assets: getStellarAssetsForDisplay(state),
+    stellarMarketInfo: getStellarMarketInfo(state)
   }
 }
 
