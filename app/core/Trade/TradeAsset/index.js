@@ -159,29 +159,42 @@ class TradeAsset extends Component {
     const { assets } = this.props
     const { stellarMarketInfo } = this.props
     const selectedOfferAsset = assets[this.state.sellAssetSelected]
-    const buttonStyle = { boxShadow: 'none', fontSize: '0.65rem' }
-    console.log(`CAD: ${stellarMarketInfo.quotes.CAD.price}`)
+
+    const fiatConversionRate = selectedOfferAsset.asset_code === 'PTS' ? (0.00005*this.props.stellarMarketInfo.quotes.CAD.price) : this.props.stellarMarketInfo.quotes.CAD.price
+    const fiatValueDisplayBalance = numeral(selectedOfferAsset.balance*fiatConversionRate).format('0,0.00')
+    const fiatValueDisplayEnteredAmt = numeral(this.state.offerAssetAmount.replace(',','') * fiatConversionRate).format('0,0.00')
+
     return (
       <div className={ styles.amountOptionContainer }>
-        {this.state.offerAssetAmount.length === 0 && <h6 className={ styles.amountOptionTitle }>
-          { numeral(selectedOfferAsset.balance).format('0,0.00')} {selectedOfferAsset.asset_code}
-          <i className="fa fa-circle" style={{color:'#A1A1A1', marginRight: '0.5rem', marginLeft: '0.5rem', marginTop: '-0.1rem', fontSize: '0.4rem'}}></i>
-          CAD ${numeral(selectedOfferAsset.balance*this.props.stellarMarketInfo.quotes.CAD.price).format('0,0.00')}
-        </h6>}
+        {
+          this.state.offerAssetAmount.length === 0 && <h6 className={ styles.amountOptionTitle }>
+            { numeral(selectedOfferAsset.balance).format('0,0.00')} {selectedOfferAsset.asset_code}
+            <i className="fa fa-circle" style={{color:'#A1A1A1', marginRight: '0.5rem', marginLeft: '0.5rem', marginTop: '-0.1rem', fontSize: '0.4rem'}}></i>
+            CAD ${fiatValueDisplayBalance}
+          </h6>
+        }
 
-        {this.state.offerAssetAmount.length > 0 && <h6 className={ styles.amountOptionTitle }>
-        CAD Value ${numeral(this.state.offerAssetAmount * stellarMarketInfo.quotes.CAD.price).format('0,0.00')}
-        </h6>}
+        {
+          this.state.offerAssetAmount.length > 0 && <h6 className={ styles.amountOptionTitle }>
+            CAD Value ${fiatValueDisplayEnteredAmt}
+          </h6>
+        }
 
         <ButtonGroup size='sm'>
-          <Button outline style={buttonStyle} onClick={ this.handleAmountSelection(0.10)}>10%</Button>
-          <Button outline style={buttonStyle} onClick={ this.handleAmountSelection(0.25)}>25%</Button>
-          <Button outline style={buttonStyle} onClick={ this.handleAmountSelection(0.50)}>50%</Button>
-          <Button outline style={buttonStyle} onClick={ this.handleAmountSelection(0.75)}>75%</Button>
-          <Button outline style={buttonStyle} onClick={ this.handleAmountSelection(1)}>100%</Button>
+          { this.renderSegmentForPercentAmount() }
         </ButtonGroup>
       </div>
     )
+  }
+
+  renderSegmentForPercentAmount() {
+    const preDeterminedPercentageAmounts = [0.10, 0.25, 0.50, 0.75, 1]
+    const buttonStyle = { boxShadow: 'none', fontSize: '0.65rem' }
+    return preDeterminedPercentageAmounts.map((percent, index) => {
+      return (
+        <Button key={index} outline style={buttonStyle} onClick={ this.handleAmountSelection(percent)}>{`${percent*100}%`}</Button>
+      )
+    })
   }
 
   renderSubmitButton() {
