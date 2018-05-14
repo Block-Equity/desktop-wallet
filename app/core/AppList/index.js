@@ -22,10 +22,8 @@ class AppList extends Component {
   constructor (props) {
     super()
     this.state = ({
-      appSelected: 0,
-      settingsOpen: false,
+      appSelected: 0
     })
-    this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
   }
 
   render() {
@@ -34,7 +32,6 @@ class AppList extends Component {
         <ListGroup>
           { this.renderAppMenu() }
         </ListGroup>
-        <Settings setOpen={this.toggleSettingsDrawer(!this.state.settingsOpen)} open={this.state.settingsOpen}/>
       </div>
     )
   }
@@ -78,23 +75,7 @@ class AppList extends Component {
     this.setState({
       appSelected: index
     })
-    if (index === 2) {
-      this.openSettings()
-    } else {
-      this.props.setCurrentApp(index)
-    }
-  }
-
-  openSettings = () => {
-    this.setState({
-      settingsOpen: true
-    })
-  }
-
-  toggleSettingsDrawer = (open) => () => {
-    this.setState({
-      settingsOpen: open
-    })
+    this.props.setCurrentApp(index)
   }
 
 }

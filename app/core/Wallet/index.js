@@ -30,7 +30,6 @@ import History from './History'
 import Tabs from './Tabs'
 import Receive from './Receive'
 import Send from './Send'
-import Settings from '../Settings'
 import Alert from '../Shared/Alert'
 import * as alertTypes from '../Shared/Alert/types'
 
@@ -39,7 +38,6 @@ import get from 'lodash/get'
 import numeral from 'numeral'
 
 import walletIcon from './images/icnWallet.png'
-import settingIcon from './images/icnSettings.png'
 import logoIcon from '../Launch/logo-white.png'
 
 import styles from './style.css'
@@ -68,10 +66,8 @@ class Main extends Component {
       publicKey: '',
       paymentSending: false,
       paymentFailed: false,
-      userAccountDetailFailed: false,
-      settingsOpen: false
+      userAccountDetailFailed: false
     }
-    this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
   }
 
   async componentWillUpdate(nextProps) {
@@ -100,16 +96,9 @@ class Main extends Component {
             { this.renderContent() }
           </div>
           { this.renderSnackBar() }
-          <Settings setOpen={this.toggleSettingsDrawer(!this.state.settingsOpen)} open={this.state.settingsOpen}/>
         </div>
       </div>
     )
-  }
-
-  toggleSettingsDrawer = (open) => () => {
-    this.setState({
-      settingsOpen: open
-    })
   }
 
   //Tab Selection Callback from Tabs component

@@ -1,18 +1,18 @@
 .mainContainer {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-content: center;
   width: 100%;
 }
 
-.assetContainer {
-  display: flex;
-  flex-direction: column;
-  height: 20rem;
-  margin-left: 5rem;
-  margin-right: 5rem;
-  margin-top: 3rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  background:  rgba(0, 0, 0, 0.02);
+.drawerContainer {
+  width: 9.5rem;
+  height: 100vh;
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.drawerItemLabel {
+  font-size: 0.8rem;
+  font-weight: 300rem;
+  padding-top: 0.5rem;
 }
