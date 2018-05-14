@@ -4,8 +4,14 @@ import { connect } from 'react-redux'
 import styles from './style.css'
 import Tabs from './Tabs'
 import TradeAsset from './TradeAsset'
+import { ListGroup, ListGroupItem } from 'reactstrap'
 
-const navigation = { tradeAsset: 0, tradeHistory: 1 }
+const navigation = { tradeAsset: 0, openOrders: 1, tradeHistory: 2 }
+const navigationList = [
+  {title: 'Trade Asset'},
+  {title: 'Open Orders'},
+  {title: 'History'}
+]
 const INITIAL_NAVIGATION_INDEX = navigation.tradeAsset
 
 class Trade extends Component {
@@ -16,15 +22,46 @@ class Trade extends Component {
       dbInit: false,
       selectedMenuItem: INITIAL_NAVIGATION_INDEX
     }
+    this.selectedItem = this.selectedItem.bind(this)
   }
 
   render() {
+    // <Tabs selectedItem={this.selectedItem} setItem={this.state.selectedMenuItem}/>
     return (
       <div className={styles.mainContainer}>
-        <Tabs selectedItem={this.selectedItem} setItem={this.state.selectedMenuItem}/>
+        { this.renderFunctionDrawer() }
         { this.renderContent() }
       </div>
     )
+  }
+
+  renderFunctionDrawer() {
+    return (
+      <div
+        role='button'
+        className={ styles.drawerContainer }>
+          <ListGroup>
+            { this.renderTradeFunctions () }
+          </ListGroup>
+      </div>
+    )
+  }
+
+  renderTradeFunctions () {
+    const listItemStyleNormal = {outline: 'none', borderRadius: '0', borderColor: 'rgba(0, 0, 0, 0.06)', borderRight: '0', borderLeft: '0' }
+    const listItemStyleActive = { ...listItemStyleNormal, backgroundColor: '#FAFAFA', color: '#002EC4' }
+
+    return navigationList.map((item, index) => {
+      const isSelected = this.state.selectedMenuItem === index ? true : false
+      return (
+        <ListGroupItem selected={ isSelected }
+                  style = { isSelected ? listItemStyleActive : listItemStyleNormal }
+                  key={ index }
+                  onClick={() => this.selectedItem(index) }>
+                    <h6 className={ styles.drawerItemLabel }>{item.title}</h6>
+        </ListGroupItem>
+      )
+    })
   }
 
   renderContent() {
@@ -41,9 +78,9 @@ class Trade extends Component {
   }
 
    //Tab Selection Callback from Tabs component
-   selectedItem = (item) => {
+   selectedItem = (index) => {
     this.setState({
-      selectedMenuItem: item
+      selectedMenuItem: index
     })
   }
 
