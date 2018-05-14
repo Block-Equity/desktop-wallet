@@ -31,10 +31,8 @@ class AppView extends Component {
   constructor (props) {
     super()
     this.state = ({
-      dbInit: false,
-      settingsOpen: false
+      dbInit: false
     })
-    this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
   }
 
   async componentDidMount () {
@@ -60,7 +58,6 @@ class AppView extends Component {
           </div>
           { this.renderContent() }
         </div>
-        <Settings setOpen={this.toggleSettingsDrawer(!this.state.settingsOpen)} open={this.state.settingsOpen}/>
       </div>
     )
   }
@@ -103,6 +100,13 @@ class AppView extends Component {
           </div>
         )
       break;
+      case appItems.settings.id:
+        return (
+          <div style={{width: '100vw'}}>
+            <Settings />
+          </div>
+        )
+      break;
     }
   }
 
@@ -129,18 +133,6 @@ class AppView extends Component {
 
   refresh = () => {
     this.props.fetchAccountDetails()
-  }
-
-  openSettings = () => {
-    this.setState({
-      settingsOpen: true
-    })
-  }
-
-  toggleSettingsDrawer = (open) => () => {
-    this.setState({
-      settingsOpen: open
-    })
   }
 }
 

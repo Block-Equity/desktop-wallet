@@ -112,47 +112,19 @@ class Settings extends Component {
   constructor (props) {
     super()
     this.state = {
-      open: props.open,
       selectedItem: userSettingsOptions[0]
     }
-    this.toggleSettingsDrawer = this.toggleSettingsDrawer.bind(this)
     this.handleItemClick = this.handleItemClick.bind(this)
-  }
-
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.open !== this.props.open) {
-      this.setState ({
-        open: nextProps.open
-      })
-    }
   }
 
   render() {
     return (
-      <Dialog
-          fullScreen
-          open={this.state.open}
-          onClose={this.closeSettings}
-          transition={Transition}>
-          <div id={styles.mainContainer}>
-            <AppBar position='absolute' className={materialStyles.appBar} style={appBarStyle}>
-              <Toolbar style={{paddingTop: '2rem'}}>
-                <IconButton color="inherit" onClick={this.closeSettings} style={{outline: 'none'}} aria-label="Close">
-                  <CloseIcon />
-                </IconButton>
-                <div style={{width: '100%', alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
-                  <Typography variant="title" color="inherit" style={appBarTitleStyle}>
-                    SETTINGS
-                  </Typography>
-                </div>
-              </Toolbar>
-            </AppBar>
-            { this.renderSettingsDrawer() }
-            <div className={styles.contentContainer}>
-              { this.renderSettingsItemContent() }
-            </div>
-          </div>
-      </Dialog>
+      <div id={styles.mainContainer}>
+        { this.renderSettingsDrawer() }
+        <div className={styles.contentContainer}>
+          { this.renderSettingsItemContent() }
+        </div>
+      </div>
     )
   }
 
@@ -160,8 +132,7 @@ class Settings extends Component {
     return (
       <div
         role='button'
-        style={{width: '12rem', marginRight: '3rem'}}
-        onKeyDown={this.toggleSettingsDrawer(false)}>
+        style={{width: '12rem', marginRight: '3rem'}}>
           <MenuList>
             { this.renderUserSettings() }
           </MenuList>
@@ -198,40 +169,20 @@ class Settings extends Component {
     switch (this.state.selectedItem.id) {
       case 0:
         return (
-          <div style={{ width: '90%' }}>
-            <ResetPIN />
-          </div>
+          <ResetPIN />
         )
       break
       case 1:
         return (
-          <div style={{ width: '90%' }}>
-            <ViewMnemonic />
-          </div>
+          <ViewMnemonic />
         )
       break
       case 2:
         return (
-          <div style={{ width: '90%' }}>
-            <DeleteWallet />
-          </div>
+          <DeleteWallet />
         )
       break;
     }
-  }
-
-  toggleSettingsDrawer = (open) => () => {
-    this.setState({
-      open
-    })
-    this.props.setOpen(open)
-  }
-
-  closeSettings = () =>  {
-    this.setState({
-      open: false
-    })
-    this.props.setOpen(false)
   }
 
   handleItemClick (selectedItem) {
