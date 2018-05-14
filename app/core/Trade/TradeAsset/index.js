@@ -59,7 +59,13 @@ class TradeAsset extends Component {
           </h5>
           <div className={styles.tradeWidgetContainer}>
             { this.renderSellAsset() }
-            <ArrowRight style={{marginLeft: '1.25rem', marginRight: '1.25rem', fontSize: '1.2rem', color: 'rgba(0, 0, 0, 0.2)' }}/>
+            <ArrowRight
+              style={{
+                marginLeft: '1rem',
+                marginRight: '1rem',
+                fontSize: '1rem',
+                color: 'rgba(0, 0, 0, 0.2)'
+              }}/>
             { this.renderBuyAsset() }
           </div>
           { this.renderBalanceAmountOptions() }
@@ -200,7 +206,7 @@ class TradeAsset extends Component {
   renderSubmitButton() {
     const btnTitle = { default: 'Submit Trade', processing: 'Submitting Trade'}
     return (
-      <div style={{marginRight: '2rem', marginLeft: '2rem', marginTop: '2rem'}}>
+      <div className={ styles.submitButtonContainer }>
         <ActionButton processing={ false } title={ btnTitle } actionClicked={ this.handleWriteMnemonicSubmit }/>
       </div>
     )

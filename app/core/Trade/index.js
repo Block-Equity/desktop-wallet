@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import styles from './style.css'
-import Tabs from './Tabs'
 import TradeAsset from './TradeAsset'
 import { ListGroup, ListGroupItem } from 'reactstrap'
 
@@ -26,7 +25,6 @@ class Trade extends Component {
   }
 
   render() {
-    // <Tabs selectedItem={this.selectedItem} setItem={this.state.selectedMenuItem}/>
     return (
       <div className={styles.mainContainer}>
         { this.renderFunctionDrawer() }
@@ -71,13 +69,15 @@ class Trade extends Component {
           <TradeAsset />
         )
       break;
+      case navigation.openOrders:
+
+      break;
       case navigation.tradeHistory:
 
       break;
     }
   }
 
-   //Tab Selection Callback from Tabs component
    selectedItem = (index) => {
     this.setState({
       selectedMenuItem: index
