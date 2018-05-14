@@ -61,9 +61,9 @@ class TradeAsset extends Component {
             { this.renderSellAsset() }
             <ArrowRight
               style={{
-                marginLeft: '1rem',
-                marginRight: '1rem',
-                fontSize: '1rem',
+                marginLeft: '0.75rem',
+                marginRight: '0.75rem',
+                fontSize: '0.85rem',
                 color: 'rgba(0, 0, 0, 0.2)'
               }}/>
             { this.renderBuyAsset() }

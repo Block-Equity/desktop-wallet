@@ -65,9 +65,7 @@ class Trade extends Component {
   renderContent() {
     switch (this.state.selectedMenuItem) {
       case navigation.tradeAsset:
-        return (
-          <TradeAsset />
-        )
+        return ( <TradeAsset /> )
       break;
       case navigation.openOrders:
 
