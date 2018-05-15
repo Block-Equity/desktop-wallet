@@ -24,6 +24,8 @@ import {
 import ArrowRight from 'material-ui-icons/ArrowForward'
 import ActionButton from '../../Shared/ActionButton'
 
+import AddAsset from '../../Shared/AddAsset'
+
 class TradeAsset extends Component {
 
   constructor (props) {
@@ -36,7 +38,8 @@ class TradeAsset extends Component {
       buyAssetSelected: 0,
       buyAssetList: [],
       offerAssetAmount: '',
-      offerAssetFiatValue: ''
+      offerAssetFiatValue: '',
+      showAddAssetModal: false
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -44,6 +47,7 @@ class TradeAsset extends Component {
     this.handleAmountSelection = this.handleAmountSelection.bind(this)
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
+    this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
   }
 
   componentDidMount() {
@@ -71,6 +75,9 @@ class TradeAsset extends Component {
           { this.renderBalanceAmountOptions() }
           { this.renderSubmitButton() }
         </div>
+        <AddAsset showModal={ this.state.showAddAssetModal }
+                  addAssetSuccessful={ this.handleAddAssetSubmission }
+                  toggle={ this.toggleAddAssetModal } />
       </div>
     )
   }
@@ -157,7 +164,12 @@ class TradeAsset extends Component {
 
   renderAddAssetOption() {
     return (
-      <DropdownItem style={{fontSize: '0.85rem'}}><i className='fa fa-plus-circle' style={{marginRight: '0.45rem', color: 'rgb(0, 0, 0, 0.25)'}}></i>Add Asset</DropdownItem>
+      <DropdownItem
+        style={{fontSize: '0.85rem'}}
+        onClick={ this.toggleAddAssetModal }>
+        <i className='fa fa-plus-circle' style={{marginRight: '0.45rem', color: 'rgb(0, 0, 0, 0.25)'}}></i>
+          Add Asset
+      </DropdownItem>
     )
   }
 
@@ -290,6 +302,19 @@ class TradeAsset extends Component {
     this.setState({
       [name]: value
     })
+  }
+
+  toggleAddAssetModal (event) {
+    this.setState({
+      showAddAssetModal: !this.state.showAddAssetModal
+    })
+  }
+
+  handleAddAssetSubmission (success) {
+    if (success) {
+      this.toggleAddAssetModal()
+      //this.props.receiveSendPaymentInfo(this.state.info)
+    }
   }
 
 }

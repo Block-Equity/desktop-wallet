@@ -5,13 +5,15 @@ import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
 import ActionButton from '../ActionButton'
-import { getUserPIN } from '../../../db'
 
 import {
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
+  Form,
+  FormGroup,
+  Label,
   Input
 }
 from 'reactstrap'
@@ -25,31 +27,43 @@ class AddAsset extends Component {
       processing: false
     }
 
-    //this.toggleModal = this.toggleModal.bind(this)
-    //this.handleSubmit = this.handleSubmit.bind(this)
-    //this.handleChange = this.handleChange.bind(this)
+    this.toggleModal = this.toggleModal.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleChange = this.handleChange.bind(this)
   }
 
   render () {
     const btnTitle = {
-      default: 'Add asset',
+      default: 'Add Asset',
       processing: 'Adding asset...'
     }
 
     return (
-      <Modal isOpen={this.props.showPINModal} className={this.props.className} centered={true}>
-        <ModalHeader style={{boxShadow: 'none'}} toggle={this.togglePINModal}>{header}</ModalHeader>
+      <Modal isOpen={this.props.showModal} className={this.props.className} centered={true}>
+        <ModalHeader style={{boxShadow: 'none'}} toggle={this.toggleModal}>Add Asset</ModalHeader>
         <ModalBody>
-          <Input type='password' name='pinValue' id='pinValue'
-            value={this.state.pinValue} onChange={this.handleChange}
-            placeholder='Enter PIN' style={{boxShadow: 'none'}} required />
+          <Form onSubmit={ this.handleSubmit }>
+            <FormGroup>
+              <Label className={styles.formLabel} htmlFor='assetCode'>Asset Code </Label>
+              <Input type='text' name='assetCode' id='assetCode'
+                  value={this.state.issuerAddress} onChange={this.handleChange}
+                  placeholder='Enter asset code' style={{boxShadow: 'none'}} required />
+            </FormGroup>
+            <FormGroup>
+              <Label className={styles.formLabel} htmlFor='issuerAddress'>Issuer Address </Label>
+              <Input type='text' name='issuerAddress' id='issuerAddress'
+                  value={this.state.issuerAddress} onChange={this.handleChange}
+                  placeholder='Enter issuer address' style={{boxShadow: 'none'}} required />
+            </FormGroup>
+            {' '}
+          </Form>
         </ModalBody>
         <ModalFooter>
           <ActionButton
             processing={ this.state.retrieve }
             title={ btnTitle }
             isForm={ false }
-            actionClicked={ this.handlePINSubmit }
+            actionClicked={ this.handleSubmit }
           />
         </ModalFooter>
       </Modal>
@@ -69,8 +83,8 @@ class AddAsset extends Component {
     })
   }
 
-  handlePINSubmit () {
-    if (this.state.pinValue.length !== 0) {
+  handleSubmit (event) {
+    if (this.state.assetCode.length !== 0) {
       this.setState({
         processing: true
       })

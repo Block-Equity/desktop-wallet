@@ -1,0 +1,32 @@
+#formContainer {
+  padding-bottom: 2rem;
+  margin-top: 0.5rem;
+}
+
+#formContainer h6 {
+  margin-bottom: 1.5rem;
+  line-height: 1.5rem;
+  font-size: 1.15rem;
+  letter-spacing: 0.015rem;
+}
+
+#formContainer input:focus {
+  box-shadow: none;
+}
+
+#formContainer input::placeholder {
+  color: #C7C7C7;
+  font-size: 0.85rem;
+}
+
+#formContainer
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.formLabel {
+  color: #777777;
+  font-size: 0.8rem;
+}
