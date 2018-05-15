@@ -46,7 +46,7 @@ class AddAsset extends Component {
             <FormGroup>
               <Label className={styles.formLabel} htmlFor='assetCode'>Asset Code </Label>
               <Input type='text' name='assetCode' id='assetCode'
-                  value={this.state.issuerAddress} onChange={this.handleChange}
+                  value={this.state.assetCode} onChange={this.handleChange}
                   placeholder='Enter asset code' style={{boxShadow: 'none'}} required />
             </FormGroup>
             <FormGroup>
@@ -60,7 +60,7 @@ class AddAsset extends Component {
         </ModalBody>
         <ModalFooter>
           <ActionButton
-            processing={ this.state.retrieve }
+            processing={ this.state.processing }
             title={ btnTitle }
             isForm={ false }
             actionClicked={ this.handleSubmit }
@@ -84,12 +84,15 @@ class AddAsset extends Component {
   }
 
   handleSubmit (event) {
-    if (this.state.assetCode.length !== 0) {
+    this.setState({
+      processing: true
+    })
+    this.timer = setTimeout( async () => {
+      await this.addAsset()
       this.setState({
-        processing: true
+        processing: false
       })
-      this.addAsset()
-    }
+    }, 2500)
   }
 
   addAsset () {
