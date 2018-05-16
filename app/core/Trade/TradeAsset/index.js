@@ -57,27 +57,55 @@ class TradeAsset extends Component {
   render() {
     return (
       <div className={styles.mainContainer}>
-        <div className={styles.assetContainer}>
-          <h5 className={styles.assetContainerTitle}>
-            Choose which assets to trade
-          </h5>
-          <div className={styles.tradeWidgetContainer}>
-            { this.renderSellAsset() }
-            <ArrowRight
-              style={{
-                marginLeft: '0.75rem',
-                marginRight: '0.75rem',
-                fontSize: '0.85rem',
-                color: 'rgba(0, 0, 0, 0.2)'
-              }}/>
-            { this.renderBuyAsset() }
-          </div>
-          { this.renderBalanceAmountOptions() }
-          { this.renderSubmitButton() }
+        { this.renderRateInfo() }
+        { this.renderBalanceInfo() }
+        <div className={styles.tradeWidgetContainer}>
+          { this.renderSellAsset() }
+          <ArrowRight
+            style={{
+              marginLeft: '0.75rem',
+              marginRight: '0.75rem',
+              fontSize: '0.85rem',
+              color: 'rgba(0, 0, 0, 0.2)'
+            }}/>
+          { this.renderBuyAsset() }
         </div>
+        { this.renderBalanceAmountOptions() }
+        { this.renderSubmitButton() }
         <AddAsset showModal={ this.state.showAddAssetModal }
                   addAssetSuccessful={ this.handleAddAssetSubmission }
                   toggle={ this.toggleAddAssetModal } />
+      </div>
+    )
+  }
+
+  renderRateInfo () {
+    return (
+      <div className={ styles.tradeRateContainer }>
+        Exchange Rate
+        <b>1 XLM  =  0.5 MOBI</b>
+      </div>
+    )
+  }
+
+  renderBalanceInfo () {
+    const divider = ( <div className={ styles.balanceInfoComponentDivider }/> )
+    return (
+      <div className={ styles.balanceInfoContainer }>
+        <div className={ styles.balanceInfoComponentContainer }>
+          Available Balance
+          <b>18.61 XLM</b>
+        </div>
+        { divider }
+        <div className={ styles.balanceInfoComponentContainer }>
+          Minimum Balance
+          <b>3 XLM</b>
+        </div>
+        { divider }
+        <div className={ styles.balanceInfoComponentContainer }>
+          Fee
+          <b>0.00001 XLM</b>
+        </div>
       </div>
     )
   }
@@ -93,12 +121,9 @@ class TradeAsset extends Component {
     return (
       <div className={ styles.assetWidgetContainer }>
         <InputGroup style={{ width: '100%'}}>
-          <InputGroupAddon addonType='prepend'>
-            <InputGroupText style={{fontSize: '0.75rem'}}>I have</InputGroupText>
-          </InputGroupAddon>
           <Input name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType='append' isOpen={this.state.dropdownOfferAssetOpen} toggle={this.toggleOfferDropDown}>
-            <DropdownToggle caret color='danger' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
+            <DropdownToggle caret color='secondary' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { selectedOfferAsset.asset_code }
             </DropdownToggle>
             <DropdownMenu>
@@ -116,12 +141,9 @@ class TradeAsset extends Component {
     return (
       <div className={ styles.assetWidgetContainer }>
         <InputGroup style={{width: '100%'}}>
-        <InputGroupAddon addonType='prepend'>
-            <InputGroupText style={{fontSize: '0.75rem'}}>I want</InputGroupText>
-        </InputGroupAddon>
         <Input name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownReceiveAssetOpen} toggle={this.toggleReceiveDropDown}>
-            <DropdownToggle caret color='success' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
+            <DropdownToggle caret color='secondary' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { this.state.buyAssetList.length > 0 && currentBuyAsset.asset_code }
             </DropdownToggle>
             <DropdownMenu>

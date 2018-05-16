@@ -55,7 +55,7 @@ class Trade extends Component {
         <ListGroupItem selected={ isSelected }
                   style = { isSelected ? listItemStyleActive : listItemStyleNormal }
                   key={ index }
-                  onClick={() => this.selectedItem(index) }>
+                  onClick={() => this.selectedItem(index) } action>
                     <h6 className={ styles.drawerItemLabel }>{item.title}</h6>
         </ListGroupItem>
       )

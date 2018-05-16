@@ -2,22 +2,55 @@
   display: flex;
   flex-direction: column;
   align-content: center;
+  height: 100%;
+  width: 80%;
 }
 
-.assetContainer {
+.tradeRateContainer {
   display: flex;
   flex-direction: column;
-  height: 23rem;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.8);
+  background-color:  #E8F4FC;
+  font-size: 0.8rem;
+  font-weight: 300;
+  padding: 0.75rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  margin-top: 1.5rem;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+
 }
 
-.assetContainerTitle {
-  margin-top: 1.5rem;
-  margin-bottom: 2.5rem;
-  color:rgba(0, 0, 0, 0.5);
-  font-size: 1.25rem;
-  font-weight: 700;
-  text-align: center;
-  width: 100%;
+.balanceInfoContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  color: rgba(0, 0, 0, 0.8);
+  background-color:  rgba(0, 0, 0, 0.02);
+  padding: 0.75rem;
+  margin-bottom: 3rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  font-size: 0.8rem;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.balanceInfoComponentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.balanceInfoComponentDivider {
+  width: 0.05rem;
+  background-color: rgba(0, 0, 0, 0.09);
+  margin-left: 3rem;
+  margin-right: 3rem;
 }
 
 .tradeWidgetContainer {
@@ -42,7 +75,6 @@
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.009rem;
-
 }
 
 .assetWidgetImageContainer {
