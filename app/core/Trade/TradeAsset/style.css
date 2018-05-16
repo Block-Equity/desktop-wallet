@@ -3,7 +3,7 @@
   flex-direction: column;
   align-content: center;
   height: 100%;
-  width: 80%;
+  width: 77%;
 }
 
 .tradeRateContainer {
@@ -15,8 +15,8 @@
   font-size: 0.8rem;
   font-weight: 300;
   padding: 0.75rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
   margin-top: 1.5rem;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
@@ -32,9 +32,10 @@
   background-color:  rgba(0, 0, 0, 0.02);
   padding: 0.75rem;
   margin-bottom: 3rem;
-  margin-left: 1rem;
-  margin-right: 1rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
   font-size: 0.8rem;
+  font-weight: 300;
   border: 1px solid rgba(0, 0, 0, 0.07);
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -47,10 +48,10 @@
 }
 
 .balanceInfoComponentDivider {
-  width: 0.05rem;
+  width: 0.075rem;
   background-color: rgba(0, 0, 0, 0.09);
-  margin-left: 3rem;
-  margin-right: 3rem;
+  margin-left: 2.5rem;
+  margin-right: 2.5rem;
 }
 
 .tradeWidgetContainer {

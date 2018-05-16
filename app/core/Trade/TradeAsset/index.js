@@ -50,7 +50,8 @@ class TradeAsset extends Component {
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
   }
 
-  componentDidMount() {
+  async componentDidMount() {
+    await this.initialSellAssetList()
     this.initialBuyAssetList()
   }
 
@@ -83,7 +84,7 @@ class TradeAsset extends Component {
     return (
       <div className={ styles.tradeRateContainer }>
         Exchange Rate
-        <b>1 XLM  =  0.5 MOBI</b>
+        <b>1 XLM  =  0.00005 PTS</b>
       </div>
     )
   }
@@ -111,24 +112,24 @@ class TradeAsset extends Component {
   }
 
   renderSellAsset() {
-    const { assets } = this.props
-    const selectedOfferAsset = assets[this.state.sellAssetSelected]
-    const image = (
+    const { sellAssetList } = this.state
+    const selectedOfferAsset = sellAssetList[this.state.sellAssetSelected]
+    /*const image = (
       <div className={ styles.assetWidgetImageContainer }>
         <img alt='' src={ selectedOfferAsset.asset_image } className={ styles.assetWidgetImage }/>
       </div>
-    )
+    )*/
     return (
       <div className={ styles.assetWidgetContainer }>
         <InputGroup style={{ width: '100%'}}>
           <Input name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType='append' isOpen={this.state.dropdownOfferAssetOpen} toggle={this.toggleOfferDropDown}>
             <DropdownToggle caret color='secondary' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
-              { selectedOfferAsset.asset_code }
+              { this.state.sellAssetList.length > 0 &&  selectedOfferAsset.asset_code }
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem header>Select Asset</DropdownItem>
-              { this.renderSellAssetList() }
+              { this.state.sellAssetList.length > 0 && this.renderSellAssetList() }
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
@@ -159,7 +160,7 @@ class TradeAsset extends Component {
   }
 
   renderSellAssetList() {
-    return this.props.assets.map((asset, index) => {
+    return this.state.sellAssetList.map((asset, index) => {
       return (
         <DropdownItem
           key = { index }
@@ -210,13 +211,13 @@ class TradeAsset extends Component {
           this.state.offerAssetAmount.length === 0 && <h6 className={ styles.amountOptionTitle }>
             { numeral(selectedOfferAsset.balance).format('0,0.00')} {selectedOfferAsset.asset_code}
             <i className="fa fa-circle" style={{color:'#A1A1A1', marginRight: '0.5rem', marginLeft: '0.5rem', marginTop: '-0.1rem', fontSize: '0.4rem'}}></i>
-            CAD ${fiatValueDisplayBalance}
+            Approx. CAD ${fiatValueDisplayBalance}
           </h6>
         }
 
         {
           this.state.offerAssetAmount.length > 0 && <h6 className={ styles.amountOptionTitle }>
-            CAD Value ${fiatValueDisplayEnteredAmt}
+            Approx. CAD ${fiatValueDisplayEnteredAmt}
           </h6>
         }
 
@@ -271,10 +272,24 @@ class TradeAsset extends Component {
     })
   }
 
-  initialBuyAssetList() {
+  initialSellAssetList() {
     const selectedSellAsset = this.props.assets[0]
     var tempArray = []
     this.props.assets.map((asset, index) => {
+      if (asset.asset_code !== 'CAD') {
+        tempArray.push(asset)
+      }
+    })
+
+    this.setState({
+      sellAssetList: tempArray
+    })
+  }
+
+  initialBuyAssetList() {
+    const selectedSellAsset = this.state.sellAssetList[0]
+    var tempArray = []
+    this.state.sellAssetList.map((asset, index) => {
       if (asset.asset_code !== selectedSellAsset.asset_code) {
         tempArray.push(asset)
       }
@@ -285,9 +300,9 @@ class TradeAsset extends Component {
 
   updateBuyAssetList(index) {
     //Update Buy List
-    const selectedSellAsset = this.props.assets[index]
+    const selectedSellAsset = this.state.sellAssetList[index]
     var tempArray = []
-    this.props.assets.map((asset, index) => {
+    this.state.sellAssetList.map((asset, index) => {
       if (asset.asset_code !== selectedSellAsset.asset_code) {
         tempArray.push(asset)
       }
