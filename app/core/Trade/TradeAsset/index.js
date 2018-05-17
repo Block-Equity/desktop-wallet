@@ -41,7 +41,10 @@ class TradeAsset extends Component {
       buyAssetList: [],
       offerAssetAmount: '',
       offerAssetFiatValue: '',
-      showAddAssetModal: false
+      showAddAssetModal: false,
+      validDisplayPrice: true,
+      displayPrice: '',
+      displayAmount: ''
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -61,14 +64,22 @@ class TradeAsset extends Component {
   async getOrderBook() {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    this.props.fetchStellarOrderBook(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer)
+    await this.props.fetchStellarOrderBook(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer)
+    const { bids } = await this.props.stellarOrderBook
+    const displayPrice = bids.length === 0 ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${bids[0].price} ${buyAsset.asset_code}`
+    const displayAmount = bids.length === 0 ? 'No assets available' : `${bids[0].amount} ${buyAsset.asset_code}`
+    this.setState({
+      validDisplayPrice: bids.length !== 0,
+      displayPrice,
+      displayAmount
+    })
   }
 
   render() {
+    //        { this.renderBalanceInfo() }
     return (
       <div className={styles.mainContainer}>
         { this.props.stellarOrderBook && this.state.sellAssetList.length > 0 && this.state.buyAssetList.length > 0 && this.renderRateInfo() }
-        { this.renderBalanceInfo() }
         <div className={styles.tradeWidgetContainer}>
           { this.renderSellAsset() }
           <ArrowRight
@@ -90,14 +101,31 @@ class TradeAsset extends Component {
   }
 
   renderRateInfo () {
-    const { bids } = this.props.stellarOrderBook
-    const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
-    const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    const displayPrice = bids.length === 0 ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${bids[0].price} ${buyAsset.asset_code}`
+    const divider = ( <div className={ styles.balanceInfoComponentDivider }/> )
+    const orderBookLabel = this.state.validDisplayPrice ? 'View order book' : 'Order book not available'
     return (
-      <div className={ styles.tradeRateContainer }>
-        <label className={ styles.tradeRateContainerTitle }>Exchange Rate</label>
-        <label className={ styles.tradeRateContainerContent }>{displayPrice}</label>
+      <div style={{display: 'flex', flexDirection: 'column'}}>
+        <div className={ styles.marketInfoContainer }>
+          <div className={ styles.marketInfoContentContainer }>
+            <label className={ styles.tradeRateContainerTitle }>Exchange Rate</label>
+            <label className={ styles.tradeRateContainerContent }>
+              { this.state.displayPrice }
+            </label>
+          </div>
+          { this.state.validDisplayPrice &&
+              <div style={{ marginLeft: '3rem'}}>
+                <div className={ styles.marketInfoContentContainer }>
+                  <label className={ styles.tradeRateContainerTitle }>Available Amount</label>
+                  <label className={ styles.tradeRateContainerContent }>
+                    { this.state.displayAmount }
+                  </label>
+                </div>
+              </div>
+          }
+        </div>
+        <div className={ styles.orderBookContainer }>
+          <a>{orderBookLabel}</a>
+        </div>
       </div>
     )
   }
