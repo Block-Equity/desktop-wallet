@@ -209,3 +209,23 @@ export const joinInflationDestination = ( sk, pk ) => {
     })
   })
 }
+
+export const getOrderBook = (sellingAsset, buyingAsset, sk, pk) => {
+  let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
+  //var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
+  const stellarAsset = new StellarSdk.Asset.native()
+  return new Promise((resolve, reject) => {
+    server.orderbook(stellarAsset, new StellarSdk.Asset('PTS', 'GBPG7KRYC3PTKHBXQGRD3GMZ5DB4C3D553ZN2ZLH57LBAQIULVY46Z5F'))
+    .call()
+    .then(response => {
+        console.log(response)
+        resolve({ payload: response, error: false })
+      }
+    )
+    .catch(err => {
+        console.log(err)
+        reject({ errorMessage: err, error: true })
+      }
+    )
+  })
+}

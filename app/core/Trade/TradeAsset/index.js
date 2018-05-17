@@ -84,7 +84,7 @@ class TradeAsset extends Component {
     return (
       <div className={ styles.tradeRateContainer }>
         Exchange Rate
-        <b>1 XLM  =  0.00005 PTS</b>
+        <b>1 XLM  =  10,000 PTS</b>
       </div>
     )
   }
