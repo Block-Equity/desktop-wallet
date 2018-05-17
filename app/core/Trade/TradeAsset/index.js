@@ -20,7 +20,9 @@ import {
   DropdownMenu,
   DropdownItem,
   Button,
-  ButtonGroup
+  ButtonGroup,
+  Collapse,
+  Table
 } from 'reactstrap';
 
 import ArrowRight from 'material-ui-icons/ArrowForward'
@@ -44,7 +46,8 @@ class TradeAsset extends Component {
       showAddAssetModal: false,
       validDisplayPrice: true,
       displayPrice: '',
-      displayAmount: ''
+      displayAmount: '',
+      orderBookOpened: false
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -53,6 +56,8 @@ class TradeAsset extends Component {
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
+    this.toggleOrderBook = this.toggleOrderBook.bind(this);
+
   }
 
   async componentDidMount() {
@@ -76,7 +81,6 @@ class TradeAsset extends Component {
   }
 
   render() {
-    //        { this.renderBalanceInfo() }
     return (
       <div className={styles.mainContainer}>
         { this.props.stellarOrderBook && this.state.sellAssetList.length > 0 && this.state.buyAssetList.length > 0 && this.renderRateInfo() }
@@ -102,7 +106,7 @@ class TradeAsset extends Component {
 
   renderRateInfo () {
     const divider = ( <div className={ styles.balanceInfoComponentDivider }/> )
-    const orderBookLabel = this.state.validDisplayPrice ? 'View order book' : 'Order book not available'
+    const orderBookLabel = this.state.validDisplayPrice ? ( this.state.orderBookOpened ? 'Close order book' : 'View order book') : 'Order book not available'
     return (
       <div style={{display: 'flex', flexDirection: 'column'}}>
         <div className={ styles.marketInfoContainer }>
@@ -113,7 +117,7 @@ class TradeAsset extends Component {
             </label>
           </div>
           { this.state.validDisplayPrice &&
-              <div style={{ marginLeft: '3rem'}}>
+              <div style={{ marginLeft: '3rem', height: '100%'}}>
                 <div className={ styles.marketInfoContentContainer }>
                   <label className={ styles.tradeRateContainerTitle }>Available Amount</label>
                   <label className={ styles.tradeRateContainerContent }>
@@ -123,10 +127,79 @@ class TradeAsset extends Component {
               </div>
           }
         </div>
-        <div className={ styles.orderBookContainer }>
-          <a>{orderBookLabel}</a>
+        <div id={ styles.orderBookContainer }>
+          <a onClick={this.toggleOrderBook}>{orderBookLabel}</a>
+          { this.state.validDisplayPrice && this.renderOrderBook() }
         </div>
       </div>
+    )
+  }
+
+  renderOrderBook () {
+
+    const orderBookHeaders = (
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Username</th>
+        </tr>
+    </thead>
+    )
+
+    const sellOrderBook = (
+      <Table size="sm" bordered style={{width: '47.5%', marginRight: '0.5rem'}}>
+        { orderBookHeaders }
+        <tbody>
+          <tr>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+          </tr>
+          <tr>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td>@fat</td>
+          </tr>
+          <tr>
+            <td>Larry</td>
+            <td>the Bird</td>
+            <td>@twitter</td>
+          </tr>
+        </tbody>
+      </Table>
+    )
+
+    const buyOrderBook = (
+      <Table size="sm" bordered style={{width: '47.5%'}}>
+        { orderBookHeaders }
+        <tbody>
+          <tr>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+          </tr>
+          <tr>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td>@fat</td>
+          </tr>
+          <tr>
+            <td>Larry</td>
+            <td>the Bird</td>
+            <td>@twitter</td>
+          </tr>
+        </tbody>
+      </Table>
+    )
+
+    return (
+      <Collapse isOpen={this.state.orderBookOpened} style={{width: '95%'}}>
+        <div className={ styles.orderBookTableContainer }>
+          { sellOrderBook }
+          { buyOrderBook }
+        </div>
+      </Collapse>
     )
   }
 
@@ -155,11 +228,6 @@ class TradeAsset extends Component {
   renderSellAsset() {
     const { sellAssetList } = this.state
     const selectedOfferAsset = sellAssetList[this.state.sellAssetSelected]
-    /*const image = (
-      <div className={ styles.assetWidgetImageContainer }>
-        <img alt='' src={ selectedOfferAsset.asset_image } className={ styles.assetWidgetImage }/>
-      </div>
-    )*/
     return (
       <div className={ styles.assetWidgetContainer }>
         <InputGroup style={{ width: '100%'}}>
@@ -388,6 +456,10 @@ class TradeAsset extends Component {
     this.setState({
       showAddAssetModal: !this.state.showAddAssetModal
     })
+  }
+
+  toggleOrderBook() {
+    this.setState({ orderBookOpened: !this.state.orderBookOpened });
   }
 
   handleAddAssetSubmission (success) {

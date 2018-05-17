@@ -45,13 +45,13 @@
   color: rgba(0, 0, 0, 0.9);
 }
 
-.orderBookContainer {
+#orderBookContainer {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   color: rgba(0, 0, 0, 0.5);
   background-color:  rgba(0, 0, 0, 0.02);
-  padding: 0.75rem;
+  padding-top: 0.75rem;
   margin-bottom: 3rem;
   margin-left: 2rem;
   margin-right: 2rem;
@@ -60,6 +60,22 @@
   border: 1px solid rgba(0, 0, 0, 0.07);
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
+}
+
+#orderBookContainer a {
+  margin-bottom: 1rem;
+}
+
+#orderBookContainer a:hover {
+  text-decoration: underline;
+}
+
+.orderBookTableContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-size: 0.7rem;
+  width: 100%;
 }
 
 .balanceInfoComponentContainer {
