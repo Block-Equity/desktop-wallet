@@ -4,6 +4,8 @@ import numeral from 'numeral'
 
 import { getStellarAssetsForDisplay } from '../../../common/account/selectors'
 import { getStellarMarketInfo } from '../../../common/market/selectors'
+import { fetchStellarOrderBook } from '../../../common/trade/actions'
+import { getStellarOrderBook } from '../../../common/trade/selectors'
 
 import styles from './style.css'
 
@@ -52,13 +54,20 @@ class TradeAsset extends Component {
 
   async componentDidMount() {
     await this.initialSellAssetList()
-    this.initialBuyAssetList()
+    await this.initialBuyAssetList()
+    await this.getOrderBook()
+  }
+
+  async getOrderBook() {
+    const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
+    const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
+    this.props.fetchStellarOrderBook(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer)
   }
 
   render() {
     return (
       <div className={styles.mainContainer}>
-        { this.renderRateInfo() }
+        { this.props.stellarOrderBook && this.state.sellAssetList.length > 0 && this.state.buyAssetList.length > 0 && this.renderRateInfo() }
         { this.renderBalanceInfo() }
         <div className={styles.tradeWidgetContainer}>
           { this.renderSellAsset() }
@@ -81,10 +90,14 @@ class TradeAsset extends Component {
   }
 
   renderRateInfo () {
+    const { bids } = this.props.stellarOrderBook
+    const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
+    const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
+    const displayPrice = bids.length === 0 ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${bids[0].price} ${buyAsset.asset_code}`
     return (
       <div className={ styles.tradeRateContainer }>
-        Exchange Rate
-        <b>1 XLM  =  10,000 PTS</b>
+        <label className={ styles.tradeRateContainerTitle }>Exchange Rate</label>
+        <label className={ styles.tradeRateContainerContent }>{displayPrice}</label>
       </div>
     )
   }
@@ -247,19 +260,21 @@ class TradeAsset extends Component {
     )
   }
 
-  handleSellAssetSelection = (asset, index) => event => {
+  handleSellAssetSelection = (asset, index) => async event => {
     event.preventDefault()
-    this.setState({
+    await this.setState({
       sellAssetSelected: index
     })
-    this.updateBuyAssetList(index)
+    await this.updateBuyAssetList(index)
+    await this.getOrderBook()
   }
 
-  handleBuyAssetSelection = (asset, index) => event => {
+  handleBuyAssetSelection = (asset, index) => async event => {
     event.preventDefault()
-    this.setState({
+    await this.setState({
       buyAssetSelected: index
     })
+    await this.getOrderBook()
   }
 
   handleAmountSelection = (percentage) => event => {
@@ -359,8 +374,13 @@ class TradeAsset extends Component {
 const mapStateToProps = (state) => {
   return {
     assets: getStellarAssetsForDisplay(state),
-    stellarMarketInfo: getStellarMarketInfo(state)
+    stellarMarketInfo: getStellarMarketInfo(state),
+    stellarOrderBook: getStellarOrderBook(state)
   }
 }
 
-export default connect(mapStateToProps, null)(TradeAsset)
+export default connect(
+  mapStateToProps,
+  { fetchStellarOrderBook }
+)
+(TradeAsset)

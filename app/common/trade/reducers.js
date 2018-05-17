@@ -12,10 +12,10 @@ export function fetchStellarOrderBookRequest (state) {
 }
 
 export function fetchStellarOrderBookSuccess (state, payload) {
-  const { info } = payload
+  const { orderbook } = payload
   return {
     ...state,
-    stellar: info
+    stellar: orderbook
   }
 }
 
@@ -35,6 +35,6 @@ const stellarOrderBookReducers = {
 
 export default createReducer (
   INITIAL_STATE, {
-    ...stellarMarketInfoReducers
+    ...stellarOrderBookReducers
   }
 )

@@ -210,12 +210,11 @@ export const joinInflationDestination = ( sk, pk ) => {
   })
 }
 
-export const getOrderBook = (sellingAsset, buyingAsset, sk, pk) => {
-  let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
-  //var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
-  const stellarAsset = new StellarSdk.Asset.native()
+export const getOrderBook = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer) => {
+  const sellAsset = sellingAsset === 'XLM' ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
+  const buyAsset = buyingAsset === 'XLM' ? new StellarSdk.Asset.native() : new StellarSdk.Asset(buyingAsset, buyingAssetIssuer)
   return new Promise((resolve, reject) => {
-    server.orderbook(stellarAsset, new StellarSdk.Asset('PTS', 'GBPG7KRYC3PTKHBXQGRD3GMZ5DB4C3D553ZN2ZLH57LBAQIULVY46Z5F'))
+    server.orderbook(sellAsset, buyAsset)
     .call()
     .then(response => {
         console.log(response)

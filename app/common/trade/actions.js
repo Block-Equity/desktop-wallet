@@ -4,20 +4,17 @@ import { getCurrentAccount } from '../account/selectors'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
 
-export function fetchStellarOrderBook(sellingAsset, buyingAsset) {
+export function fetchStellarOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer) {
   return async dispatch => {
     dispatch(fetchStellarOrderBookRequest())
-
-    let currentAccount = getCurrentAccount(getState())
-    const { pKey: publicKey, sKey: secretKey } = currentAccount
-    const { pin } = await getUserPIN()
-    const decryptSK = await encryption.decryptText(secretKey, pin)
-
     try {
-      const { payload, error } = getOrderBook(sellingAsset, buyingAsset, decryptSK, pKey)
-      return dispatch(fetchStellarOrderBookSuccess(orderbook))
+      const { payload, error, errorMessage } = await getOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer)
+      if (error) {
+        return dispatch(fetchStellarOrderBookFailure(errorMessage))
+      }
+      return dispatch(fetchStellarOrderBookSuccess(payload))
     } catch (e) {
-      return dispatch(fetchStellarOrderBookFailure)
+      return dispatch(fetchStellarOrderBookFailure(e))
     }
   }
 }
