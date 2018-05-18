@@ -136,61 +136,76 @@ class TradeAsset extends Component {
   }
 
   renderOrderBook () {
+    const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
+    const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
+    const { bids, asks } = this.props.stellarOrderBook
 
-    const orderBookHeaders = (
+    const orderBookSellHeaders = (
       <thead>
         <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Username</th>
+          <th>{sellAsset.asset_code}</th>
+          <th>{buyAsset.asset_code}</th>
+          <th>Price</th>
         </tr>
     </thead>
     )
 
+    const sellOrderContent = asks.map( (data, index) => {
+      return (
+        <tr key={index}>
+          <td>{data.amount}</td>
+          <td>{data.amount}*{data.price}</td>
+          <td>{data.price}</td>
+        </tr>
+      )
+    })
+
     const sellOrderBook = (
-      <Table size="sm" bordered style={{width: '47.5%', marginRight: '0.5rem'}}>
-        { orderBookHeaders }
-        <tbody>
-          <tr>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <td>Larry</td>
-            <td>the Bird</td>
-            <td>@twitter</td>
-          </tr>
-        </tbody>
-      </Table>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '47.5%'}}>
+        <b style={{color: 'red'}}>Sell Offers</b>
+        <Table size="sm" bordered style={{width: '100%', marginRight: '0.5rem'}}>
+          { orderBookSellHeaders }
+          <tbody>
+            { sellOrderContent }
+          </tbody>
+        </Table>
+      </div>
+    )
+
+    const orderBookBuyHeaders = (
+      <thead>
+        <tr>
+          <th>Price</th>
+          <th>{buyAsset.asset_code}</th>
+          <th>{sellAsset.asset_code}</th>
+        </tr>
+    </thead>
     )
 
     const buyOrderBook = (
-      <Table size="sm" bordered style={{width: '47.5%'}}>
-        { orderBookHeaders }
-        <tbody>
-          <tr>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
-          <tr>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <td>Larry</td>
-            <td>the Bird</td>
-            <td>@twitter</td>
-          </tr>
-        </tbody>
-      </Table>
+      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '47.5%'}}>
+        <b style={{color: 'green'}}>Buy Offers</b>
+        <Table size="sm" bordered style={{width: '100%'}}>
+          { orderBookBuyHeaders }
+          <tbody>
+            <tr>
+              <td>Mark</td>
+              <td>Otto</td>
+              <td>@mdo</td>
+            </tr>
+            <tr>
+              <td>Jacob</td>
+              <td>Thornton</td>
+              <td>@fat</td>
+            </tr>
+            <tr>
+              <td>Larry</td>
+              <td>the Bird</td>
+              <td>@twitter</td>
+            </tr>
+          </tbody>
+        </Table>
+      </div>
     )
 
     return (
