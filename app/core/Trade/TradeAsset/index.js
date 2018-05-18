@@ -71,8 +71,8 @@ class TradeAsset extends Component {
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
     await this.props.fetchStellarOrderBook(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer)
     const { bids } = await this.props.stellarOrderBook
-    const displayPrice = bids.length === 0 ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${bids[0].price} ${buyAsset.asset_code}`
-    const displayAmount = bids.length === 0 ? 'No assets available' : `${bids[0].amount} ${buyAsset.asset_code}`
+    const displayPrice = bids.length === 0 ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(bids[0].price).format('0,0.0000')} ${buyAsset.asset_code}`
+    const displayAmount = bids.length === 0 ? 'No assets available' : `${numeral(bids[0].amount).format('0,0.00')} ${buyAsset.asset_code}`
     this.setState({
       validDisplayPrice: bids.length !== 0,
       displayPrice,
@@ -143,26 +143,26 @@ class TradeAsset extends Component {
     const orderBookSellHeaders = (
       <thead>
         <tr>
-          <th>{sellAsset.asset_code}</th>
-          <th>{buyAsset.asset_code}</th>
-          <th>Price</th>
+          <th>{sellAsset.asset_code} Amount</th>
+          <th>{buyAsset.asset_code} Amount</th>
+          <th>{buyAsset.asset_code} Price</th>
         </tr>
     </thead>
     )
 
-    const sellOrderContent = asks.map( (data, index) => {
+    const sellOrderContent = this.top5SellOrders(asks).map((data, index) => {
       return (
         <tr key={index}>
-          <td>{data.amount}</td>
-          <td>{data.amount}*{data.price}</td>
-          <td>{data.price}</td>
+          <td>{numeral(data.amount).format('0,0.00')}</td>
+          <td>{numeral(data.amount/(1/data.price)).format('0,0.00')}</td>
+          <td>{numeral(1/data.price).format('0,0.0000')}</td>
         </tr>
       )
     })
 
     const sellOrderBook = (
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '47.5%'}}>
-        <b style={{color: 'red'}}>Sell Offers</b>
+        <b style={{color: 'red'}}>Top 5 Sell Offers</b>
         <Table size="sm" bordered style={{width: '100%', marginRight: '0.5rem'}}>
           { orderBookSellHeaders }
           <tbody>
@@ -175,34 +175,30 @@ class TradeAsset extends Component {
     const orderBookBuyHeaders = (
       <thead>
         <tr>
-          <th>Price</th>
-          <th>{buyAsset.asset_code}</th>
-          <th>{sellAsset.asset_code}</th>
+          <th>{sellAsset.asset_code} Price</th>
+          <th>{buyAsset.asset_code} Amount</th>
+          <th>{sellAsset.asset_code} Amount</th>
         </tr>
-    </thead>
+      </thead>
     )
+
+    const buyOrderContent = this.top5BuyOrders(bids).map((data, index) => {
+      return (
+        <tr key={index}>
+          <td>{numeral(1/data.price).format('0,0.0000')}</td>
+          <td>{numeral(data.amount).format('0,0.00')}</td>
+          <td>{numeral(data.amount*(1/data.price)).format('0,0.00')}</td>
+        </tr>
+      )
+    })
 
     const buyOrderBook = (
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '47.5%'}}>
-        <b style={{color: 'green'}}>Buy Offers</b>
+        <b style={{color: 'green'}}>Top 5 Buy Offers</b>
         <Table size="sm" bordered style={{width: '100%'}}>
           { orderBookBuyHeaders }
           <tbody>
-            <tr>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-            </tr>
-            <tr>
-              <td>Jacob</td>
-              <td>Thornton</td>
-              <td>@fat</td>
-            </tr>
-            <tr>
-              <td>Larry</td>
-              <td>the Bird</td>
-              <td>@twitter</td>
-            </tr>
+            { buyOrderContent }
           </tbody>
         </Table>
       </div>
@@ -443,6 +439,26 @@ class TradeAsset extends Component {
       buyAssetList: tempArray,
       buyAssetSelected: updatedBuyAssetIndex
     })
+  }
+
+  top5SellOrders(asks) {
+    var tempArray = []
+    var length = asks.length > 5 ? 5 : asks.length
+    for (var i = 0; i < length; i++) {
+      const data = asks[i]
+      tempArray.push(data)
+    }
+    return tempArray
+  }
+
+  top5BuyOrders(bids) {
+    var tempArray = []
+    var length = bids.length > 5 ? 5 : bids.length
+    for (var i = 0; i < length; i++) {
+      const data = bids[i]
+      tempArray.push(data)
+    }
+    return tempArray
   }
 
   toggleOfferDropDown() {
