@@ -201,7 +201,7 @@ export const joinInflationDestination = ( sk, pk ) => {
 
       server.submitTransaction(transaction)
       .then( transactionResult => {
-        resolve({ payload: 'Success', error: false })
+        resolve({ payload: transactionResult, error: false })
       }).catch( err => {
         console.log(err);
         reject({ errorMessage: err, error: true })
@@ -227,4 +227,37 @@ export const getOrderBook = (sellingAsset, sellingAssetIssuer, buyingAsset, buyi
       }
     )
   })
+}
+
+export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, amount, sk, pk) => {
+  let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
+  const sellAsset = sellingAsset === 'XLM' ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
+  const buyAsset = buyingAsset === 'XLM' ? new StellarSdk.Asset.native() : new StellarSdk.Asset(buyingAsset, buyingAssetIssuer)
+  return new Promise((resolve, reject) => {
+    server.loadAccount(pk)
+    .catch(error => {
+      reject({ errorMessage: error.name, error: true })
+    })
+    .then(sourceAccount => {
+      var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
+        .addOperation(StellarSdk.Operation.manageOffer({
+            selling: sellAsset,
+            buying: buyAsset,
+            amount
+          })
+        )
+        .build()
+      transaction.sign(sourceKeys)
+
+      server.submitTransaction(transaction)
+      .then( transactionResult => {
+        resolve({ payload: 'Success', error: false })
+      }).catch( err => {
+        console.log(err);
+        reject({ errorMessage: err, error: true })
+      })
+    })
+  })
+
+
 }
