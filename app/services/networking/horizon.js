@@ -229,7 +229,7 @@ export const getOrderBook = (sellingAsset, sellingAssetIssuer, buyingAsset, buyi
   })
 }
 
-export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, amount, sk, pk) => {
+export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, amount, price, sk, pk) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
   const sellAsset = sellingAsset === 'XLM' ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
   const buyAsset = buyingAsset === 'XLM' ? new StellarSdk.Asset.native() : new StellarSdk.Asset(buyingAsset, buyingAssetIssuer)
@@ -243,7 +243,9 @@ export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
         .addOperation(StellarSdk.Operation.manageOffer({
             selling: sellAsset,
             buying: buyAsset,
-            amount
+            amount,
+            price,
+            offerId: 0
           })
         )
         .build()
