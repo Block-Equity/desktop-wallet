@@ -4,7 +4,7 @@ import numeral from 'numeral'
 
 import { getStellarAssetsForDisplay } from '../../../common/account/selectors'
 import { getStellarMarketInfo } from '../../../common/market/selectors'
-import { fetchStellarOrderBook } from '../../../common/trade/actions'
+import { fetchStellarOrderBook, makeTradeOffer } from '../../../common/trade/actions'
 import { getStellarOrderBook } from '../../../common/trade/selectors'
 
 import styles from './style.css'
@@ -56,8 +56,8 @@ class TradeAsset extends Component {
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
-    this.toggleOrderBook = this.toggleOrderBook.bind(this);
-
+    this.toggleOrderBook = this.toggleOrderBook.bind(this)
+    this.handleTradeSubmission = this.handleTradeSubmission.bind(this)
   }
 
   async componentDidMount() {
@@ -71,11 +71,13 @@ class TradeAsset extends Component {
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
     await this.props.fetchStellarOrderBook(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer)
     const { bids } = await this.props.stellarOrderBook
+    const price = bids.length === 0 ? 0 : bids[0].price
     const displayPrice = bids.length === 0 ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(bids[0].price).format('0,0.0000')} ${buyAsset.asset_code}`
     const displayAmount = bids.length === 0 ? 'No assets available' : `${numeral(bids[0].amount).format('0,0.00')} ${buyAsset.asset_code}`
     this.setState({
       validDisplayPrice: bids.length !== 0,
       displayPrice,
+      price,
       displayAmount
     })
   }
@@ -362,7 +364,7 @@ class TradeAsset extends Component {
     const btnTitle = { default: 'Submit Trade', processing: 'Submitting Trade'}
     return (
       <div className={ styles.submitButtonContainer }>
-        <ActionButton processing={ false } title={ btnTitle } actionClicked={ this.handleWriteMnemonicSubmit }/>
+        <ActionButton processing={ false } title={ btnTitle } isForm={ false } actionClicked={ this.handleTradeSubmission }/>
       </div>
     )
   }
@@ -478,6 +480,15 @@ class TradeAsset extends Component {
     var value = target.value
     const name = target.name
     value = value.replace(/[^0.001-9]/g, '')
+    if (name === 'offerAssetAmount') {
+      this.setState({
+        receiveAssetAmount: value*this.state.price
+      })
+    } else {
+      this.setState({
+        offerAssetAmount: value/this.state.price
+      })
+    }
     this.setState({
       [name]: value
     })
@@ -500,6 +511,14 @@ class TradeAsset extends Component {
     }
   }
 
+  handleTradeSubmission = async () => {
+    const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
+    const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
+    const tradePrice = this.state.price === 0 ? (this.state.receiveAssetAmount/this.state.offerAssetAmount) : this.state.price
+    await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
+      this.state.offerAssetAmount, tradePrice )
+  }
+
 }
 
 const mapStateToProps = (state) => {
@@ -511,7 +530,7 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(
-  mapStateToProps,
-  { fetchStellarOrderBook }
-)
-(TradeAsset)
+  mapStateToProps, {
+    fetchStellarOrderBook,
+    makeTradeOffer
+}) (TradeAsset)
