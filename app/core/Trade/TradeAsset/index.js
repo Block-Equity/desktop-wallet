@@ -379,7 +379,9 @@ class TradeAsset extends Component {
   handleSellAssetSelection = (asset, index) => async event => {
     event.preventDefault()
     await this.setState({
-      sellAssetSelected: index
+      sellAssetSelected: index,
+      offerAssetAmount: '',
+      receiveAssetAmount: ''
     })
     await this.updateBuyAssetList(index)
     await this.getOrderBook()
@@ -388,7 +390,9 @@ class TradeAsset extends Component {
   handleBuyAssetSelection = (asset, index) => async event => {
     event.preventDefault()
     await this.setState({
-      buyAssetSelected: index
+      buyAssetSelected: index,
+      offerAssetAmount: '',
+      receiveAssetAmount: ''
     })
     await this.getOrderBook()
   }
@@ -510,7 +514,6 @@ class TradeAsset extends Component {
   handleAddAssetSubmission (success) {
     if (success) {
       this.toggleAddAssetModal()
-      //this.props.receiveSendPaymentInfo(this.state.info)
     }
   }
 
@@ -521,6 +524,7 @@ class TradeAsset extends Component {
     this.setState({ tradeProcessing: true })
     await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
       this.state.offerAssetAmount, tradePrice )
+    await this.getOrderBook()
     this.setState({
       tradeProcessing: false,
       offerAssetAmount: '',
