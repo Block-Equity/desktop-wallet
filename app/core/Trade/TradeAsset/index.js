@@ -47,7 +47,8 @@ class TradeAsset extends Component {
       validDisplayPrice: true,
       displayPrice: '',
       displayAmount: '',
-      orderBookOpened: false
+      orderBookOpened: false,
+      tradeProcessing: false
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -242,9 +243,9 @@ class TradeAsset extends Component {
     const { sellAssetList } = this.state
     const selectedOfferAsset = sellAssetList[this.state.sellAssetSelected]
     return (
-      <div className={ styles.assetWidgetContainer }>
+      <div id={ styles.assetWidgetContainer }>
         <InputGroup style={{ width: '100%'}}>
-          <Input name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
+          <Input placeholder='I am selling' name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType='append' isOpen={this.state.dropdownOfferAssetOpen} toggle={this.toggleOfferDropDown}>
             <DropdownToggle caret color='secondary' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { this.state.sellAssetList.length > 0 &&  selectedOfferAsset.asset_code }
@@ -262,9 +263,9 @@ class TradeAsset extends Component {
   renderBuyAsset() {
     const currentBuyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
     return (
-      <div className={ styles.assetWidgetContainer }>
+      <div id={ styles.assetWidgetContainer }>
         <InputGroup style={{width: '100%'}}>
-        <Input name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
+        <Input placeholder='I am buying' disabled={true} name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownReceiveAssetOpen} toggle={this.toggleReceiveDropDown}>
             <DropdownToggle caret color='secondary' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { this.state.buyAssetList.length > 0 && currentBuyAsset.asset_code }
@@ -325,7 +326,8 @@ class TradeAsset extends Component {
 
     const fiatConversionRate = selectedOfferAsset.asset_code === 'PTS' ? (0.00005*this.props.stellarMarketInfo.quotes.CAD.price) : this.props.stellarMarketInfo.quotes.CAD.price
     const fiatValueDisplayBalance = numeral(selectedOfferAsset.balance*fiatConversionRate).format('0,0.00')
-    const fiatValueDisplayEnteredAmt = numeral(this.state.offerAssetAmount.replace(',','') * fiatConversionRate).format('0,0.00')
+    const offerAmount = this.state.offerAssetAmount.length === 0 ? '' : this.state.offerAssetAmount
+    const fiatValueDisplayEnteredAmt = numeral(offerAmount * fiatConversionRate).format('0,0.00')
 
     return (
       <div className={ styles.amountOptionContainer }>
@@ -364,7 +366,7 @@ class TradeAsset extends Component {
     const btnTitle = { default: 'Submit Trade', processing: 'Submitting Trade'}
     return (
       <div className={ styles.submitButtonContainer }>
-        <ActionButton processing={ false } title={ btnTitle } isForm={ false } actionClicked={ this.handleTradeSubmission }/>
+        <ActionButton processing={ this.state.tradeProcessing } title={ btnTitle } isForm={ false } actionClicked={ this.handleTradeSubmission }/>
       </div>
     )
   }
@@ -480,18 +482,14 @@ class TradeAsset extends Component {
     var value = target.value
     const name = target.name
     value = value.replace(/[^0.001-9]/g, '')
-    if (name === 'offerAssetAmount') {
-      this.setState({
-        receiveAssetAmount: value*this.state.price
-      })
-    } else {
-      this.setState({
-        offerAssetAmount: value/this.state.price
-      })
-    }
     this.setState({
       [name]: value
     })
+    if (name === 'offerAssetAmount') {
+      this.setState({
+        receiveAssetAmount: value.length === 0 ? '' : value*this.state.price
+      })
+    }
   }
 
   toggleAddAssetModal (event) {
@@ -515,8 +513,14 @@ class TradeAsset extends Component {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
     const tradePrice = this.state.price === 0 ? (this.state.receiveAssetAmount/this.state.offerAssetAmount) : this.state.price
+    this.setState({ tradeProcessing: true })
     await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
       this.state.offerAssetAmount, tradePrice )
+    this.setState({
+      tradeProcessing: false,
+      offerAssetAmount: '',
+      receiveAssetAmount: ''
+    })
   }
 
 }

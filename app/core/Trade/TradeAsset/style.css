@@ -99,7 +99,7 @@
   width: 100%;
 }
 
-.assetWidgetContainer {
+#assetWidgetContainer {
   display: flex;
   flex-direction: column;
   align-content: center;
