@@ -26,6 +26,8 @@ import {
 } from 'reactstrap';
 
 import ArrowRight from 'material-ui-icons/ArrowForward'
+import Snackbar from 'material-ui/Snackbar'
+import SnackbarButton from 'material-ui/Button'
 import ActionButton from '../../Shared/ActionButton'
 
 import AddAsset from '../../Shared/AddAsset'
@@ -48,7 +50,9 @@ class TradeAsset extends Component {
       displayPrice: '',
       displayAmount: '',
       orderBookOpened: false,
-      tradeProcessing: false
+      tradeProcessing: false,
+      alertOpen: false,
+      alertMessage: ''
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -103,6 +107,7 @@ class TradeAsset extends Component {
         <AddAsset showModal={ this.state.showAddAssetModal }
                   addAssetSuccessful={ this.handleAddAssetSubmission }
                   toggle={ this.toggleAddAssetModal } />
+        { this.renderAlertView() }
       </div>
     )
   }
@@ -519,7 +524,51 @@ class TradeAsset extends Component {
     this.setState({
       tradeProcessing: false,
       offerAssetAmount: '',
-      receiveAssetAmount: ''
+      receiveAssetAmount: '',
+      alertOpen: true,
+      alertMessage: 'Trade submitted successfully'
+    })
+  }
+
+  renderAlertView() {
+    return (
+      <div>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={this.state.alertOpen}
+          autoHideDuration={6000}
+          onClose={this.handleAlertClose}
+          SnackbarContentProps={{
+            'aria-describedby': 'message-id',
+          }}
+          message={<span id="message-id">{this.state.alertMessage}</span>}
+          action={[
+            <SnackbarButton key="close" color="secondary" size="small"
+              onClick={this.handleAlertClose}>
+              CLOSE
+            </SnackbarButton>
+          ]}
+        />
+      </div>
+    )
+  }
+
+  handleAlertOpen (message) {
+    this.setState({
+      alertOpen: true,
+      alertMessage: message
+    })
+  }
+
+  handleAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    this.setState({
+      alertOpen: false
     })
   }
 
