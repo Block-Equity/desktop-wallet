@@ -89,7 +89,7 @@ class Main extends Component {
       <div className={styles.mainPageContainer}>
         <div className={styles.mainPageContentContainer}>
           { !isEmpty(this.props.currentAccount) && <AccountInfo currentAccount={this.props.currentAccount} /> }
-          <div style={{width: '100%'}}>
+          <div style={{width: '40rem'}}>
             <Tabs selectedItem={this.selectedItem} setItem={this.state.selectedMenuItem}/>
           </div>
           <div className={styles.mainPageComponentContainer}>

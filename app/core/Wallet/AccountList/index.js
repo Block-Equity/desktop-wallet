@@ -15,7 +15,8 @@ import {
   ModalHeader,
   ModalBody,
   ListGroup,
-  ListGroupItem
+  ListGroupItem,
+  Button
 }
 from 'reactstrap'
 
@@ -33,6 +34,8 @@ import {
 } from 'material-ui/Menu'
 
 import Divider from 'material-ui/Divider'
+
+import AddAsset from '../../Shared/AddAsset'
 
 import { getSupportedAssets } from '../../../services/networking/lists'
 
@@ -79,9 +82,12 @@ class AccountList extends Component {
     this.state = ({
       assetSelected: 0,
       changeTrustInProcess: false,
-      changeTrustAsset: undefined
+      changeTrustAsset: undefined,
+      showAddAssetModal: false,
+      processingAddAsset: false
     })
     this.handleBlockEQTokenAddition = this.handleBlockEQTokenAddition.bind(this)
+    this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
   }
 
   componentDidMount () {
@@ -108,16 +114,22 @@ class AccountList extends Component {
   render() {
     return (
       <div>
-        <div style={{ width: '9.5rem', marginTop: '-0.55rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.06)', height: '100vh'}}>
+        <div style={{ width: '9.5rem', marginTop: '-0.55rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.06)', height: '40.5rem'}}>
           <MenuList style={{ height: '100vh' }}>
             <ListGroup id={styles.listItem}>
               { this.renderAssets() }
             </ListGroup>
             { (!isEmpty(this.props.blockEQTokens)) && this.renderSubHeader(listSections.supported_assets.displayName)}
             { this.renderSupportedAssets() }
+            <ListGroup>
+              { this.renderAddAsset() }
+            </ListGroup>
           </MenuList>
         </div>
         { this.renderLoadingDialog() }
+        <AddAsset showModal={ this.state.showAddAssetModal }
+                  addAssetSuccessful={ this.handleAddAssetSubmission }
+                  toggle={ this.toggleAddAssetModal } />
       </div>
     )
   }
@@ -152,12 +164,26 @@ class AccountList extends Component {
           <ListGroupItem
             key={ index }
             style={ listItemStyleNormal }
-            onClick={this.handleBlockEQTokenAddition(asset, index)}>
+            onClick={this.handleBlockEQTokenAddition(asset, index)}
+            action>
             {this.renderSupportedAssetListLabel(asset.asset_name)}
           </ListGroupItem>
         )
       })
     }
+  }
+
+  renderAddAsset () {
+    const listItemStyleNormal = {fontSize: '0.75rem', outline: 'none', borderRadius: '0', borderColor: 'rgba(0, 0, 0, 0.00)' }
+
+    return (
+      <ListGroupItem
+        style={ listItemStyleNormal }
+        onClick={ this.toggleAddAssetModal } action>
+          <i className='fa fa-plus-circle' style={{marginRight: '0.5rem', color: 'rgb(0, 0, 0, 0.25)'}}/>
+          Add Asset
+      </ListGroupItem>
+    )
   }
 
   renderSubHeader (value) {
@@ -237,6 +263,19 @@ class AccountList extends Component {
       changeTrustIndex: asset
     })
     this.changeTrust (asset)
+  }
+
+  toggleAddAssetModal (event) {
+    this.setState({
+      showAddAssetModal: !this.state.showAddAssetModal
+    })
+  }
+
+  handleAddAssetSubmission (success) {
+    if (success) {
+      this.toggleAddAssetModal()
+      //this.props.receiveSendPaymentInfo(this.state.info)
+    }
   }
 
   async changeTrust (asset) {

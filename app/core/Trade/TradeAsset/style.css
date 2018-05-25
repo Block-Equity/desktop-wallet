@@ -2,22 +2,93 @@
   display: flex;
   flex-direction: column;
   align-content: center;
+  height: 100%;
+  width: 77%;
 }
 
-.assetContainer {
+.marketInfoContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background-color:  #F0F5F9;
+  font-size: 0.8rem;
+  font-weight: 300;
+  margin-top: 2rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-top: 1px solid rgba(0, 0, 0, 0.07);
+  border-left: 1px solid rgba(0, 0, 0, 0.07);
+  border-right: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.marketInfoContentContainer {
   display: flex;
   flex-direction: column;
-  height: 23rem;
+  align-items: center;
+  padding: 1rem;
 }
 
-.assetContainerTitle {
-  margin-top: 1.5rem;
-  margin-bottom: 2.5rem;
-  color:rgba(0, 0, 0, 0.5);
-  font-size: 1.25rem;
-  font-weight: 700;
-  text-align: center;
+.tradeRateContainerTitle {
+  font-weight: 400;
+  font-size: 0.8rem;
+  margin-bottom: 0.1rem;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.tradeRateContainerContent {
+  font-weight: 400;
+  font-size: 0.8rem;
+  margin-bottom: 0;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+#orderBookContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.5);
+  background-color:  rgba(0, 0, 0, 0.02);
+  padding-top: 0.75rem;
+  margin-bottom: 3rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  font-size: 0.8rem;
+  font-weight: 400;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+#orderBookContainer a {
+  margin-bottom: 1rem;
+}
+
+#orderBookContainer a:hover {
+  text-decoration: underline;
+}
+
+.orderBookTableContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-size: 0.7rem;
   width: 100%;
+}
+
+.balanceInfoComponentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.balanceInfoComponentDivider {
+  width: 0.1rem;
+  background-color: rgba(0, 0, 0, 0.09);
+  margin-left: 2.5rem;
+  margin-right: 2.5rem;
 }
 
 .tradeWidgetContainer {
@@ -28,7 +99,7 @@
   width: 100%;
 }
 
-.assetWidgetContainer {
+#assetWidgetContainer {
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -42,7 +113,6 @@
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.009rem;
-
 }
 
 .assetWidgetImageContainer {

@@ -16,7 +16,6 @@ import * as locking from '../app/services/authentication/locking'
 import { DATABASE_PATH } from '../app/db/constants'
 import { streamPayments } from '../app/common/payment/actions'
 const { ipcMain } = require('electron')
-//import keytar from 'keytar'
 
 var mainWindow = null
 
@@ -60,7 +59,7 @@ function createMainWindow() {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 860,
+    width: 935,
     height: 680,
     resizable: process.env.NODE_ENV === 'development' ? true : false,
     titleBarStyle: 'hiddenInset',
@@ -146,19 +145,3 @@ app.on('before-quit', async () => {
   mainWindow.removeAllListeners('close')
   mainWindow.close()
 })
-
-/*
-//TODO: Figure out how to do Production Build with C binding library
-//Moved Keytar to Main IPC
-ipcMain.on('get-password', (event, serviceName, user) => {
-  event.returnValue = keytar.getPassword(serviceName, user);
-})
-
-ipcMain.on('set-password', (event, serviceName, user, pass) => {
-  event.returnValue = keytar.setPassword(serviceName, user, pass);
-})
-
-ipcMain.on('delete-password', (event, serviceName, user) => {
-  event.returnValue = keytar.deletePassword(serviceName, user);
-})
-*/

@@ -81,7 +81,7 @@ class Settings extends Component {
         <ListGroupItem selected={ isSelected }
                   style = { isSelected ? listItemStyleActive : listItemStyleNormal }
                   key={ index }
-                  onClick={() => this.handleItemClick(item) }>
+                  onClick={() => this.handleItemClick(item) } action>
                     <h6 className={ styles.drawerItemLabel }>{item.title}</h6>
         </ListGroupItem>
       )

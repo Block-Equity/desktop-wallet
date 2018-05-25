@@ -45,7 +45,8 @@ const TRANSACTION_TYPE = {
   Payment: 'payment',
   CreateAccount: 'create_account',
   ChangeTrust: 'change_trust',
-  SetOptions: 'set_options'
+  SetOptions: 'set_options',
+  ManageOffer: 'manage_offer'
 }
 
 class History extends Component {
@@ -58,7 +59,7 @@ class History extends Component {
     var displayData = []
 
     this.props.paymentTransactions.map(n => {
-      if (n.type === TRANSACTION_TYPE.CreateAccount || n.type === TRANSACTION_TYPE.Payment) {
+      if (n.type === TRANSACTION_TYPE.CreateAccount || n.type === TRANSACTION_TYPE.Payment || n.type === TRANSACTION_TYPE.ManageOffer) {
         var obj
         if (n.type === TRANSACTION_TYPE.CreateAccount ) {
           obj = {
@@ -74,12 +75,12 @@ class History extends Component {
 
     displayDataAllAssets.map(n => {
       if (currentAccount.asset_type === 'native') {
-        if (n.asset_type === 'native') {
+        if (n.asset_type === 'native' || n.buying_asset_type === 'native' || n.selling_asset_type === 'native') {
           const obj = this.getDisplayObject(n, currentAccount)
           displayData.push(obj)
         }
       } else {
-        if (currentAccount.asset_code === n.asset_code) {
+        if (n.asset_code === currentAccount.asset_code || n.buying_asset_code === currentAccount.asset_code || n.selling_asset_code === currentAccount.asset_code) {
           const obj = this.getDisplayObject(n, currentAccount)
           displayData.push(obj)
         }
@@ -120,6 +121,10 @@ class History extends Component {
       displayAddress = n.source_account === currentAccount.pKey ? n.account : n.source_account
       displayAmount = n.source_account === currentAccount.pKey ? numeral(`-${n.starting_balance}`).format('(0,0.00)') : numeral(n.starting_balance).format('0,0.00')
       displayTypeLabel = n.source_account === currentAccount.pKey ? `Account created ` : `Account created by `
+    } else if (n.type === TRANSACTION_TYPE.ManageOffer) {
+      displayAddress = n.selling_asset_type === 'native' ? `Sold XLM for ${n.buying_asset_code}` : `Bought XLM from ${n.selling_asset_code}`
+      displayAmount = n.selling_asset_type === 'native' ? numeral(`-${n.amount*n.price}`).format('(0,0.00)') : numeral(n.amount*n.price).format('0,0.00')
+      displayTypeLabel = 'Trade offers'
     }
     const displayObj = {
       id,

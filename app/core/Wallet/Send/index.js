@@ -172,7 +172,7 @@ class Send extends Component {
 
   handleAlertClose = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
     this.setState({
       alertOpen: false

@@ -15,6 +15,7 @@ export const BASE_URL_HORIZON_PUBLIC_NET = 'https://horizon.stellar.org'
 const BASE_URL = BASE_URL_HORIZON_PUBLIC_NET
 const server = new StellarSdk.Server(BASE_URL)
 const INFLATION_DESTINATION = 'GCCD6AJOYZCUAQLX32ZJF2MKFFAUJ53PVCFQI3RHWKL3V47QYE2BNAUT'
+const STELLAR_CODE = 'XLM'
 
 export const fundAccount = (publicKey) => {
   // Friend Bot is only on Horizon Test Net
@@ -70,14 +71,12 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
       // If there was no error, load up-to-date information on your account.
       .then(() => server.loadAccount(publicKey))
       .then(sourceAccount => {
-        //sourceAccount.incrementSequenceNumber()
-        console.log(`Next Sequence: ${sourceAccount.sequenceNumber()}`)
         transaction = new StellarSdk.TransactionBuilder(sourceAccount)
           .addOperation(StellarSdk.Operation.payment({
             destination: destinationId,
             // Because Stellar allows transaction in many currencies, you must
             // specify the asset type. The special "native" asset represents Lumens.
-            asset: assetType === 'XLM'? StellarSdk.Asset.native() : blockEQToken,
+            asset: assetType === STELLAR_CODE ? StellarSdk.Asset.native() : blockEQToken,
             amount: amount.toString()
           }))
           // A memo allows you to add your own metadata to a transaction. It's
@@ -161,7 +160,6 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
     })
     // If there was no error, load up-to-date information on your account.
     .then(sourceAccount => {
-      console.log('Transaction Builder')
       var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
         .addOperation(StellarSdk.Operation.changeTrust({
           asset: blockEQToken
@@ -201,6 +199,59 @@ export const joinInflationDestination = ( sk, pk ) => {
 
       server.submitTransaction(transaction)
       .then( transactionResult => {
+        resolve({ payload: transactionResult, error: false })
+      }).catch( err => {
+        console.log(err);
+        reject({ errorMessage: err, error: true })
+      })
+    })
+  })
+}
+
+export const getOrderBook = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer) => {
+  const sellAsset = sellingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
+  const buyAsset = buyingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(buyingAsset, buyingAssetIssuer)
+  return new Promise((resolve, reject) => {
+    server.orderbook(sellAsset, buyAsset)
+    .call()
+    .then(response => {
+        console.log(response)
+        resolve({ payload: response, error: false })
+      }
+    )
+    .catch(err => {
+        console.log(err)
+        reject({ errorMessage: err, error: true })
+      }
+    )
+  })
+}
+
+export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, amount, price, sk, pk) => {
+  let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
+  const sellAsset = sellingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
+  const buyAsset = buyingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(buyingAsset, buyingAssetIssuer)
+  return new Promise((resolve, reject) => {
+    server.loadAccount(pk)
+    .catch(error => {
+      reject({ errorMessage: error.name, error: true })
+    })
+    .then(sourceAccount => {
+      var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
+        .addOperation(StellarSdk.Operation.manageOffer({
+            selling: sellAsset,
+            buying: buyAsset,
+            amount,
+            price,
+            offerId: 0
+          })
+        )
+        .build()
+      transaction.sign(sourceKeys)
+
+      server.submitTransaction(transaction)
+      .then( result => {
+        console.log(`Manage offer success: ${JSON.stringify(result)}`)
         resolve({ payload: 'Success', error: false })
       }).catch( err => {
         console.log(err);
