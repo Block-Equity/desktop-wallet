@@ -403,7 +403,8 @@ class TradeAsset extends Component {
     const value = numeral(percentage * selectedOfferAsset.balance).format('0,0.00')
     console.log(`Stellar Balance: ${selectedOfferAsset.balance} || Percentage: ${percentage}`)
     this.setState({
-      offerAssetAmount:value
+      offerAssetAmount: value,
+      receiveAssetAmount: selectedOfferAsset.balance*this.state.price
     })
   }
 
