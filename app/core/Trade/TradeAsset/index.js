@@ -400,11 +400,12 @@ class TradeAsset extends Component {
   handleAmountSelection = (percentage) => event => {
     const { assets } = this.props
     const selectedOfferAsset = assets[this.state.sellAssetSelected]
-    const value = numeral(percentage * selectedOfferAsset.balance).format('0,0.00')
+    const value = percentage * selectedOfferAsset.balance
+    const formattedValue = numeral(percentage * selectedOfferAsset.balance).format('0,0.00')
     console.log(`Stellar Balance: ${selectedOfferAsset.balance} || Percentage: ${percentage}`)
     this.setState({
-      offerAssetAmount: value,
-      receiveAssetAmount: selectedOfferAsset.balance*this.state.price
+      offerAssetAmount: formattedValue,
+      receiveAssetAmount: value * this.state.price
     })
   }
 
