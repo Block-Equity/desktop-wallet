@@ -2,6 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import numeral from 'numeral'
 
+import { getStellarMarketInfo } from '../../../common/market/selectors'
+import { fetchStellarOrderBook } from '../../../common/trade/actions'
+import { getStellarOrderBook } from '../../../common/trade/selectors'
+
 import styles from './style.css'
 
 class MarketInfo extends Component {
@@ -14,7 +18,6 @@ class MarketInfo extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    assets: getStellarAssetsForDisplay(state),
     stellarMarketInfo: getStellarMarketInfo(state),
     stellarOrderBook: getStellarOrderBook(state)
   }
