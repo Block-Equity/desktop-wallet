@@ -23,7 +23,7 @@ import {
   ButtonGroup,
   Collapse,
   Table
-} from 'reactstrap';
+} from 'reactstrap'
 
 import ArrowRight from 'material-ui-icons/ArrowForward'
 import Snackbar from 'material-ui/Snackbar'
@@ -31,6 +31,7 @@ import SnackbarButton from 'material-ui/Button'
 import ActionButton from '../../Shared/ActionButton'
 
 import AddAsset from '../../Shared/AddAsset'
+import MarketInfo from '../Market Info'
 
 class TradeAsset extends Component {
 
@@ -90,7 +91,10 @@ class TradeAsset extends Component {
   render() {
     return (
       <div className={styles.mainContainer}>
-        { this.props.stellarOrderBook && this.state.sellAssetList.length > 0 && this.state.buyAssetList.length > 0 && this.renderRateInfo() }
+        { this.props.stellarOrderBook
+          && this.state.sellAssetList.length > 0
+          && this.state.buyAssetList.length > 0
+          && <MarketInfo sellAsset={this.state.sellAssetList[this.state.sellAssetSelected]} buyAsset={this.state.buyAssetList[this.state.buyAssetSelected]}/> }
         <div className={styles.tradeWidgetContainer}>
           { this.renderSellAsset() }
           <ArrowRight
