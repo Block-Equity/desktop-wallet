@@ -28,7 +28,7 @@ class MarketInfo extends Component {
   }
 
   async componentDidMount() {
-    //await this.getOrderBook()
+    await this.getOrderBook()
   }
 
   async getOrderBook() {
@@ -71,7 +71,10 @@ class MarketInfo extends Component {
         </div>
         <div id={ styles.orderBookContainer }>
           <a onClick={this.toggleOrderBook}>{orderBookLabel}</a>
-          { this.state.validDisplayPrice && this.renderOrderBook() }
+          { this.props.stellarOrderBook
+            && this.state.validDisplayPrice
+            && this.renderOrderBook()
+          }
         </div>
       </div>
     )
@@ -84,9 +87,9 @@ class MarketInfo extends Component {
     const orderBookSellHeaders = (
       <thead>
         <tr>
-          <th>{sellAsset.asset_code} Amount</th>
-          <th>{buyAsset.asset_code} Amount</th>
-          <th>{buyAsset.asset_code} Price</th>
+          <th>{this.props.sellAsset.asset_code} Amount</th>
+          <th>{this.props.buyAsset.asset_code} Amount</th>
+          <th>{this.props.buyAsset.asset_code} Price</th>
         </tr>
     </thead>
     )
@@ -116,9 +119,9 @@ class MarketInfo extends Component {
     const orderBookBuyHeaders = (
       <thead>
         <tr>
-          <th>{sellAsset.asset_code} Price</th>
-          <th>{buyAsset.asset_code} Amount</th>
-          <th>{sellAsset.asset_code} Amount</th>
+          <th>{this.props.sellAsset.asset_code} Price</th>
+          <th>{this.props.buyAsset.asset_code} Amount</th>
+          <th>{this.props.sellAsset.asset_code} Amount</th>
         </tr>
       </thead>
     )
