@@ -71,7 +71,9 @@ class TradeAsset extends Component {
       <div className={styles.mainContainer}>
         { this.state.sellAssetList.length > 0
           && this.state.buyAssetList.length > 0
-          && <MarketInfo sellAsset={this.state.sellAssetList[this.state.sellAssetSelected]} buyAsset={this.state.buyAssetList[this.state.buyAssetSelected]}/> }
+          && <MarketInfo onRef={ref => (this.marketInfo = ref)}
+              sellAsset={this.state.sellAssetList[this.state.sellAssetSelected]}
+              buyAsset={this.state.buyAssetList[this.state.buyAssetSelected]}/> }
         <div className={styles.tradeWidgetContainer}>
           { this.renderSellAsset() }
           <ArrowRight
@@ -233,7 +235,7 @@ class TradeAsset extends Component {
       receiveAssetAmount: ''
     })
     await this.updateBuyAssetList(index)
-    //await this.getOrderBook()
+    await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
   }
 
   handleBuyAssetSelection = (asset, index) => async event => {
@@ -243,7 +245,7 @@ class TradeAsset extends Component {
       offerAssetAmount: '',
       receiveAssetAmount: ''
     })
-    //await this.getOrderBook()
+    await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
   }
 
   handleAmountSelection = (percentage) => event => {

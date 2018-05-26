@@ -28,11 +28,16 @@ class MarketInfo extends Component {
   }
 
   async componentDidMount() {
-    await this.getOrderBook()
+    this.props.onRef(this)
+    const { sellAsset, buyAsset } = this.props
+    await this.getOrderBook(sellAsset, buyAsset)
   }
 
-  async getOrderBook() {
-    const { sellAsset, buyAsset } = this.props
+  componentWillUnmount() {
+    this.props.onRef(undefined)
+  }
+
+  async getOrderBook(sellAsset, buyAsset) {
     await this.props.fetchStellarOrderBook(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer)
     const { bids } = await this.props.stellarOrderBook
     const price = bids.length === 0 ? 0 : bids[0].price
