@@ -4,8 +4,7 @@ import numeral from 'numeral'
 
 import { getStellarAssetsForDisplay } from '../../../common/account/selectors'
 import { getStellarMarketInfo } from '../../../common/market/selectors'
-import { fetchStellarOrderBook, makeTradeOffer } from '../../../common/trade/actions'
-import { getStellarOrderBook } from '../../../common/trade/selectors'
+import { makeTradeOffer } from '../../../common/trade/actions'
 
 import styles from './style.css'
 
@@ -410,7 +409,6 @@ const mapStateToProps = (state) => {
   return {
     assets: getStellarAssetsForDisplay(state),
     stellarMarketInfo: getStellarMarketInfo(state),
-    stellarOrderBook: getStellarOrderBook(state)
   }
 }
 
