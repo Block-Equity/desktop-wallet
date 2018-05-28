@@ -1,6 +1,8 @@
 import * as Types from './types'
 import * as coinmarketcap from '../../services/networking/coinmarketcap'
 
+const POLL_FREQUENCY = 300000 //5 minutes
+
 export function fetchStellarMarketInfo() {
   return async dispatch => {
     dispatch(fetchStellarMarketInfoRequest())
@@ -8,7 +10,7 @@ export function fetchStellarMarketInfo() {
       const pollMarket = setInterval( async function() {
         const { info } = await coinmarketcap.getStellarMarketInfo()
         return dispatch(fetchStellarMarketInfoSuccess(info))
-      }, 300000)
+      }, POLL_FREQUENCY)
       const { info } = await coinmarketcap.getStellarMarketInfo()
       return dispatch(fetchStellarMarketInfoSuccess(info))
 
