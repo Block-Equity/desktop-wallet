@@ -30,7 +30,7 @@ class MarketInfo extends Component {
   async componentDidMount() {
     this.props.onRef(this)
     const { sellAsset, buyAsset } = this.props
-    await this.getOrderBook(sellAsset, buyAsset)
+    this.getOrderBook(sellAsset, buyAsset)
   }
 
   componentWillUnmount() {
@@ -49,6 +49,7 @@ class MarketInfo extends Component {
       price,
       displayAmount
     })
+    this.props.tradePrice(price)
   }
 
   render () {

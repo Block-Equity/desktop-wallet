@@ -58,6 +58,7 @@ class TradeAsset extends Component {
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
     this.handleTradeSubmission = this.handleTradeSubmission.bind(this)
+    this.tradePrice = this.tradePrice.bind(this)
   }
 
   async componentDidMount() {
@@ -71,6 +72,7 @@ class TradeAsset extends Component {
         { this.state.sellAssetList.length > 0
           && this.state.buyAssetList.length > 0
           && <MarketInfo onRef={ref => (this.marketInfo = ref)}
+              tradePrice={this.tradePrice}
               sellAsset={this.state.sellAssetList[this.state.sellAssetSelected]}
               buyAsset={this.state.buyAssetList[this.state.buyAssetSelected]}/> }
         <div className={styles.tradeWidgetContainer}>
@@ -351,13 +353,19 @@ class TradeAsset extends Component {
     this.setState({ tradeProcessing: true })
     await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
       this.state.offerAssetAmount, tradePrice )
-    await this.getOrderBook()
+    await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
     this.setState({
       tradeProcessing: false,
       offerAssetAmount: '',
       receiveAssetAmount: '',
       alertOpen: true,
       alertMessage: 'Trade submitted successfully'
+    })
+  }
+
+  tradePrice = (price) => {
+    this.setState({
+      price
     })
   }
 
@@ -414,6 +422,5 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps, {
-    fetchStellarOrderBook,
     makeTradeOffer
 }) (TradeAsset)
