@@ -27,6 +27,8 @@ import {
 import ArrowRight from 'material-ui-icons/ArrowForward'
 import Snackbar from 'material-ui/Snackbar'
 import SnackbarButton from 'material-ui/Button'
+import Menu from 'material-ui/Menu'
+import MenuItem from 'material-ui/Menu/MenuItem'
 import ActionButton from '../../Shared/ActionButton'
 
 import AddAsset from '../../Shared/AddAsset'
@@ -52,13 +54,14 @@ class TradeAsset extends Component {
     }
 
     this.handleChange = this.handleChange.bind(this)
-    this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
     this.handleAmountSelection = this.handleAmountSelection.bind(this)
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
     this.handleTradeSubmission = this.handleTradeSubmission.bind(this)
     this.tradePrice = this.tradePrice.bind(this)
+    this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
+    this.renderSellAssetList = this.renderSellAssetList.bind(this)
   }
 
   async componentDidMount() {
@@ -105,9 +108,9 @@ class TradeAsset extends Component {
           <Input placeholder='I am selling' name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType='append' isOpen={this.state.dropdownOfferAssetOpen} toggle={this.toggleOfferDropDown}>
             <DropdownToggle caret color='secondary' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
-              { this.state.sellAssetList.length > 0 &&  selectedOfferAsset.asset_code }
+              { this.state.sellAssetList.length > 0 && selectedOfferAsset.asset_code }
             </DropdownToggle>
-            <DropdownMenu>
+            <DropdownMenu persist={true}>
               <DropdownItem header>Select Asset</DropdownItem>
               { this.state.sellAssetList.length > 0 && this.renderSellAssetList() }
             </DropdownMenu>
@@ -145,7 +148,7 @@ class TradeAsset extends Component {
         <DropdownItem
           key = { index }
           style={{fontSize: '0.7rem'}}
-          onClick={ this.handleSellAssetSelection(asset, index) }>
+          onClick={ ()=>{this.handleSellAssetSelection(asset, index)} }>
           { `${ asset.asset_name } (${ asset.asset_code})` }
         </DropdownItem>
       )
@@ -158,7 +161,7 @@ class TradeAsset extends Component {
         <DropdownItem
           key = { index }
           style={{fontSize: '0.7rem'}}
-          onClick={ this.handleBuyAssetSelection(asset, index) }>
+          onClick={ ()=>{this.handleBuyAssetSelection(asset, index)} }>
             { `${ asset.asset_name } (${ asset.asset_code})` }
         </DropdownItem>
       )
@@ -228,9 +231,11 @@ class TradeAsset extends Component {
     )
   }
 
-  handleSellAssetSelection = (asset, index) => async event => {
+  async handleSellAssetSelection(asset, index) {
     event.preventDefault()
-    await this.setState({
+    console.log(`Sell Asset Selected: ${JSON.stringify(asset)}`)
+    console.log(`Sell Asset Selected Index: ${index}`)
+    this.setState({
       sellAssetSelected: index,
       offerAssetAmount: '',
       receiveAssetAmount: ''
@@ -239,7 +244,7 @@ class TradeAsset extends Component {
     await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
   }
 
-  handleBuyAssetSelection = (asset, index) => async event => {
+  async handleBuyAssetSelection(asset, index) {
     event.preventDefault()
     await this.setState({
       buyAssetSelected: index,
@@ -264,9 +269,7 @@ class TradeAsset extends Component {
     const selectedSellAsset = this.props.assets[0]
     var tempArray = []
     this.props.assets.map((asset, index) => {
-      if (asset.asset_code !== 'CAD') {
-        tempArray.push(asset)
-      }
+      tempArray.push(asset)
     })
 
     this.setState({
