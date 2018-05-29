@@ -41,12 +41,14 @@ class TradeAsset extends Component {
     this.state = {
       dropdownOfferAssetOpen: false,
       dropdownReceiveAssetOpen: false,
+      marketOrder: true,
       sellAssetSelected: 0,
       sellAssetList: [],
       buyAssetSelected: 0,
       buyAssetList: [],
       offerAssetAmount: '',
       offerAssetFiatValue: '',
+      receiveAssetAmount: '',
       showAddAssetModal: false,
       tradeProcessing: false,
       alertOpen: false,
@@ -61,7 +63,7 @@ class TradeAsset extends Component {
     this.handleTradeSubmission = this.handleTradeSubmission.bind(this)
     this.tradePrice = this.tradePrice.bind(this)
     this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
-    this.renderSellAssetList = this.renderSellAssetList.bind(this)
+    this.handleMarketLimitSelection = this.handleMarketLimitSelection.bind(this)
   }
 
   async componentDidMount() {
@@ -76,6 +78,9 @@ class TradeAsset extends Component {
           && this.state.buyAssetList.length > 0
           && <MarketInfo onRef={ref => (this.marketInfo = ref)}
               tradePrice={this.tradePrice}
+              isMarketOrder={this.state.marketOrder}
+              buyAssetAmount={this.state.receiveAssetAmount}
+              sellAssetAmount={this.state.offerAssetAmount}
               sellAsset={this.state.sellAssetList[this.state.sellAssetSelected]}
               buyAsset={this.state.buyAssetList[this.state.buyAssetSelected]}/> }
         <div className={styles.tradeWidgetContainer}>
@@ -84,12 +89,12 @@ class TradeAsset extends Component {
             style={{
               marginLeft: '0.75rem',
               marginRight: '0.75rem',
+              marginTop: '-3.5rem',
               fontSize: '0.85rem',
               color: 'rgba(0, 0, 0, 0.2)'
             }}/>
           { this.renderBuyAsset() }
         </div>
-        { this.renderBalanceAmountOptions() }
         { this.renderSubmitButton() }
         <AddAsset showModal={ this.state.showAddAssetModal }
                   addAssetSuccessful={ this.handleAddAssetSubmission }
@@ -107,15 +112,16 @@ class TradeAsset extends Component {
         <InputGroup style={{ width: '100%'}}>
           <Input placeholder='I am selling' name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType='append' isOpen={this.state.dropdownOfferAssetOpen} toggle={this.toggleOfferDropDown}>
-            <DropdownToggle caret color='secondary' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
+            <DropdownToggle caret outline color='danger' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { this.state.sellAssetList.length > 0 && selectedOfferAsset.asset_code }
             </DropdownToggle>
-            <DropdownMenu persist={true}>
+            <DropdownMenu>
               <DropdownItem header>Select Asset</DropdownItem>
               { this.state.sellAssetList.length > 0 && this.renderSellAssetList() }
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
+        { this.renderBalanceAmountOptions() }
       </div>
     )
   }
@@ -125,9 +131,9 @@ class TradeAsset extends Component {
     return (
       <div id={ styles.assetWidgetContainer }>
         <InputGroup style={{width: '100%'}}>
-        <Input placeholder='I am buying' disabled={true} name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
+        <Input placeholder='I am buying' disabled={this.state.marketOrder} name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownReceiveAssetOpen} toggle={this.toggleReceiveDropDown}>
-            <DropdownToggle caret color='secondary' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
+            <DropdownToggle caret outline color='success' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { this.state.buyAssetList.length > 0 && currentBuyAsset.asset_code }
             </DropdownToggle>
             <DropdownMenu>
@@ -138,6 +144,7 @@ class TradeAsset extends Component {
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
+        { this.renderSegmentForMarketLimitOrders() }
       </div>
     )
   }
@@ -222,6 +229,18 @@ class TradeAsset extends Component {
     })
   }
 
+  renderSegmentForMarketLimitOrders() {
+    const buttonStyle = { boxShadow: 'none', fontSize: '0.65rem', paddingLeft: '1.5rem', paddingRight: '1.5rem' }
+    return (
+      <div className={ styles.marketLimitOptionContainer }>
+        <ButtonGroup size='sm'>
+          <Button outline style={buttonStyle} onClick={ this.handleMarketLimitSelection } active={this.state.marketOrder}>Market</Button>
+          <Button outline style={buttonStyle} onClick={ this.handleMarketLimitSelection } active={!this.state.marketOrder}>Limit</Button>
+        </ButtonGroup>
+      </div>
+    )
+  }
+
   renderSubmitButton() {
     const btnTitle = { default: 'Submit Trade', processing: 'Submitting Trade'}
     return (
@@ -263,6 +282,17 @@ class TradeAsset extends Component {
       offerAssetAmount: formattedValue,
       receiveAssetAmount: value * this.state.price
     })
+  }
+
+  async handleMarketLimitSelection() {
+    await this.setState({
+      marketOrder: !this.state.marketOrder
+    })
+    if (this.state.marketOrder) {
+        this.setState({
+          receiveAssetAmount: this.state.offerAssetAmount.length === 0 ? '' : numeral(this.state.offerAssetAmount*this.state.price).format('0.0000')
+        })
+    }
   }
 
   initialSellAssetList() {
@@ -330,10 +360,12 @@ class TradeAsset extends Component {
     this.setState({
       [name]: value
     })
-    if (name === 'offerAssetAmount') {
-      this.setState({
-        receiveAssetAmount: value.length === 0 ? '' : value*this.state.price
-      })
+    if (this.state.marketOrder) {
+      if (name === 'offerAssetAmount') {
+        this.setState({
+          receiveAssetAmount: value.length === 0 ? '' : numeral(value*this.state.price).format('0.0000')
+        })
+      }
     }
   }
 
@@ -352,7 +384,7 @@ class TradeAsset extends Component {
   handleTradeSubmission = async () => {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    const tradePrice = this.state.price === 0 ? (this.state.receiveAssetAmount/this.state.offerAssetAmount) : this.state.price
+    const tradePrice = this.state.isMarketOrder ? this.state.price : (this.state.receiveAssetAmount/this.state.offerAssetAmount)
     this.setState({ tradeProcessing: true })
     await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
       this.state.offerAssetAmount, tradePrice )

@@ -40,16 +40,26 @@ class MarketInfo extends Component {
   async getOrderBook(sellAsset, buyAsset) {
     await this.props.fetchStellarOrderBook(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer)
     const { bids } = await this.props.stellarOrderBook
-    const price = bids.length === 0 ? 0 : bids[0].price
-    const displayPrice = bids.length === 0 ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(bids[0].price).format('0,0.0000')} ${buyAsset.asset_code}`
+    const limitOrderPrice = isNaN(this.props.buyAssetAmount/this.props.sellAssetAmount) ? 0 : (this.props.buyAssetAmount/this.props.sellAssetAmount)
+    const marketOrderPrice = bids.length === 0 ? 0 : bids[0].price
+    const price = this.props.isMarketOrder ? marketOrderPrice : limitOrderPrice
     const displayAmount = bids.length === 0 ? 'No assets available' : `${numeral(bids[0].amount).format('0,0.00')} ${buyAsset.asset_code}`
     this.setState({
       validDisplayPrice: bids.length !== 0,
-      displayPrice,
       price,
       displayAmount
     })
     this.props.tradePrice(price)
+  }
+
+  getDisplayPrice() {
+    const { sellAsset, buyAsset } = this.props
+    const { bids } = this.props.stellarOrderBook
+    const limitOrderPrice = isNaN(this.props.buyAssetAmount/this.props.sellAssetAmount) ? 0 : (this.props.buyAssetAmount/this.props.sellAssetAmount)
+    const marketOrderPrice = bids.length === 0 ? 0 : bids[0].price
+    const price = this.props.isMarketOrder ? marketOrderPrice : limitOrderPrice
+    const displayPrice = isNaN(price) ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(price).format('0,0.0000')} ${buyAsset.asset_code}`
+    return displayPrice
   }
 
   render () {
@@ -61,10 +71,10 @@ class MarketInfo extends Component {
           <div className={ styles.marketInfoContentContainer }>
             <label className={ styles.tradeRateContainerTitle }>Exchange Rate</label>
             <label className={ styles.tradeRateContainerContent }>
-              { this.state.displayPrice }
+              { this.props.stellarOrderBook && this.getDisplayPrice() }
             </label>
           </div>
-          { this.state.validDisplayPrice &&
+          { this.state.validDisplayPrice && this.props.isMarketOrder &&
               <div style={{ marginLeft: '3rem', height: '100%'}}>
                 <div className={ styles.marketInfoContentContainer }>
                   <label className={ styles.tradeRateContainerTitle }>Available Amount</label>
