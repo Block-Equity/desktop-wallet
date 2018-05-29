@@ -4,8 +4,7 @@ import numeral from 'numeral'
 
 import { getStellarAssetsForDisplay } from '../../../common/account/selectors'
 import { getStellarMarketInfo } from '../../../common/market/selectors'
-import { fetchStellarOrderBook, makeTradeOffer } from '../../../common/trade/actions'
-import { getStellarOrderBook } from '../../../common/trade/selectors'
+import { makeTradeOffer } from '../../../common/trade/actions'
 
 import styles from './style.css'
 
@@ -23,14 +22,17 @@ import {
   ButtonGroup,
   Collapse,
   Table
-} from 'reactstrap';
+} from 'reactstrap'
 
 import ArrowRight from 'material-ui-icons/ArrowForward'
 import Snackbar from 'material-ui/Snackbar'
 import SnackbarButton from 'material-ui/Button'
+import Menu from 'material-ui/Menu'
+import MenuItem from 'material-ui/Menu/MenuItem'
 import ActionButton from '../../Shared/ActionButton'
 
 import AddAsset from '../../Shared/AddAsset'
+import MarketInfo from '../Market Info'
 
 class TradeAsset extends Component {
 
@@ -39,207 +41,65 @@ class TradeAsset extends Component {
     this.state = {
       dropdownOfferAssetOpen: false,
       dropdownReceiveAssetOpen: false,
+      marketOrder: true,
       sellAssetSelected: 0,
       sellAssetList: [],
       buyAssetSelected: 0,
       buyAssetList: [],
       offerAssetAmount: '',
       offerAssetFiatValue: '',
+      receiveAssetAmount: '',
       showAddAssetModal: false,
-      validDisplayPrice: true,
-      displayPrice: '',
-      displayAmount: '',
-      orderBookOpened: false,
       tradeProcessing: false,
       alertOpen: false,
       alertMessage: ''
     }
 
     this.handleChange = this.handleChange.bind(this)
-    this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
     this.handleAmountSelection = this.handleAmountSelection.bind(this)
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
-    this.toggleOrderBook = this.toggleOrderBook.bind(this)
     this.handleTradeSubmission = this.handleTradeSubmission.bind(this)
+    this.tradePrice = this.tradePrice.bind(this)
+    this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
+    this.handleMarketLimitSelection = this.handleMarketLimitSelection.bind(this)
   }
 
   async componentDidMount() {
     await this.initialSellAssetList()
     await this.initialBuyAssetList()
-    await this.getOrderBook()
-  }
-
-  async getOrderBook() {
-    const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
-    const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    await this.props.fetchStellarOrderBook(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer)
-    const { bids } = await this.props.stellarOrderBook
-    const price = bids.length === 0 ? 0 : bids[0].price
-    const displayPrice = bids.length === 0 ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(bids[0].price).format('0,0.0000')} ${buyAsset.asset_code}`
-    const displayAmount = bids.length === 0 ? 'No assets available' : `${numeral(bids[0].amount).format('0,0.00')} ${buyAsset.asset_code}`
-    this.setState({
-      validDisplayPrice: bids.length !== 0,
-      displayPrice,
-      price,
-      displayAmount
-    })
   }
 
   render() {
     return (
       <div className={styles.mainContainer}>
-        { this.props.stellarOrderBook && this.state.sellAssetList.length > 0 && this.state.buyAssetList.length > 0 && this.renderRateInfo() }
+        { this.state.sellAssetList.length > 0
+          && this.state.buyAssetList.length > 0
+          && <MarketInfo onRef={ref => (this.marketInfo = ref)}
+              tradePrice={this.tradePrice}
+              isMarketOrder={this.state.marketOrder}
+              buyAssetAmount={this.state.receiveAssetAmount}
+              sellAssetAmount={this.state.offerAssetAmount}
+              sellAsset={this.state.sellAssetList[this.state.sellAssetSelected]}
+              buyAsset={this.state.buyAssetList[this.state.buyAssetSelected]}/> }
         <div className={styles.tradeWidgetContainer}>
           { this.renderSellAsset() }
           <ArrowRight
             style={{
               marginLeft: '0.75rem',
               marginRight: '0.75rem',
+              marginTop: '-3.5rem',
               fontSize: '0.85rem',
               color: 'rgba(0, 0, 0, 0.2)'
             }}/>
           { this.renderBuyAsset() }
         </div>
-        { this.renderBalanceAmountOptions() }
         { this.renderSubmitButton() }
         <AddAsset showModal={ this.state.showAddAssetModal }
                   addAssetSuccessful={ this.handleAddAssetSubmission }
                   toggle={ this.toggleAddAssetModal } />
         { this.renderAlertView() }
-      </div>
-    )
-  }
-
-  renderRateInfo () {
-    const divider = ( <div className={ styles.balanceInfoComponentDivider }/> )
-    const orderBookLabel = this.state.validDisplayPrice ? ( this.state.orderBookOpened ? 'Close order book' : 'View order book') : 'Order book not available'
-    return (
-      <div style={{display: 'flex', flexDirection: 'column'}}>
-        <div className={ styles.marketInfoContainer }>
-          <div className={ styles.marketInfoContentContainer }>
-            <label className={ styles.tradeRateContainerTitle }>Exchange Rate</label>
-            <label className={ styles.tradeRateContainerContent }>
-              { this.state.displayPrice }
-            </label>
-          </div>
-          { this.state.validDisplayPrice &&
-              <div style={{ marginLeft: '3rem', height: '100%'}}>
-                <div className={ styles.marketInfoContentContainer }>
-                  <label className={ styles.tradeRateContainerTitle }>Available Amount</label>
-                  <label className={ styles.tradeRateContainerContent }>
-                    { this.state.displayAmount }
-                  </label>
-                </div>
-              </div>
-          }
-        </div>
-        <div id={ styles.orderBookContainer }>
-          <a onClick={this.toggleOrderBook}>{orderBookLabel}</a>
-          { this.state.validDisplayPrice && this.renderOrderBook() }
-        </div>
-      </div>
-    )
-  }
-
-  renderOrderBook () {
-    const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
-    const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    const { bids, asks } = this.props.stellarOrderBook
-
-    const orderBookSellHeaders = (
-      <thead>
-        <tr>
-          <th>{sellAsset.asset_code} Amount</th>
-          <th>{buyAsset.asset_code} Amount</th>
-          <th>{buyAsset.asset_code} Price</th>
-        </tr>
-    </thead>
-    )
-
-    const sellOrderContent = this.top5SellOrders(asks).map((data, index) => {
-      return (
-        <tr key={index}>
-          <td>{numeral(data.amount).format('0,0.00')}</td>
-          <td>{numeral(data.amount/(1/data.price)).format('0,0.00')}</td>
-          <td>{numeral(1/data.price).format('0,0.0000')}</td>
-        </tr>
-      )
-    })
-
-    const sellOrderBook = (
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '47.5%'}}>
-        <b style={{color: 'red'}}>Top 5 Sell Offers</b>
-        <Table size="sm" bordered style={{width: '100%', marginRight: '0.5rem'}}>
-          { orderBookSellHeaders }
-          <tbody>
-            { sellOrderContent }
-          </tbody>
-        </Table>
-      </div>
-    )
-
-    const orderBookBuyHeaders = (
-      <thead>
-        <tr>
-          <th>{sellAsset.asset_code} Price</th>
-          <th>{buyAsset.asset_code} Amount</th>
-          <th>{sellAsset.asset_code} Amount</th>
-        </tr>
-      </thead>
-    )
-
-    const buyOrderContent = this.top5BuyOrders(bids).map((data, index) => {
-      return (
-        <tr key={index}>
-          <td>{numeral(1/data.price).format('0,0.0000')}</td>
-          <td>{numeral(data.amount).format('0,0.00')}</td>
-          <td>{numeral(data.amount*(1/data.price)).format('0,0.00')}</td>
-        </tr>
-      )
-    })
-
-    const buyOrderBook = (
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '47.5%'}}>
-        <b style={{color: 'green'}}>Top 5 Buy Offers</b>
-        <Table size="sm" bordered style={{width: '100%'}}>
-          { orderBookBuyHeaders }
-          <tbody>
-            { buyOrderContent }
-          </tbody>
-        </Table>
-      </div>
-    )
-
-    return (
-      <Collapse isOpen={this.state.orderBookOpened} style={{width: '95%'}}>
-        <div className={ styles.orderBookTableContainer }>
-          { sellOrderBook }
-          { buyOrderBook }
-        </div>
-      </Collapse>
-    )
-  }
-
-  renderBalanceInfo () {
-    const divider = ( <div className={ styles.balanceInfoComponentDivider }/> )
-    return (
-      <div className={ styles.balanceInfoContainer }>
-        <div className={ styles.balanceInfoComponentContainer }>
-          Available Balance
-          <b>18.61 XLM</b>
-        </div>
-        { divider }
-        <div className={ styles.balanceInfoComponentContainer }>
-          Minimum Balance
-          <b>3 XLM</b>
-        </div>
-        { divider }
-        <div className={ styles.balanceInfoComponentContainer }>
-          Fee
-          <b>0.00001 XLM</b>
-        </div>
       </div>
     )
   }
@@ -252,8 +112,8 @@ class TradeAsset extends Component {
         <InputGroup style={{ width: '100%'}}>
           <Input placeholder='I am selling' name='offerAssetAmount' value={this.state.offerAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType='append' isOpen={this.state.dropdownOfferAssetOpen} toggle={this.toggleOfferDropDown}>
-            <DropdownToggle caret color='secondary' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
-              { this.state.sellAssetList.length > 0 &&  selectedOfferAsset.asset_code }
+            <DropdownToggle caret outline color='danger' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
+              { this.state.sellAssetList.length > 0 && selectedOfferAsset.asset_code }
             </DropdownToggle>
             <DropdownMenu>
               <DropdownItem header>Select Asset</DropdownItem>
@@ -261,6 +121,7 @@ class TradeAsset extends Component {
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
+        { this.renderBalanceAmountOptions() }
       </div>
     )
   }
@@ -270,9 +131,9 @@ class TradeAsset extends Component {
     return (
       <div id={ styles.assetWidgetContainer }>
         <InputGroup style={{width: '100%'}}>
-        <Input placeholder='I am buying' disabled={true} name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
+        <Input placeholder='I am buying' disabled={this.state.marketOrder} name='receiveAssetAmount' value={this.state.receiveAssetAmount} onChange={this.handleChange} style={{ boxShadow: 'none', fontSize: '0.8rem'}}/>
           <InputGroupButtonDropdown addonType="append" isOpen={this.state.dropdownReceiveAssetOpen} toggle={this.toggleReceiveDropDown}>
-            <DropdownToggle caret color='secondary' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
+            <DropdownToggle caret outline color='success' style={{ boxShadow: 'none', fontSize: '0.75rem'}}>
               { this.state.buyAssetList.length > 0 && currentBuyAsset.asset_code }
             </DropdownToggle>
             <DropdownMenu>
@@ -283,6 +144,7 @@ class TradeAsset extends Component {
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
+        { this.renderSegmentForMarketLimitOrders() }
       </div>
     )
   }
@@ -293,7 +155,7 @@ class TradeAsset extends Component {
         <DropdownItem
           key = { index }
           style={{fontSize: '0.7rem'}}
-          onClick={ this.handleSellAssetSelection(asset, index) }>
+          onClick={ ()=>{this.handleSellAssetSelection(asset, index)} }>
           { `${ asset.asset_name } (${ asset.asset_code})` }
         </DropdownItem>
       )
@@ -306,7 +168,7 @@ class TradeAsset extends Component {
         <DropdownItem
           key = { index }
           style={{fontSize: '0.7rem'}}
-          onClick={ this.handleBuyAssetSelection(asset, index) }>
+          onClick={ ()=>{this.handleBuyAssetSelection(asset, index)} }>
             { `${ asset.asset_name } (${ asset.asset_code})` }
         </DropdownItem>
       )
@@ -367,6 +229,18 @@ class TradeAsset extends Component {
     })
   }
 
+  renderSegmentForMarketLimitOrders() {
+    const buttonStyle = { boxShadow: 'none', fontSize: '0.65rem', paddingLeft: '1.5rem', paddingRight: '1.5rem' }
+    return (
+      <div className={ styles.marketLimitOptionContainer }>
+        <ButtonGroup size='sm'>
+          <Button outline style={buttonStyle} onClick={ this.handleMarketLimitSelection } active={this.state.marketOrder}>Market</Button>
+          <Button outline style={buttonStyle} onClick={ this.handleMarketLimitSelection } active={!this.state.marketOrder}>Limit</Button>
+        </ButtonGroup>
+      </div>
+    )
+  }
+
   renderSubmitButton() {
     const btnTitle = { default: 'Submit Trade', processing: 'Submitting Trade'}
     return (
@@ -376,25 +250,25 @@ class TradeAsset extends Component {
     )
   }
 
-  handleSellAssetSelection = (asset, index) => async event => {
+  async handleSellAssetSelection(asset, index) {
     event.preventDefault()
-    await this.setState({
+    this.setState({
       sellAssetSelected: index,
       offerAssetAmount: '',
       receiveAssetAmount: ''
     })
     await this.updateBuyAssetList(index)
-    await this.getOrderBook()
+    await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
   }
 
-  handleBuyAssetSelection = (asset, index) => async event => {
+  async handleBuyAssetSelection(asset, index) {
     event.preventDefault()
     await this.setState({
       buyAssetSelected: index,
       offerAssetAmount: '',
       receiveAssetAmount: ''
     })
-    await this.getOrderBook()
+    await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
   }
 
   handleAmountSelection = (percentage) => event => {
@@ -404,17 +278,26 @@ class TradeAsset extends Component {
     const formattedValue = numeral(percentage * selectedOfferAsset.balance).format('0,0.00')
     this.setState({
       offerAssetAmount: formattedValue,
-      receiveAssetAmount: value * this.state.price
+      receiveAssetAmount: this.calculateReceiveAmount(this.state.price, value)
     })
+  }
+
+  async handleMarketLimitSelection() {
+    await this.setState({
+      marketOrder: !this.state.marketOrder
+    })
+    if (this.state.marketOrder) {
+        this.setState({
+          receiveAssetAmount: this.state.offerAssetAmount.length === 0 ? '' : this.calculateReceiveAmount(this.state.price, this.state.offerAssetAmount)
+        })
+    }
   }
 
   initialSellAssetList() {
     const selectedSellAsset = this.props.assets[0]
     var tempArray = []
     this.props.assets.map((asset, index) => {
-      if (asset.asset_code !== 'CAD') {
-        tempArray.push(asset)
-      }
+      tempArray.push(asset)
     })
 
     this.setState({
@@ -455,26 +338,6 @@ class TradeAsset extends Component {
     })
   }
 
-  top5SellOrders(asks) {
-    var tempArray = []
-    var length = asks.length > 5 ? 5 : asks.length
-    for (var i = 0; i < length; i++) {
-      const data = asks[i]
-      tempArray.push(data)
-    }
-    return tempArray
-  }
-
-  top5BuyOrders(bids) {
-    var tempArray = []
-    var length = bids.length > 5 ? 5 : bids.length
-    for (var i = 0; i < length; i++) {
-      const data = bids[i]
-      tempArray.push(data)
-    }
-    return tempArray
-  }
-
   toggleOfferDropDown() {
     this.setState({
       dropdownOfferAssetOpen: !this.state.dropdownOfferAssetOpen
@@ -495,10 +358,12 @@ class TradeAsset extends Component {
     this.setState({
       [name]: value
     })
-    if (name === 'offerAssetAmount') {
-      this.setState({
-        receiveAssetAmount: value.length === 0 ? '' : value*this.state.price
-      })
+    if (this.state.marketOrder) {
+      if (name === 'offerAssetAmount') {
+        this.setState({
+          receiveAssetAmount: value.length === 0 ? '' : this.calculateReceiveAmount(this.state.price, value)
+        })
+      }
     }
   }
 
@@ -506,10 +371,6 @@ class TradeAsset extends Component {
     this.setState({
       showAddAssetModal: !this.state.showAddAssetModal
     })
-  }
-
-  toggleOrderBook() {
-    this.setState({ orderBookOpened: !this.state.orderBookOpened });
   }
 
   handleAddAssetSubmission (success) {
@@ -521,11 +382,11 @@ class TradeAsset extends Component {
   handleTradeSubmission = async () => {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    const tradePrice = this.state.price === 0 ? (this.state.receiveAssetAmount/this.state.offerAssetAmount) : this.state.price
+    const tradePrice = this.state.isMarketOrder ? this.state.price : (this.state.receiveAssetAmount/this.state.offerAssetAmount)
     this.setState({ tradeProcessing: true })
     await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
       this.state.offerAssetAmount, tradePrice )
-    await this.getOrderBook()
+    await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
     this.setState({
       tradeProcessing: false,
       offerAssetAmount: '',
@@ -533,6 +394,16 @@ class TradeAsset extends Component {
       alertOpen: true,
       alertMessage: 'Trade submitted successfully'
     })
+  }
+
+  tradePrice = (price) => {
+    this.setState({
+      price
+    })
+  }
+
+  calculateReceiveAmount(price, amount) {
+    return numeral(amount * price).format('0.0000')
   }
 
   renderAlertView() {
@@ -583,12 +454,10 @@ const mapStateToProps = (state) => {
   return {
     assets: getStellarAssetsForDisplay(state),
     stellarMarketInfo: getStellarMarketInfo(state),
-    stellarOrderBook: getStellarOrderBook(state)
   }
 }
 
 export default connect(
   mapStateToProps, {
-    fetchStellarOrderBook,
     makeTradeOffer
 }) (TradeAsset)

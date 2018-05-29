@@ -4,10 +4,21 @@ import { getCurrentAccount } from '../account/selectors'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
 
+const POLL_FREQUENCY = 30000
+var pollOrderBook
+
 export function fetchStellarOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer) {
   return async dispatch => {
     dispatch(fetchStellarOrderBookRequest())
     try {
+      clearInterval(pollOrderBook)
+      pollOrderBook = setInterval( async function() {
+        const { payload, error, errorMessage } = await getOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer)
+        if (error) {
+          return dispatch(fetchStellarOrderBookFailure(errorMessage))
+        }
+        return dispatch(fetchStellarOrderBookSuccess(payload))
+      }, POLL_FREQUENCY)
       const { payload, error, errorMessage } = await getOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer)
       if (error) {
         return dispatch(fetchStellarOrderBookFailure(errorMessage))
