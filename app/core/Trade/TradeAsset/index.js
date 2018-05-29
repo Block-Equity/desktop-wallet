@@ -252,8 +252,6 @@ class TradeAsset extends Component {
 
   async handleSellAssetSelection(asset, index) {
     event.preventDefault()
-    console.log(`Sell Asset Selected: ${JSON.stringify(asset)}`)
-    console.log(`Sell Asset Selected Index: ${index}`)
     this.setState({
       sellAssetSelected: index,
       offerAssetAmount: '',
@@ -280,7 +278,7 @@ class TradeAsset extends Component {
     const formattedValue = numeral(percentage * selectedOfferAsset.balance).format('0,0.00')
     this.setState({
       offerAssetAmount: formattedValue,
-      receiveAssetAmount: value * this.state.price
+      receiveAssetAmount: this.calculateReceiveAmount(this.state.price, value)
     })
   }
 
@@ -290,7 +288,7 @@ class TradeAsset extends Component {
     })
     if (this.state.marketOrder) {
         this.setState({
-          receiveAssetAmount: this.state.offerAssetAmount.length === 0 ? '' : numeral(this.state.offerAssetAmount*this.state.price).format('0.0000')
+          receiveAssetAmount: this.state.offerAssetAmount.length === 0 ? '' : this.calculateReceiveAmount(this.state.price, this.state.offerAssetAmount)
         })
     }
   }
@@ -363,7 +361,7 @@ class TradeAsset extends Component {
     if (this.state.marketOrder) {
       if (name === 'offerAssetAmount') {
         this.setState({
-          receiveAssetAmount: value.length === 0 ? '' : numeral(value*this.state.price).format('0.0000')
+          receiveAssetAmount: value.length === 0 ? '' : this.calculateReceiveAmount(this.state.price, value)
         })
       }
     }
@@ -402,6 +400,10 @@ class TradeAsset extends Component {
     this.setState({
       price
     })
+  }
+
+  calculateReceiveAmount(price, amount) {
+    return numeral(amount * price).format('0.0000')
   }
 
   renderAlertView() {
