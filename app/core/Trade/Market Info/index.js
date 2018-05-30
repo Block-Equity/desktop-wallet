@@ -66,32 +66,35 @@ class MarketInfo extends Component {
     const divider = ( <div className={ styles.balanceInfoComponentDivider }/> )
     const orderBookLabel = this.state.validDisplayPrice ? ( this.state.orderBookOpened ? 'Close order book' : 'View order book') : 'Order book not available'
     return (
-      <div style={{display: 'flex', flexDirection: 'column'}}>
-        <div className={ styles.marketInfoContainer }>
-          <div className={ styles.marketInfoContentContainer }>
-            <label className={ styles.tradeRateContainerTitle }>Exchange Rate</label>
-            <label className={ styles.tradeRateContainerContent }>
-              { this.props.stellarOrderBook && this.getDisplayPrice() }
-            </label>
-          </div>
-          { this.state.validDisplayPrice && this.props.isMarketOrder &&
-              <div style={{ marginLeft: '3rem', height: '100%'}}>
-                <div className={ styles.marketInfoContentContainer }>
-                  <label className={ styles.tradeRateContainerTitle }>Available Amount</label>
-                  <label className={ styles.tradeRateContainerContent }>
-                    { this.state.displayAmount }
-                  </label>
-                </div>
-              </div>
-          }
-        </div>
+      <div className={ styles.mainContainer }>
+        { this.renderMarketInfo() }
         <div id={ styles.orderBookContainer }>
           <a onClick={this.toggleOrderBook}>{orderBookLabel}</a>
-          { this.props.stellarOrderBook
-            && this.state.validDisplayPrice
-            && this.renderOrderBook()
-          }
+          { this.props.stellarOrderBook && this.renderOrderBook() }
         </div>
+      </div>
+    )
+  }
+
+  renderMarketInfo() {
+    return (
+      <div className={ styles.marketInfoContainer }>
+        <div className={ styles.marketInfoContentContainer }>
+          <label className={ styles.tradeRateContainerTitle }>Exchange Rate</label>
+          <label className={ styles.tradeRateContainerContent }>
+            { this.props.stellarOrderBook && this.getDisplayPrice() }
+          </label>
+        </div>
+        { this.state.validDisplayPrice && this.props.isMarketOrder &&
+            <div style={{ marginLeft: '3rem', height: '100%'}}>
+              <div className={ styles.marketInfoContentContainer }>
+                <label className={ styles.tradeRateContainerTitle }>Available Amount</label>
+                <label className={ styles.tradeRateContainerContent }>
+                  { this.state.displayAmount }
+                </label>
+              </div>
+            </div>
+        }
       </div>
     )
   }
