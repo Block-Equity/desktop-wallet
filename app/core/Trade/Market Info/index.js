@@ -42,7 +42,8 @@ class MarketInfo extends Component {
     const { bids } = await this.props.stellarOrderBook
     const limitOrderPrice = isNaN(this.props.buyAssetAmount/this.props.sellAssetAmount) ? 0 : (this.props.buyAssetAmount/this.props.sellAssetAmount)
     const marketOrderPrice = bids.length === 0 ? 0 : bids[0].price
-    const price = this.props.isMarketOrder ? marketOrderPrice : limitOrderPrice
+    const price = this.props.isMarketOrder ? numeral(marketOrderPrice).format('0.0000000', Math.floor) : numeral(limitOrderPrice).format('0.0000000', Math.floor)
+    const displayPrice = isNaN(price) ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(price).format('0,0.0000', Math.floor)} ${buyAsset.asset_code}`
     const displayAmount = bids.length === 0 ? 'No assets available' : `${numeral(bids[0].amount).format('0,0.00')} ${buyAsset.asset_code}`
     this.setState({
       validDisplayPrice: bids.length !== 0,
@@ -57,8 +58,8 @@ class MarketInfo extends Component {
     const { bids } = this.props.stellarOrderBook
     const limitOrderPrice = isNaN(this.props.buyAssetAmount/this.props.sellAssetAmount) ? 0 : (this.props.buyAssetAmount/this.props.sellAssetAmount)
     const marketOrderPrice = bids.length === 0 ? 0 : bids[0].price
-    const price = this.props.isMarketOrder ? marketOrderPrice : limitOrderPrice
-    const displayPrice = isNaN(price) ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(price).format('0,0.0000')} ${buyAsset.asset_code}`
+    const price = this.props.isMarketOrder ? numeral(marketOrderPrice).format('0.0000000', Math.floor) : numeral(limitOrderPrice).format('0.0000000', Math.floor)
+    const displayPrice = isNaN(price) ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(price).format('0,0.0000', Math.floor)} ${buyAsset.asset_code}`
     return displayPrice
   }
 
