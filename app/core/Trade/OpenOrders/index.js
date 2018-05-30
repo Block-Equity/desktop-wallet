@@ -2,14 +2,18 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import numeral from 'numeral'
 
-import { fetchOpenOrders } from '../../../common/trade/actions'
+import { fetchOpenOrders, deleteTradeOffer } from '../../../common/trade/actions'
 import { getStellarOpenOrders } from '../../../common/trade/selectors'
 
 import styles from './style.css'
 
 import {
-  Table
+  Table,
+  Button
 } from 'reactstrap'
+
+const DISPLAY_FORMAT = '0,0.0000'
+const CALCULATION_FORMAT = '0.0000000'
 
 class OpenOrders extends Component {
 
@@ -28,7 +32,7 @@ class OpenOrders extends Component {
     return (
       <div className={styles.mainContainer}>
         <div className={styles.tableContainer}>
-          <Table hover>
+          <Table hover responsive>
             { this.renderTableHeaders() }
             <tbody>
               { this.props.stellarOpenOrders && this.renderTableBody() }
@@ -43,10 +47,10 @@ class OpenOrders extends Component {
     return (
       <thead>
         <tr style={{fontSize: '0.7rem'}}>
-          <th>Selling</th>
-          <th>Buying</th>
-          <th>{`Price\n(in terms of selling asset)`}</th>
-          <th>{`Price\n(in terms of buying asset)`}</th>
+          <th>Selling Amount</th>
+          <th>Price</th>
+          <th>Value</th>
+          <th></th>
         </tr>
       </thead>
     )
@@ -58,22 +62,32 @@ class OpenOrders extends Component {
         <div>No open offers</div>
       )
     } else {
+      const rowStyle = {verticalAlign: 'middle'}
       return this.props.stellarOpenOrders.map((offer, index) => {
         const sellAssetType = offer.selling.asset_type === 'native' ? 'XLM' : offer.selling.asset_code
         const buyAssetType = offer.buying.asset_type === 'native' ? 'XLM' : offer.buying.asset_code
         return (
           <tr
             key = { index }
-            style={{fontSize: '0.7rem'}}
-            onClick={ ()=>{this.handleSellAssetSelection(asset, index)} }>
-            <td>{ numeral(offer.amount).format('0,0.0000') } { sellAssetType }</td>
-            <td>{ numeral(offer.price).format('0,0.0000') } { buyAssetType }</td>
-            <td>{ numeral(offer.price_r.d / offer.price_r.n).format('0,0.0000') } { sellAssetType }</td>
-            <td>{ numeral(offer.price_r.n / offer.price_r.d).format('0,0.0000') } { buyAssetType }</td>
+            style={{fontSize: '0.7rem'}}>
+              <td style={rowStyle}>{ numeral(offer.amount).format(DISPLAY_FORMAT, Math.floor) } { sellAssetType }</td>
+              <td style={rowStyle}>{ numeral(offer.price).format(DISPLAY_FORMAT, Math.floor) } { sellAssetType }</td>
+              <td style={rowStyle}>{ numeral(offer.amount * offer.price).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
+              <td><Button outline color='danger' size='sm' style={{fontSize: '0.7rem'}} onClick={ () => {this.handleDeleteOffer(offer)}}>Cancel</Button></td>
           </tr>
         )
       })
     }
+  }
+
+  async handleDeleteOffer(offer) {
+    event.preventDefault()
+    const offerSellingAssetCode = offer.selling.asset_type === 'native' ? 'XLM' : offer.selling.asset_code
+    const offerSellingAssetIssuer = offer.selling.asset_type === 'native' ? '' : offer.selling.asset_issuer
+    const offerBuyingAssetCode = offer.buying.asset_type === 'native' ? 'XLM' : offer.buying.asset_code
+    const offerBuyingAssetIssuer = offer.buying.asset_type === 'native' ? '' : offer.buying.asset_issuer
+    await this.props.deleteTradeOffer(offerSellingAssetCode, offerSellingAssetIssuer, offerBuyingAssetCode, offerBuyingAssetIssuer, offer.id)
+    this.props.fetchOpenOrders()
   }
 
 }
@@ -86,6 +100,7 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps, {
-    fetchOpenOrders
+    fetchOpenOrders,
+    deleteTradeOffer
 }) (OpenOrders)
 

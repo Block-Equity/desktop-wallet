@@ -285,3 +285,35 @@ export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
     })
   })
 }
+
+export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, sk, pk, offerId) => {
+  let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
+  const sellAsset = sellingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
+  const buyAsset = buyingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(buyingAsset, buyingAssetIssuer)
+  return new Promise((resolve, reject) => {
+    server.loadAccount(pk)
+    .catch(error => {
+      reject({ errorMessage: error.name, error: true })
+    })
+    .then(sourceAccount => {
+      var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
+        .addOperation(StellarSdk.Operation.manageOffer({
+            selling: sellAsset,
+            buying: buyAsset,
+            amount: 0,
+            offerId
+          })
+        )
+        .build()
+      transaction.sign(sourceKeys)
+
+      server.submitTransaction(transaction)
+      .then( result => {
+        resolve({ payload: 'Success', error: false })
+      }).catch( err => {
+        console.log(err);
+        reject({ errorMessage: err, error: true })
+      })
+    })
+  })
+}

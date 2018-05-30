@@ -1,5 +1,5 @@
 import * as Types from './types'
-import { getOrderBook, manageOffer, getOpenOrders } from '../../services/networking/horizon'
+import { getOrderBook, manageOffer, getOpenOrders, deleteOffer } from '../../services/networking/horizon'
 import { getCurrentAccount } from '../account/selectors'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
@@ -84,6 +84,46 @@ export function makeTradeOfferSuccess(trade) {
 export function makeTradeOfferFailure(error) {
   return {
     type: Types.TRADE_STELLAR_SUCCESS,
+    payload: error,
+    error: true
+  }
+}
+
+export function deleteTradeOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, offerId) {
+  return async (dispatch, getState) => {
+    dispatch(deleteTradeOfferRequest())
+    //Fetch PIN
+    let currentAccount = getCurrentAccount(getState())
+    const { pKey: publicKey, sKey: secretKey } = currentAccount
+    const { pin } = await getUserPIN()
+    console.log(`Pin: ${pin}`)
+    const decryptSK = await encryption.decryptText(secretKey, pin)
+    console.log(`SK: ${decryptSK}`)
+    try {
+      const trade = await manageOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, decryptSK, publicKey, offerId)
+      dispatch(deleteTradeOfferSuccess(true))
+    } catch (e) {
+      dispatch(deleteTradeOfferFailure(e))
+    }
+  }
+}
+
+export function deleteTradeOfferRequest() {
+  return {
+    type: Types.TRADE_STELLAR_DELETE_OFFER_REQUEST
+  }
+}
+
+export function deleteTradeOfferSuccess(success) {
+  return {
+    type: Types.TRADE_STELLAR_DELETE_OFFER_SUCCESS,
+    payload: success
+  }
+}
+
+export function deleteTradeOfferFailure(error) {
+  return {
+    type: Types.TRADE_STELLAR_DELETE_OFFER_FAILURE,
     payload: error,
     error: true
   }
