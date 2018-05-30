@@ -5,7 +5,7 @@
 
 .tableContainer {
   overflow: auto;
-  height: 38rem;
+  max-height: 38rem;
   border-radius: 0.25rem;
   padding-top: -1rem;
   border: 1px solid rgba(0, 0, 0, 0.08);

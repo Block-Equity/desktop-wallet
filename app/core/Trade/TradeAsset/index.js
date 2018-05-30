@@ -382,7 +382,7 @@ class TradeAsset extends Component {
   handleTradeSubmission = async () => {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    const tradePrice = this.state.isMarketOrder ? this.state.price : (this.state.receiveAssetAmount/this.state.offerAssetAmount)
+    const tradePrice = this.state.isMarketOrder ? this.state.price : numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000')
     this.setState({ tradeProcessing: true })
     await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
       this.state.offerAssetAmount, tradePrice )

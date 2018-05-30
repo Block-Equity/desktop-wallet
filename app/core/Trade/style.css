@@ -3,6 +3,7 @@
   flex-direction: row;
   align-content: center;
   width: 100%;
+  -webkit-app-region: no-drag;
 }
 
 .drawerContainer {

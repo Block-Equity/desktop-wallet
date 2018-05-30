@@ -66,10 +66,10 @@ class OpenOrders extends Component {
             key = { index }
             style={{fontSize: '0.7rem'}}
             onClick={ ()=>{this.handleSellAssetSelection(asset, index)} }>
-            <td>{ offer.amount } { sellAssetType }</td>
-            <td>{ offer.price } { buyAssetType }</td>
-            <td>{ offer.price_r.d / offer.price_r.n } { sellAssetType }</td>
-            <td>{ offer.price_r.n / offer.price_r.d } { buyAssetType }</td>
+            <td>{ numeral(offer.amount).format('0,0.0000') } { sellAssetType }</td>
+            <td>{ numeral(offer.price).format('0,0.0000') } { buyAssetType }</td>
+            <td>{ numeral(offer.price_r.d / offer.price_r.n).format('0,0.0000') } { sellAssetType }</td>
+            <td>{ numeral(offer.price_r.n / offer.price_r.d).format('0,0.0000') } { buyAssetType }</td>
           </tr>
         )
       })
