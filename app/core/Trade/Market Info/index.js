@@ -105,7 +105,7 @@ class MarketInfo extends Component {
         <tr>
           <th>{this.props.sellAsset.asset_code} Amount</th>
           <th>{this.props.buyAsset.asset_code} Amount</th>
-          <th>{this.props.buyAsset.asset_code} Price</th>
+          <th>{this.props.sellAsset.asset_code} Price</th>
         </tr>
     </thead>
     )
