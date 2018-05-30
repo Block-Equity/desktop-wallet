@@ -46,7 +46,21 @@ export const getPaymentOperationList = async (publicKey) => {
       .limit(200)
       .call()
       .then(({ records }) => resolve(records))
-      .catch(error => reject(error));
+      .catch(error => reject(error))
+  })
+}
+
+export const getTransactionList = async (publicKey) => {
+  return new Promise((resolve, reject) => {
+    server.transactions()
+    .forAccount(publicKey)
+    .order('desc')
+    .limit(200)
+    .call()
+    .then(({ records }) => {
+      resolve(records)
+    })
+    .catch(error => reject(error))
   })
 }
 
@@ -224,6 +238,17 @@ export const getOrderBook = (sellingAsset, sellingAssetIssuer, buyingAsset, buyi
         reject({ errorMessage: err, error: true })
       }
     )
+  })
+}
+
+export const getOpenOrders = (pk) => {
+  return new Promise((resolve, reject) => {
+    server.offers('accounts', pk)
+    .call()
+    .then(({ records }) => {
+      resolve({ payload: records, error: false })
+    })
+    .catch(error => reject({ errorMessage: error, error: true }))
   })
 }
 
