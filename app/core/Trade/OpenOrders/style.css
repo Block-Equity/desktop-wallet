@@ -9,3 +9,11 @@
   border-radius: 0.25rem;
   padding-top: -1rem;
 }
+
+.emptyContainer {
+  margin-top: 2rem;
+  color: #999999;
+  text-align: center;
+  font-size: 1.25rem;
+  width: 100%;
+}

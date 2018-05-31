@@ -41,6 +41,7 @@ class OpenOrders extends Component {
               { this.props.stellarOpenOrders && this.renderTableBody() }
             </tbody>
           </Table>
+          { this.props.stellarOpenOrders && this.renderEmptyState() }
         </div>
       </div>
     )
@@ -60,11 +61,7 @@ class OpenOrders extends Component {
   }
 
   renderTableBody() {
-    if (this.props.stellarOpenOrders.length === 0) {
-      return (
-        <div>No open offers</div>
-      )
-    } else {
+    if (this.props.stellarOpenOrders.length > 0) {
       const rowStyle = {verticalAlign: 'middle'}
       return this.props.stellarOpenOrders.map((offer, index) => {
         const sellAssetType = offer.selling.asset_type === 'native' ? 'XLM' : offer.selling.asset_code
@@ -74,12 +71,20 @@ class OpenOrders extends Component {
             key = { index }
             style={{fontSize: '0.7rem'}}>
               <td style={rowStyle}>{ numeral(offer.amount).format(DISPLAY_FORMAT, Math.floor) } { sellAssetType }</td>
-              <td style={rowStyle}>{ numeral(offer.price).format(DISPLAY_FORMAT, Math.floor) } { sellAssetType }</td>
+              <td style={rowStyle}>{ numeral(offer.price).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
               <td style={rowStyle}>{ numeral(offer.amount * offer.price).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
               <td style={{textAlign: 'right'}}>{ this.renderCancelView(offer, index)}</td>
           </tr>
         )
       })
+    }
+  }
+
+  renderEmptyState() {
+    if (this.props.stellarOpenOrders.length === 0) {
+      return (
+        <div className={ styles.emptyContainer }>No open offers</div>
+      )
     }
   }
 
