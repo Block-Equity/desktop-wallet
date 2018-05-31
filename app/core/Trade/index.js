@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import styles from './style.css'
 import TradeAsset from './TradeAsset'
+import OpenOrders from './OpenOrders'
 import { ListGroup, ListGroupItem } from 'reactstrap'
 
 const navigation = { tradeAsset: 0, openOrders: 1, tradeHistory: 2 }
@@ -68,7 +69,7 @@ class Trade extends Component {
         return ( <TradeAsset /> )
       break;
       case navigation.openOrders:
-
+        return ( <OpenOrders /> )
       break;
       case navigation.tradeHistory:
 

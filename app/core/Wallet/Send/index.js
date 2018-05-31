@@ -20,7 +20,7 @@ class Send extends Component {
       sendMemoID: '',
       displayErrors: false,
       showPINModal: false,
-      currentAddress: props.currentAddress,
+      currentAddress: props.currentAccount.pKey,
       alertOpen: false,
       alertMessage: ''
     }
@@ -43,6 +43,9 @@ class Send extends Component {
   }
 
   renderSendMoneySection () {
+
+    const { currentAccount } = this.props
+
     var formStyle = 'form-control'
     if (this.state.displayErrors) {
       formStyle = `form-control sendAssetFormDisplayErrors`
@@ -72,8 +75,8 @@ class Send extends Component {
               id='sendMemoID' name='sendMemoID' value={this.state.sendMemoID} onChange={this.handleChange} />
           </div>
           <div className='form-group'>
-            <label className={styles.sendAssetFormLabel} htmlFor='sendAmount'>Amount in XLM </label>
-            <input type='text' className={formStyle} placeholder='Amount in XLM'
+            <label className={styles.sendAssetFormLabel} htmlFor='sendAmount'>{`Amount in ${currentAccount.asset_code}`} </label>
+            <input type='text' className={formStyle} placeholder={`Amount in ${currentAccount.asset_code}`}
               id='sendAmount' name='sendAmount' value={this.state.sendAmount} onChange={this.handleChange} required />
           </div>
           <ActionButton processing={ this.props.paymentSending } title={ btnTitle } isForm={ true } />

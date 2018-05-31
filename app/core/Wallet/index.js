@@ -181,7 +181,7 @@ class Main extends Component {
       break
       case navigation.send:
         return (
-          <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } paymentSending={ this.props.paymentSending } currentAddress={ this.state.publicKey } />
+          <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } paymentSending={ this.props.paymentSending } currentAccount={ this.props.currentAccount } />
         )
       break
       case navigation.receive:

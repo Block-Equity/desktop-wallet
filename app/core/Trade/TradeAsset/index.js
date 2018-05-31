@@ -90,7 +90,7 @@ class TradeAsset extends Component {
               marginLeft: '0.75rem',
               marginRight: '0.75rem',
               marginTop: '-3.5rem',
-              fontSize: '0.85rem',
+              fontSize: '0.75rem',
               color: 'rgba(0, 0, 0, 0.2)'
             }}/>
           { this.renderBuyAsset() }
@@ -382,7 +382,9 @@ class TradeAsset extends Component {
   handleTradeSubmission = async () => {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    const tradePrice = this.state.isMarketOrder ? this.state.price : (this.state.receiveAssetAmount/this.state.offerAssetAmount)
+    const tradePrice = this.state.isMarketOrder ? this.state.price : numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
+    console.log(`Limit Price calculation: ${this.state.receiveAssetAmount/this.state.offerAssetAmount}`)
+    console.log(`Limit Price calculation for submission: ${numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)}`)
     this.setState({ tradeProcessing: true })
     await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
       this.state.offerAssetAmount, tradePrice )

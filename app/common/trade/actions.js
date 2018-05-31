@@ -1,5 +1,5 @@
 import * as Types from './types'
-import { getOrderBook, manageOffer } from '../../services/networking/horizon'
+import { getOrderBook, manageOffer, getOpenOrders, deleteOffer } from '../../services/networking/horizon'
 import { getCurrentAccount } from '../account/selectors'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
@@ -84,6 +84,83 @@ export function makeTradeOfferSuccess(trade) {
 export function makeTradeOfferFailure(error) {
   return {
     type: Types.TRADE_STELLAR_SUCCESS,
+    payload: error,
+    error: true
+  }
+}
+
+export function deleteTradeOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, price, offerId) {
+  return async (dispatch, getState) => {
+    dispatch(deleteTradeOfferRequest())
+    //Fetch PIN
+    let currentAccount = getCurrentAccount(getState())
+    const { pKey: publicKey, sKey: secretKey } = currentAccount
+    const { pin } = await getUserPIN()
+    console.log(`Pin: ${pin}`)
+    const decryptSK = await encryption.decryptText(secretKey, pin)
+    try {
+      const trade = await deleteOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, price, decryptSK, publicKey, offerId)
+      dispatch(deleteTradeOfferSuccess(true))
+    } catch (e) {
+      dispatch(deleteTradeOfferFailure(e))
+    }
+  }
+}
+
+export function deleteTradeOfferRequest() {
+  return {
+    type: Types.TRADE_STELLAR_DELETE_OFFER_REQUEST
+  }
+}
+
+export function deleteTradeOfferSuccess(success) {
+  return {
+    type: Types.TRADE_STELLAR_DELETE_OFFER_SUCCESS,
+    payload: success
+  }
+}
+
+export function deleteTradeOfferFailure(error) {
+  return {
+    type: Types.TRADE_STELLAR_DELETE_OFFER_FAILURE,
+    payload: error,
+    error: true
+  }
+}
+
+export function fetchOpenOrders() {
+  return async (dispatch, getState) => {
+    dispatch(fetchOpenOrdersRequest())
+    try {
+      let currentAccount = getCurrentAccount(getState())
+      const { pKey } = currentAccount
+      const { payload, error, errorMessage } = await getOpenOrders(pKey)
+      if (error) {
+        return dispatch(fetchOpenOrdersFailure(errorMessage))
+      }
+      return dispatch(fetchOpenOrdersSuccess(payload))
+    } catch (e) {
+      return dispatch(fetchOpenOrdersFailure(e))
+    }
+  }
+}
+
+export function fetchOpenOrdersRequest () {
+  return {
+    type: Types.TRADE_STELLAR_OPEN_ORDERS_REQUEST
+  }
+}
+
+export function fetchOpenOrdersSuccess (openOrders) {
+  return {
+    type: Types.TRADE_STELLAR_OPEN_ORDERS_SUCCESS,
+    payload: { openOrders }
+  }
+}
+
+export function fetchOpenOrdersFailure (error) {
+  return {
+    type: Types.TRADE_STELLAR_OPEN_ORDERS_FAILURE,
     payload: error,
     error: true
   }

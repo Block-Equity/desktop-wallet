@@ -46,7 +46,21 @@ export const getPaymentOperationList = async (publicKey) => {
       .limit(200)
       .call()
       .then(({ records }) => resolve(records))
-      .catch(error => reject(error));
+      .catch(error => reject(error))
+  })
+}
+
+export const getTransactionList = async (publicKey) => {
+  return new Promise((resolve, reject) => {
+    server.transactions()
+    .forAccount(publicKey)
+    .order('desc')
+    .limit(200)
+    .call()
+    .then(({ records }) => {
+      resolve(records)
+    })
+    .catch(error => reject(error))
   })
 }
 
@@ -227,6 +241,17 @@ export const getOrderBook = (sellingAsset, sellingAssetIssuer, buyingAsset, buyi
   })
 }
 
+export const getOpenOrders = (pk) => {
+  return new Promise((resolve, reject) => {
+    server.offers('accounts', pk)
+    .call()
+    .then(({ records }) => {
+      resolve({ payload: records, error: false })
+    })
+    .catch(error => reject({ errorMessage: error, error: true }))
+  })
+}
+
 export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, amount, price, sk, pk) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
   const sellAsset = sellingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
@@ -252,6 +277,40 @@ export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
       server.submitTransaction(transaction)
       .then( result => {
         console.log(`Manage offer success: ${JSON.stringify(result)}`)
+        resolve({ payload: 'Success', error: false })
+      }).catch( err => {
+        console.log(err);
+        reject({ errorMessage: err, error: true })
+      })
+    })
+  })
+}
+
+export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, price, sk, pk, offerId) => {
+  console.log(`Horizon SK: ${sk}`)
+  let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
+  const sellAsset = sellingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
+  const buyAsset = buyingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(buyingAsset, buyingAssetIssuer)
+  return new Promise((resolve, reject) => {
+    server.loadAccount(pk)
+    .catch(error => {
+      reject({ errorMessage: error.name, error: true })
+    })
+    .then(sourceAccount => {
+      var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
+        .addOperation(StellarSdk.Operation.manageOffer({
+            selling: sellAsset,
+            buying: buyAsset,
+            amount: '0.0000000',
+            price,
+            offerId
+          })
+        )
+        .build()
+      transaction.sign(sourceKeys)
+
+      server.submitTransaction(transaction)
+      .then( result => {
         resolve({ payload: 'Success', error: false })
       }).catch( err => {
         console.log(err);
