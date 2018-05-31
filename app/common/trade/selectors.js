@@ -5,3 +5,7 @@ export function getStellarOrderBook (state) {
 export function getStellarOpenOrders (state) {
   return state.trade.openOrders
 }
+
+export function getStellarTradeHistory (state) {
+  return state.trade.history
+}

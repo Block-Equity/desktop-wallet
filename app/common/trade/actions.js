@@ -1,5 +1,5 @@
 import * as Types from './types'
-import { getOrderBook, manageOffer, getOpenOrders, deleteOffer } from '../../services/networking/horizon'
+import { getOrderBook, manageOffer, getOpenOrders, deleteOffer, getTradeHistory } from '../../services/networking/horizon'
 import { getCurrentAccount } from '../account/selectors'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
@@ -161,6 +161,44 @@ export function fetchOpenOrdersSuccess (openOrders) {
 export function fetchOpenOrdersFailure (error) {
   return {
     type: Types.TRADE_STELLAR_OPEN_ORDERS_FAILURE,
+    payload: error,
+    error: true
+  }
+}
+
+export function fetchTradeHistory() {
+  return async (dispatch, getState) => {
+    dispatch(fetchTradeHistoryRequest())
+    try {
+      let currentAccount = getCurrentAccount(getState())
+      const { pKey } = currentAccount
+      const { payload, error, errorMessage } = await getTradeHistory(pKey)
+      if (error) {
+        return dispatch(fetchTradeHistoryFailure(errorMessage))
+      }
+      return dispatch(fetchTradeHistorySuccess(payload))
+    } catch (e) {
+      return dispatch(fetchTradeHistoryFailure(e))
+    }
+  }
+}
+
+export function fetchTradeHistoryRequest () {
+  return {
+    type: Types.TRADE_STELLAR_HISTORY_REQUEST
+  }
+}
+
+export function fetchTradeHistorySuccess (history) {
+  return {
+    type: Types.TRADE_STELLAR_HISTORY_SUCCESS,
+    payload: { history }
+  }
+}
+
+export function fetchTradeHistoryFailure (error) {
+  return {
+    type: Types.TRADE_STELLAR_HISTORY_FAILURE,
     payload: error,
     error: true
   }
