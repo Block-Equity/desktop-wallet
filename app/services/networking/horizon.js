@@ -286,7 +286,8 @@ export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
   })
 }
 
-export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, sk, pk, offerId) => {
+export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, price, sk, pk, offerId) => {
+  console.log(`Horizon SK: ${sk}`)
   let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
   const sellAsset = sellingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
   const buyAsset = buyingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(buyingAsset, buyingAssetIssuer)
@@ -300,7 +301,8 @@ export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
         .addOperation(StellarSdk.Operation.manageOffer({
             selling: sellAsset,
             buying: buyAsset,
-            amount: 0,
+            amount: '0.0000000',
+            price,
             offerId
           })
         )

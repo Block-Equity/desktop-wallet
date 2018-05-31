@@ -89,7 +89,7 @@ export function makeTradeOfferFailure(error) {
   }
 }
 
-export function deleteTradeOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, offerId) {
+export function deleteTradeOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, price, offerId) {
   return async (dispatch, getState) => {
     dispatch(deleteTradeOfferRequest())
     //Fetch PIN
@@ -98,9 +98,8 @@ export function deleteTradeOffer(sellingAsset, sellingAssetIssuer, buyingAsset, 
     const { pin } = await getUserPIN()
     console.log(`Pin: ${pin}`)
     const decryptSK = await encryption.decryptText(secretKey, pin)
-    console.log(`SK: ${decryptSK}`)
     try {
-      const trade = await manageOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, decryptSK, publicKey, offerId)
+      const trade = await deleteOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, price, decryptSK, publicKey, offerId)
       dispatch(deleteTradeOfferSuccess(true))
     } catch (e) {
       dispatch(deleteTradeOfferFailure(e))
