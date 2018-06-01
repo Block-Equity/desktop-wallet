@@ -4,7 +4,7 @@ import numeral from 'numeral'
 
 import { getStellarMarketInfo } from '../../../common/market/selectors'
 import { fetchStellarOrderBook } from '../../../common/trade/actions'
-import { getStellarOrderBook } from '../../../common/trade/selectors'
+import { getStellarOrderBook, getBestOffer } from '../../../common/trade/selectors'
 
 import styles from './style.css'
 
@@ -39,28 +39,24 @@ class MarketInfo extends Component {
 
   async getOrderBook(sellAsset, buyAsset) {
     await this.props.fetchStellarOrderBook(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer)
-    const { bids } = await this.props.stellarOrderBook
-    const limitOrderPrice = isNaN(this.props.buyAssetAmount/this.props.sellAssetAmount) ? 0 : (this.props.buyAssetAmount/this.props.sellAssetAmount)
-    const marketOrderPrice = bids.length === 0 ? 0 : bids[0].price
-    const price = this.props.isMarketOrder ? numeral(marketOrderPrice).format('0.0000000', Math.floor) : numeral(limitOrderPrice).format('0.0000000', Math.floor)
-    const displayPrice = isNaN(price) ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(price).format('0,0.0000', Math.floor)} ${buyAsset.asset_code}`
-    const displayAmount = bids.length === 0 ? 'No assets available' : `${numeral(bids[0].amount).format('0,0.00')} ${buyAsset.asset_code}`
-    this.setState({
-      validDisplayPrice: bids.length !== 0,
-      price,
-      displayAmount
-    })
-    this.props.tradePrice(price)
+    const { bids, asks } = await this.props.stellarOrderBook
+    this.setState({ validDisplayPrice: bids.length !== 0 || asks.length !==0 })
   }
 
   getDisplayPrice() {
     const { sellAsset, buyAsset } = this.props
     const { bids } = this.props.stellarOrderBook
     const limitOrderPrice = isNaN(this.props.buyAssetAmount/this.props.sellAssetAmount) ? 0 : (this.props.buyAssetAmount/this.props.sellAssetAmount)
-    const marketOrderPrice = bids.length === 0 ? 0 : bids[0].price
+    const marketOrderPrice = this.props.bestOffer.marketPrice
     const price = this.props.isMarketOrder ? numeral(marketOrderPrice).format('0.0000000', Math.floor) : numeral(limitOrderPrice).format('0.0000000', Math.floor)
     const displayPrice = isNaN(price) ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(price).format('0,0.0000', Math.floor)} ${buyAsset.asset_code}`
     return displayPrice
+  }
+
+  getDisplayAmount() {
+    const { buyAsset } = this.props
+    const displayAmount = this.props.bestOffer.marketAmount === 0 ? 'No assets available' : `${numeral(this.props.bestOffer.marketAmount).format('0,0.00')} ${buyAsset.asset_code}`
+    return displayAmount
   }
 
   render () {
@@ -68,7 +64,7 @@ class MarketInfo extends Component {
     const orderBookLabel = this.state.validDisplayPrice ? ( this.state.orderBookOpened ? 'Close order book' : 'View order book') : 'Order book not available'
     return (
       <div className={ styles.mainContainer }>
-        { this.renderMarketInfo() }
+        { this.props.bestOffer && this.renderMarketInfo() }
         <div id={ styles.orderBookContainer }>
           <a onClick={this.toggleOrderBook}>{orderBookLabel}</a>
           { this.props.stellarOrderBook && this.renderOrderBook() }
@@ -91,7 +87,7 @@ class MarketInfo extends Component {
               <div className={ styles.marketInfoContentContainer }>
                 <label className={ styles.tradeRateContainerTitle }>Available Amount</label>
                 <label className={ styles.tradeRateContainerContent }>
-                  { this.state.displayAmount }
+                  { this.props.stellarOrderBook && this.getDisplayAmount() }
                 </label>
               </div>
             </div>
@@ -125,7 +121,7 @@ class MarketInfo extends Component {
     })
 
     const sellOrderBook = (
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '47.5%'}}>
+      <div className={styles.orderBookTableContentContainer}>
         <b style={{color: 'red'}}>Top 5 Sell Offers</b>
         <Table size="sm" bordered style={{width: '100%', marginRight: '0.5rem'}}>
           { orderBookSellHeaders }
@@ -157,7 +153,7 @@ class MarketInfo extends Component {
     })
 
     const buyOrderBook = (
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '47.5%'}}>
+      <div className={styles.orderBookTableContentContainer}>
         <b style={{color: 'green'}}>Top 5 Buy Offers</b>
         <Table size="sm" bordered style={{width: '100%'}}>
           { orderBookBuyHeaders }
@@ -229,7 +225,8 @@ class MarketInfo extends Component {
 const mapStateToProps = (state) => {
   return {
     stellarMarketInfo: getStellarMarketInfo(state),
-    stellarOrderBook: getStellarOrderBook(state)
+    stellarOrderBook: getStellarOrderBook(state),
+    bestOffer: getBestOffer(state)
   }
 }
 

@@ -244,6 +244,8 @@ export const getOrderBook = (sellingAsset, sellingAssetIssuer, buyingAsset, buyi
 export const getOpenOrders = (pk) => {
   return new Promise((resolve, reject) => {
     server.offers('accounts', pk)
+    .order('desc')
+    .limit(200)
     .call()
     .then(({ records }) => {
       resolve({ payload: records, error: false })
@@ -287,7 +289,6 @@ export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
 }
 
 export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, price, sk, pk, offerId) => {
-  console.log(`Horizon SK: ${sk}`)
   let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
   const sellAsset = sellingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
   const buyAsset = buyingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(buyingAsset, buyingAssetIssuer)
@@ -318,4 +319,21 @@ export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
       })
     })
   })
+}
+
+export const getTradeHistory = (pk) => {
+  return new Promise((resolve, reject) => {
+    server.effects()
+    .forAccount(pk)
+    .order('desc')
+    .limit(200)
+    .call()
+    .then( ({ records }) => {
+      resolve({ payload: records, error: false })
+    })
+    .catch( error =>
+      reject({ errorMessage: error, error: true })
+    )
+  })
+
 }
