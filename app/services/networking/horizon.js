@@ -244,6 +244,8 @@ export const getOrderBook = (sellingAsset, sellingAssetIssuer, buyingAsset, buyi
 export const getOpenOrders = (pk) => {
   return new Promise((resolve, reject) => {
     server.offers('accounts', pk)
+    .order('desc')
+    .limit(200)
     .call()
     .then(({ records }) => {
       resolve({ payload: records, error: false })

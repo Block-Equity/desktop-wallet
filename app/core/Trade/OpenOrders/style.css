@@ -5,15 +5,13 @@
 
 .tableContainer {
   overflow: auto;
-  max-height: 38rem;
-  border-radius: 0.25rem;
-  padding-top: -1rem;
+  max-height: 40rem;
 }
 
 .emptyContainer {
   margin-top: 2rem;
   color: #999999;
   text-align: center;
-  font-size: 1.25rem;
+  font-size: 1.35rem;
   width: 100%;
 }

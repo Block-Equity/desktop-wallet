@@ -5,9 +5,7 @@
 
 .tableContainer {
   overflow: auto;
-  max-height: 38rem;
-  border-radius: 0.25rem;
-  padding-top: -1rem;
+  max-height: 40rem;
 }
 
 .emptyContainer {
