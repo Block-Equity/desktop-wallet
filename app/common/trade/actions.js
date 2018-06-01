@@ -5,27 +5,29 @@ import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
 
 import axios from 'axios'
+import numeral from 'numeral'
 
-const POLL_FREQUENCY = 30000
+const POLL_FREQUENCY = 10000
 var pollOrderBook
 
 export function fetchStellarOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer) {
   return async dispatch => {
     dispatch(fetchStellarOrderBookRequest())
     try {
-      clearInterval(pollOrderBook)
-      pollOrderBook = setInterval( async function() {
+      const orderBookRequest = async () => {
         const { payload, error, errorMessage } = await getOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer)
-        if (error) {
-          return dispatch(fetchStellarOrderBookFailure(errorMessage))
-        }
-        return dispatch(fetchStellarOrderBookSuccess(payload))
-      }, POLL_FREQUENCY)
-      const { payload, error, errorMessage } = await getOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer)
-      if (error) {
-        return dispatch(fetchStellarOrderBookFailure(errorMessage))
+
+        if (error) { return dispatch(fetchStellarOrderBookFailure(errorMessage)) }
+
+        const { bids } = await payload
+        const marketPrice = await bids.length === 0 ? 0 : numeral(bids[0].price).format('0.0000000', Math.floor)
+        const marketAmount = await bids.length === 0 ? 0 : bids[0].amount
+
+        return dispatch(fetchStellarOrderBookSuccess({ payload, marketPrice, marketAmount }))
       }
-      return dispatch(fetchStellarOrderBookSuccess(payload))
+      clearInterval(pollOrderBook) //This clears any previous polls as selection criterias could be changing by the user
+      pollOrderBook = setInterval( () => { orderBookRequest() }, POLL_FREQUENCY)
+      orderBookRequest()
     } catch (e) {
       return dispatch(fetchStellarOrderBookFailure(e))
     }
@@ -38,10 +40,11 @@ export function fetchStellarOrderBookRequest () {
   }
 }
 
-export function fetchStellarOrderBookSuccess (orderbook) {
+export function fetchStellarOrderBookSuccess (info) {
+  const { payload: orderbook, marketPrice, marketAmount } = info
   return {
     type: Types.TRADE_STELLAR_ORDER_BOOK_SUCCESS,
-    payload: { orderbook }
+    payload: { orderbook, marketPrice, marketAmount }
   }
 }
 
@@ -198,7 +201,6 @@ export async function parseTradeRecords(records) {
         })
       }
   })
-
   return recordsWithDate
 }
 

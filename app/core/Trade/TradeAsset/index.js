@@ -5,6 +5,7 @@ import numeral from 'numeral'
 import { getStellarAssetsForDisplay } from '../../../common/account/selectors'
 import { getStellarMarketInfo } from '../../../common/market/selectors'
 import { makeTradeOffer, fetchTradeHistory } from '../../../common/trade/actions'
+import { getBestOffer } from '../../../common/trade/selectors'
 
 import styles from './style.css'
 
@@ -61,7 +62,6 @@ class TradeAsset extends Component {
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
     this.handleTradeSubmission = this.handleTradeSubmission.bind(this)
-    this.tradePrice = this.tradePrice.bind(this)
     this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
     this.handleMarketLimitSelection = this.handleMarketLimitSelection.bind(this)
   }
@@ -78,7 +78,6 @@ class TradeAsset extends Component {
         { this.state.sellAssetList.length > 0
           && this.state.buyAssetList.length > 0
           && <MarketInfo onRef={ref => (this.marketInfo = ref)}
-              tradePrice={this.tradePrice}
               isMarketOrder={this.state.marketOrder}
               buyAssetAmount={this.state.receiveAssetAmount}
               sellAssetAmount={this.state.offerAssetAmount}
@@ -279,7 +278,7 @@ class TradeAsset extends Component {
     const formattedValue = numeral(percentage * selectedOfferAsset.balance).format('0,0.00')
     this.setState({
       offerAssetAmount: formattedValue,
-      receiveAssetAmount: this.calculateReceiveAmount(this.state.price, value)
+      receiveAssetAmount: this.calculateReceiveAmount(this.props.bestOffer.marketPrice, value)
     })
   }
 
@@ -289,7 +288,7 @@ class TradeAsset extends Component {
     })
     if (this.state.marketOrder) {
         this.setState({
-          receiveAssetAmount: this.state.offerAssetAmount.length === 0 ? '' : this.calculateReceiveAmount(this.state.price, this.state.offerAssetAmount)
+          receiveAssetAmount: this.state.offerAssetAmount.length === 0 ? '' : this.calculateReceiveAmount(this.props.bestOffer.marketPrice, this.state.offerAssetAmount)
         })
     }
   }
@@ -362,7 +361,7 @@ class TradeAsset extends Component {
     if (this.state.marketOrder) {
       if (name === 'offerAssetAmount') {
         this.setState({
-          receiveAssetAmount: value.length === 0 ? '' : this.calculateReceiveAmount(this.state.price, value)
+          receiveAssetAmount: value.length === 0 ? '' : this.calculateReceiveAmount(this.props.bestOffer.marketPrice, value)
         })
       }
     }
@@ -383,7 +382,7 @@ class TradeAsset extends Component {
   handleTradeSubmission = async () => {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    const tradePrice = this.state.isMarketOrder ? this.state.price : numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
+    const tradePrice = this.state.isMarketOrder ? this.props.bestOffer.marketPrice : numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
     console.log(`Limit Price calculation: ${this.state.receiveAssetAmount/this.state.offerAssetAmount}`)
     console.log(`Limit Price calculation for submission: ${numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)}`)
     this.setState({ tradeProcessing: true })
@@ -396,12 +395,6 @@ class TradeAsset extends Component {
       receiveAssetAmount: '',
       alertOpen: true,
       alertMessage: 'Trade submitted successfully'
-    })
-  }
-
-  tradePrice = (price) => {
-    this.setState({
-      price
     })
   }
 
@@ -457,6 +450,7 @@ const mapStateToProps = (state) => {
   return {
     assets: getStellarAssetsForDisplay(state),
     stellarMarketInfo: getStellarMarketInfo(state),
+    bestOffer: getBestOffer(state)
   }
 }
 

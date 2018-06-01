@@ -4,7 +4,8 @@ import * as Types from './types'
 export const INITIAL_STATE = {
   orderbook: undefined,
   openOrders: undefined,
-  history: undefined
+  history: undefined,
+  bestOffer: undefined
 }
 
 export function fetchStellarOrderBookRequest (state) {
@@ -14,10 +15,11 @@ export function fetchStellarOrderBookRequest (state) {
 }
 
 export function fetchStellarOrderBookSuccess (state, payload) {
-  const { orderbook } = payload
+  const { orderbook, marketPrice, marketAmount } = payload
   return {
     ...state,
-    orderbook: orderbook
+    orderbook,
+    bestOffer: { marketPrice, marketAmount }
   }
 }
 
