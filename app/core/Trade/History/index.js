@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import numeral from 'numeral'
+import moment from 'moment'
 
 import { fetchTradeHistory } from '../../../common/trade/actions'
 import { getStellarTradeHistory } from '../../../common/trade/selectors'
@@ -66,7 +67,7 @@ class History extends Component {
           <tr
             key = { index }
             style={{fontSize: '0.7rem'}}>
-              <td style={rowStyle}>{ trade.date }</td>
+              <td style={rowStyle}>{ moment(trade.date, 'YYYY-MM-DDTHH:mm:ssZ').format('lll') }</td>
               <td style={rowStyle}>{ numeral(trade.sold_amount).format(DISPLAY_FORMAT, Math.floor) } { sellAssetType }</td>
               <td style={rowStyle}>{ numeral(trade.bought_amount/trade.sold_amount).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
               <td style={rowStyle}>{ numeral(trade.bought_amount).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
