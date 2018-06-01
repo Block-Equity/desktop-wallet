@@ -289,7 +289,6 @@ export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
 }
 
 export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, price, sk, pk, offerId) => {
-  console.log(`Horizon SK: ${sk}`)
   let sourceKeys = StellarSdk.Keypair.fromSecret(sk)
   const sellAsset = sellingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(sellingAsset, sellingAssetIssuer)
   const buyAsset = buyingAsset === STELLAR_CODE ? new StellarSdk.Asset.native() : new StellarSdk.Asset(buyingAsset, buyingAssetIssuer)

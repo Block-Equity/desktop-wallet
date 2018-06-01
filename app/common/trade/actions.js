@@ -101,7 +101,6 @@ export function deleteTradeOffer(sellingAsset, sellingAssetIssuer, buyingAsset, 
     let currentAccount = getCurrentAccount(getState())
     const { pKey: publicKey, sKey: secretKey } = currentAccount
     const { pin } = await getUserPIN()
-    console.log(`Pin: ${pin}`)
     const decryptSK = await encryption.decryptText(secretKey, pin)
     try {
       const trade = await deleteOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, price, decryptSK, publicKey, offerId)
