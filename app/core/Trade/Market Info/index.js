@@ -39,14 +39,15 @@ class MarketInfo extends Component {
 
   async getOrderBook(sellAsset, buyAsset) {
     await this.props.fetchStellarOrderBook(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer)
-    const { bids } = await this.props.stellarOrderBook
+    const { bids, asks } = await this.props.stellarOrderBook
+    //TODO: Exchange rate and available amount should come from the store so they are also updated everytime order book is updated
     const limitOrderPrice = isNaN(this.props.buyAssetAmount/this.props.sellAssetAmount) ? 0 : (this.props.buyAssetAmount/this.props.sellAssetAmount)
     const marketOrderPrice = bids.length === 0 ? 0 : bids[0].price
     const price = this.props.isMarketOrder ? numeral(marketOrderPrice).format('0.0000000', Math.floor) : numeral(limitOrderPrice).format('0.0000000', Math.floor)
     const displayPrice = isNaN(price) ? 'No offers available' : `1 ${sellAsset.asset_code}  =  ${numeral(price).format('0,0.0000', Math.floor)} ${buyAsset.asset_code}`
     const displayAmount = bids.length === 0 ? 'No assets available' : `${numeral(bids[0].amount).format('0,0.00')} ${buyAsset.asset_code}`
     this.setState({
-      validDisplayPrice: bids.length !== 0,
+      validDisplayPrice: (bids.length !== 0 || asks.length !==0),
       price,
       displayAmount
     })
@@ -125,7 +126,7 @@ class MarketInfo extends Component {
     })
 
     const sellOrderBook = (
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '47.5%'}}>
+      <div className={styles.orderBookTableContentContainer}>
         <b style={{color: 'red'}}>Top 5 Sell Offers</b>
         <Table size="sm" bordered style={{width: '100%', marginRight: '0.5rem'}}>
           { orderBookSellHeaders }
@@ -157,7 +158,7 @@ class MarketInfo extends Component {
     })
 
     const buyOrderBook = (
-      <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', width: '47.5%'}}>
+      <div className={styles.orderBookTableContentContainer}>
         <b style={{color: 'green'}}>Top 5 Buy Offers</b>
         <Table size="sm" bordered style={{width: '100%'}}>
           { orderBookBuyHeaders }

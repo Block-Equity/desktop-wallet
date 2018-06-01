@@ -75,6 +75,13 @@
   width: 100%;
 }
 
+.orderBookTableContentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 47.5%;
+}
+
 .balanceInfoComponentContainer {
   display: flex;
   flex-direction: column;
