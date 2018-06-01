@@ -8,6 +8,13 @@
   max-height: 40rem;
 }
 
+.tableHeader {
+  background-color: #F7F7F7;
+  border-top: 0px solid rgba(0, 0, 0, 0);
+  border-bottom: 0px solid rgba(0, 0, 0, 0);
+  font-size: 0.8rem;
+}
+
 .emptyContainer {
   margin-top: 2rem;
   color: #999999;

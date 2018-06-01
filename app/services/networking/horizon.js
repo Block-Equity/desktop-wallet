@@ -322,18 +322,15 @@ export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
 }
 
 export const getTradeHistory = (pk) => {
+  const url = `${BASE_URL}/accounts/${pk}/trades?order=desc&limit=200&`
   return new Promise((resolve, reject) => {
-    server.effects()
-    .forAccount(pk)
-    .order('desc')
-    .limit(200)
-    .call()
-    .then( ({ records }) => {
-      resolve({ payload: records, error: false })
+    axios.get(url)
+    .then( response => {
+      var records = response.data._embedded.records
+      resolve({ records, error: false })
     })
-    .catch( error =>
+    .catch( error => {
       reject({ errorMessage: error, error: true })
-    )
+    })
   })
-
 }

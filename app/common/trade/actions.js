@@ -176,31 +176,21 @@ export function fetchTradeHistory() {
     try {
       let currentAccount = getCurrentAccount(getState())
       const { pKey } = currentAccount
-      const { payload, error, errorMessage } = await getTradeHistory(pKey)
-      const recordsWithDate = await parseTradeRecords(payload)
+      const { records, error, errorMessage } = await getTradeHistory(pKey)
+
+      const customSort = (a, b) => {
+        return new Date(b.ledger_close_time).getTime() - new Date(a.ledger_close_time).getTime()
+      }
+      const sortedRecords = await records.sort(customSort)
 
       if (error) {
-        return dispatch(fetchTradeHistoryFailure(errorMessage))
+        return dispatch(fetchTradeHistoryFailure(error))
       }
-      return dispatch(fetchTradeHistorySuccess(recordsWithDate))
+      return dispatch(fetchTradeHistorySuccess(sortedRecords))
     } catch (e) {
       return dispatch(fetchTradeHistoryFailure(e))
     }
   }
-}
-
-export async function parseTradeRecords(records) {
-  var recordsWithDate = []
-  await records.map((record, index) => {
-      if (record.type === 'trade') {
-        const url = record._links.operation.href
-        axios.get(url).then( response => {
-          var date = response.data.created_at
-          recordsWithDate.push({ ...record, date})
-        })
-      }
-  })
-  return recordsWithDate
 }
 
 export function fetchTradeHistoryRequest () {
