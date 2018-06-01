@@ -322,14 +322,17 @@ export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
 
 export const getTradeHistory = (pk) => {
   return new Promise((resolve, reject) => {
-    server.trades()
+    server.effects()
     .forAccount(pk)
+    .order('desc')
+    .limit(200)
     .call()
-    .then(({ records }) => {
+    .then( ({ records }) => {
       resolve({ payload: records, error: false })
     })
     .catch( error =>
       reject({ errorMessage: error, error: true })
     )
   })
+
 }

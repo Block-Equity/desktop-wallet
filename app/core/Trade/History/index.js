@@ -24,7 +24,7 @@ class History extends Component {
   }
 
   async componentDidMount() {
-    this.props.fetchTradeHistory()
+    //this.props.fetchTradeHistory()
   }
 
   render() {
@@ -47,10 +47,10 @@ class History extends Component {
     return (
       <thead>
         <tr style={{fontSize: '0.7rem'}}>
+          <th>Date</th>
           <th>Selling</th>
           <th>Price</th>
           <th>Value</th>
-          <th></th>
         </tr>
       </thead>
     )
@@ -60,16 +60,16 @@ class History extends Component {
     if (this.props.history.length > 0) {
       const rowStyle = {verticalAlign: 'middle'}
       return this.props.history.map((trade, index) => {
-        const sellAssetType = trade.base_asset_type === 'native' ? 'XLM' : offer.base_asset_code
-        const buyAssetType = trade.counter_asset_type === 'native' ? 'XLM' : offer.counter_asset_code
+        const sellAssetType = trade.sold_asset_type === 'native' ? 'XLM' : trade.sold_asset_code
+        const buyAssetType = trade.bought_asset_type === 'native' ? 'XLM' : trade.bought_asset_code
         return (
           <tr
             key = { index }
             style={{fontSize: '0.7rem'}}>
-              <td style={rowStyle}>{ numeral(trade.base_amount).format(DISPLAY_FORMAT, Math.floor) } { sellAssetType }</td>
-              <td style={rowStyle}>{ numeral(trade.price.n/trade.price.d).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
-              <td style={rowStyle}>{ numeral(trade.counter_amount).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
-              <td style={{textAlign: 'right'}}>{ this.renderCancelView(offer, index)}</td>
+              <td style={rowStyle}>{ trade.date }</td>
+              <td style={rowStyle}>{ numeral(trade.sold_amount).format(DISPLAY_FORMAT, Math.floor) } { sellAssetType }</td>
+              <td style={rowStyle}>{ numeral(trade.bought_amount/trade.sold_amount).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
+              <td style={rowStyle}>{ numeral(trade.bought_amount).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
           </tr>
         )
       })

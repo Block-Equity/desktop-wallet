@@ -4,7 +4,7 @@ import numeral from 'numeral'
 
 import { getStellarAssetsForDisplay } from '../../../common/account/selectors'
 import { getStellarMarketInfo } from '../../../common/market/selectors'
-import { makeTradeOffer } from '../../../common/trade/actions'
+import { makeTradeOffer, fetchTradeHistory } from '../../../common/trade/actions'
 
 import styles from './style.css'
 
@@ -69,6 +69,7 @@ class TradeAsset extends Component {
   async componentDidMount() {
     await this.initialSellAssetList()
     await this.initialBuyAssetList()
+    this.props.fetchTradeHistory()
   }
 
   render() {
@@ -461,5 +462,6 @@ const mapStateToProps = (state) => {
 
 export default connect(
   mapStateToProps, {
-    makeTradeOffer
+    makeTradeOffer,
+    fetchTradeHistory
 }) (TradeAsset)

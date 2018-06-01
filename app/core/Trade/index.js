@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import styles from './style.css'
 import TradeAsset from './TradeAsset'
 import OpenOrders from './OpenOrders'
+import History from './History'
 import { ListGroup, ListGroupItem } from 'reactstrap'
 
 const navigation = { tradeAsset: 0, openOrders: 1, tradeHistory: 2 }
@@ -72,7 +73,7 @@ class Trade extends Component {
         return ( <OpenOrders /> )
       break;
       case navigation.tradeHistory:
-
+        return ( <History /> )
       break;
     }
   }

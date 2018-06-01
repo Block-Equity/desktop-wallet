@@ -4,6 +4,8 @@ import { getCurrentAccount } from '../account/selectors'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
 
+import axios from 'axios'
+
 const POLL_FREQUENCY = 30000
 var pollOrderBook
 
@@ -173,14 +175,31 @@ export function fetchTradeHistory() {
       let currentAccount = getCurrentAccount(getState())
       const { pKey } = currentAccount
       const { payload, error, errorMessage } = await getTradeHistory(pKey)
+      const recordsWithDate = await parseTradeRecords(payload)
+
       if (error) {
         return dispatch(fetchTradeHistoryFailure(errorMessage))
       }
-      return dispatch(fetchTradeHistorySuccess(payload))
+      return dispatch(fetchTradeHistorySuccess(recordsWithDate))
     } catch (e) {
       return dispatch(fetchTradeHistoryFailure(e))
     }
   }
+}
+
+export async function parseTradeRecords(records) {
+  var recordsWithDate = []
+  await records.map((record, index) => {
+      if (record.type === 'trade') {
+        const url = record._links.operation.href
+        axios.get(url).then( response => {
+          var date = response.data.created_at
+          recordsWithDate.push({ ...record, date})
+        })
+      }
+  })
+
+  return recordsWithDate
 }
 
 export function fetchTradeHistoryRequest () {
