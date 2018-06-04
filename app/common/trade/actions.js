@@ -1,6 +1,7 @@
 import * as Types from './types'
 import { getOrderBook, manageOffer, getOpenOrders, deleteOffer, getTradeHistory } from '../../services/networking/horizon'
 import { getCurrentAccount } from '../account/selectors'
+import { getCurrentApp } from '../app/selectors'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
 
@@ -11,7 +12,7 @@ const POLL_FREQUENCY = 10000
 var pollOrderBook
 
 export function fetchStellarOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer) {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     dispatch(fetchStellarOrderBookRequest())
     try {
       const orderBookRequest = async () => {
@@ -25,8 +26,16 @@ export function fetchStellarOrderBook(sellingAsset, sellingAssetIssuer, buyingAs
 
         return dispatch(fetchStellarOrderBookSuccess({ payload, marketPrice, marketAmount }))
       }
+
       clearInterval(pollOrderBook) //This clears any previous polls as selection criterias could be changing by the user
-      pollOrderBook = setInterval( () => { orderBookRequest() }, POLL_FREQUENCY)
+      pollOrderBook = setInterval( () => {
+        const currentApp = getCurrentApp(getState())
+        if (currentApp === 1) {
+          orderBookRequest()
+        } else {
+          clearInterval(pollOrderBook)
+        }
+      }, POLL_FREQUENCY)
       orderBookRequest()
     } catch (e) {
       return dispatch(fetchStellarOrderBookFailure(e))

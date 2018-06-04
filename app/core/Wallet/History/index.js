@@ -42,15 +42,12 @@ const tableAmountRowStyle = {
 }
 
 const TRANSACTION_TYPE = {
+  AccountCreated: 'account_created',
   AccountCredited: 'account_credited',
   AccountDebited: 'account_debited',
   Trade: 'trade',
   TrustlineCreated: 'trustline_created',
-  TrustlineRemoved: 'trustline_removed',
-  CreateAccount: 'account_created',
-  Payment: 'payment',
-  SetOptions: 'set_options',
-  ManageOffer: 'manage_offer'
+  TrustlineRemoved: 'trustline_removed'
 }
 
 class History extends Component {
@@ -63,11 +60,14 @@ class History extends Component {
 
     this.props.paymentTransactions.map(n => {
       if (currentAccount.asset_type === 'native') {
-        if (n.type === 'trade') {
+        if (n.type === TRANSACTION_TYPE.Trade) {
           if (n.bought_asset_type === 'native' || n.sold_asset_type === 'native') {
             const obj = this.getDisplayObject(n, currentAccount)
             displayData.push(obj)
           }
+        } else if (n.type === TRANSACTION_TYPE.AccountCreated) {
+          const obj = this.getDisplayObject(n, currentAccount)
+          displayData.push(obj)
         } else {
           if (n.asset_type === 'native') {
             const obj = this.getDisplayObject(n, currentAccount)
@@ -111,7 +111,7 @@ class History extends Component {
 
   getDisplayObject(n, currentAccount) {
     const id = n.id
-    const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow();
+    const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
     const formattedDate = moment(n.created_at).format('lll')
     const displayDate = `${formattedNowTime}${formattedDate}`
     var displayAddress, displayAmount, displayTypeLabel
@@ -125,7 +125,7 @@ class History extends Component {
         displayAmount = `${numeral(`-${n.amount}`).format('(0,0.00)')}`
         displayTypeLabel = `Payment sent`
       break;
-      case TRANSACTION_TYPE.CreateAccount:
+      case TRANSACTION_TYPE.AccountCreated:
         //displayAddress = n.source_account === currentAccount.pKey ? n.account : n.source_account //Todo: Fetch from Operation API
         displayAmount = numeral(n.starting_balance).format('0,0.00')
         displayTypeLabel = `Account created`
