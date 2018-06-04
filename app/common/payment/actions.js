@@ -1,4 +1,4 @@
-import { sendPayment, getPaymentOperationList, createDestinationAccount, BASE_URL_HORIZON_PUBLIC_NET } from '../../services/networking/horizon'
+import { sendPayment, getPaymentOperationList, getEffectsOnAccount, createDestinationAccount, BASE_URL_HORIZON_PUBLIC_NET } from '../../services/networking/horizon'
 import { fetchAccountDetails, setCurrentAccount, fetchStellarAssetsForDisplay } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey, getUserAccountFailedStatus } from '../account/selectors'
 import { getStellarPaymentPagingToken } from '../payment/selectors'
@@ -72,8 +72,11 @@ export function fetchPaymentOperationList() {
     dispatch(paymentOperationListRequest())
 
     try {
-      let paymentList = await getPaymentOperationList(publicKey)
-      return dispatch(paymentOperationListSuccess(paymentList))
+      const { payload, error, errorMessage } = await getEffectsOnAccount(publicKey)
+      if (error) {
+        return dispatch(paymentOperationListFailure(errorMessage))
+      }
+      return dispatch(paymentOperationListSuccess(payload))
     } catch (e) {
       return dispatch(paymentOperationListFailure(e))
     }

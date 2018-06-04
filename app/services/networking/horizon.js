@@ -50,6 +50,22 @@ export const getPaymentOperationList = async (publicKey) => {
   })
 }
 
+export const getEffectsOnAccount = (publicKey) => {
+  return new Promise((resolve, reject) => {
+    server.effects()
+    .forAccount(publicKey)
+    .order('desc')
+    .limit(200)
+    .call()
+    .then( ({ records }) => {
+      resolve({ payload: records, error: false })
+    })
+    .catch( error =>
+      reject({ errorMessage: error, error: true })
+    )
+  })
+}
+
 export const getTransactionList = async (publicKey) => {
   return new Promise((resolve, reject) => {
     server.transactions()

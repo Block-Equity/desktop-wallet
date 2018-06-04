@@ -181,6 +181,7 @@ export function fetchTradeHistory() {
       const customSort = (a, b) => {
         return new Date(b.ledger_close_time).getTime() - new Date(a.ledger_close_time).getTime()
       }
+      //Sorted by most recent trades first
       const sortedRecords = await records.sort(customSort)
 
       if (error) {
