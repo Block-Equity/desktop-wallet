@@ -203,7 +203,7 @@ export function fetchStellarAssetsForDisplay () {
       Object.keys(accounts).map((key, index) => {
         if (accounts[key].type === stellarAssetDesc.asset_name) {
           const stellarAccount = accounts[Object.keys(accounts)[index]]
-          const minimumBalance = 1 + (stellarAccount.subentryCount * MINIMUM_BALANCE_INCREMENT) + (stellarAccount.signers.length * MINIMUM_BALANCE_INCREMENT)
+          const minimumBalance = calculateStellarMinimumBalance(stellarAccount)
           stellarAccount.balances.map((acc, index) => {
             const assetCodeLookUpValue = acc.asset_code === undefined ? '' : acc.asset_code.toLowerCase()
             const checkIfDisplayNameExists = response[assetCodeLookUpValue] === undefined ? acc.asset_code : response[assetCodeLookUpValue].asset_name
@@ -236,6 +236,37 @@ export function fetchStellarAssetsForDisplay () {
       return dispatch(stellarAccountsDisplayFailure(e))
     }
   }
+}
+
+export function calculateStellarMinimumBalance(stellarAccount) {
+  const baseReserve = 1
+
+  const trustlines = {
+    count: stellarAccount.balances.length - 1,
+    amount: (stellarAccount.balances.length - 1) * MINIMUM_BALANCE_INCREMENT
+  }
+
+  const offers = {
+    count: stellarAccount.subentryCount - trustlines.count,
+    amount: (stellarAccount.subentryCount - trustlines.count) * MINIMUM_BALANCE_INCREMENT
+  }
+
+  const signers = {
+    count: stellarAccount.signers ? stellarAccount.signers.length : 0,
+    amount: (stellarAccount.signers ? stellarAccount.signers.length : 0) * MINIMUM_BALANCE_INCREMENT
+  }
+
+  const minimumBalanceAmount = baseReserve + trustlines.amount + offers.amount + signers.amount
+
+  const minimumBalance = {
+    baseReserve,
+    trustlines,
+    offers,
+    signers,
+    minimumBalanceAmount
+  }
+
+  return minimumBalance
 }
 
 export function fetchBlockEQTokensForDisplay () {
