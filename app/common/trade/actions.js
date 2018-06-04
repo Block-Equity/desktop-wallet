@@ -4,11 +4,9 @@ import { getCurrentAccount } from '../account/selectors'
 import { getCurrentApp } from '../app/selectors'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
-
-import axios from 'axios'
 import numeral from 'numeral'
 
-const POLL_FREQUENCY = 10000
+const POLL_FREQUENCY = 15000
 var pollOrderBook
 
 export function fetchStellarOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer) {
@@ -30,7 +28,7 @@ export function fetchStellarOrderBook(sellingAsset, sellingAssetIssuer, buyingAs
       clearInterval(pollOrderBook) //This clears any previous polls as selection criterias could be changing by the user
       pollOrderBook = setInterval( () => {
         const currentApp = getCurrentApp(getState())
-        if (currentApp === 1) {
+        if (currentApp === 1) { //No need to poll unless on trading
           orderBookRequest()
         } else {
           clearInterval(pollOrderBook)

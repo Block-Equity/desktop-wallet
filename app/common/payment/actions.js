@@ -98,8 +98,6 @@ export function streamPayments() {
 
       es.onmessage = message => {
         var payload = message.data ? JSON.parse(message.data) : message
-        console.log(`Incoming Payment Paging Token: ${JSON.stringify(payload.paging_token)}`)
-
         dispatch(streamPaymentIncoming(true))
         dispatch(updatePaymentPagingToken(payload.paging_token))
 

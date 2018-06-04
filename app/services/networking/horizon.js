@@ -34,6 +34,8 @@ export const getAccountDetail = async (publicKey) => {
     balances: account.balances,
     sequence: account.sequence,
     type: 'Stellar',
+    subentryCount: account.subentry_count,
+    signers: account.signers,
     inflationDestination: account.inflation_destination
   }
 }

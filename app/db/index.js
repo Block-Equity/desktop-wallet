@@ -170,7 +170,7 @@ export const addUserAccount = ({ publicKey, secretKey, balances, sequence, type 
   })
 }
 
-export const updateUserAccount = ({ publicKey, secretKey, balances, sequence, type, inflationDestination, pagingToken }) => {
+export const updateUserAccount = ({ publicKey, secretKey, balances, sequence, type, inflationDestination, pagingToken, subentryCount, signers }) => {
   const updatedAccount = {
     pKey: publicKey,
     sKey: secretKey,
@@ -178,7 +178,9 @@ export const updateUserAccount = ({ publicKey, secretKey, balances, sequence, ty
     sequence,
     type,
     inflationDestination,
-    pagingToken
+    pagingToken,
+    subentryCount,
+    signers
   }
   return new Promise((resolve, reject) => {
     db.update({ type: DOCUMENT_TYPE_USER_INFO }, { $set: { accounts: { [publicKey]: updatedAccount } } },

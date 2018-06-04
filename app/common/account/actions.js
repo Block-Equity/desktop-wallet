@@ -20,6 +20,7 @@ import * as mnemonic from '../../services/security/mnemonic'
 import * as Types from './types'
 
 export const stellarAssetImageURL = 'https://firebasestorage.googleapis.com/v0/b/blockeq-wallet.appspot.com/o/icon-stellar.png?alt=media&token=38b70165-5255-4113-a15e-3c72bd4fab9f'
+export const MINIMUM_BALANCE_INCREMENT = 0.5
 
 export function initializeDB () {
   return async (dispatch, getState) => {
@@ -116,7 +117,7 @@ export function fetchAccountDetails () {
 
     try {
       let details = await horizon.getAccountDetail(publicKey)
-      const { balances, sequence: nextSequence, type, inflationDestination } = details
+      const { balances, sequence: nextSequence, type, inflationDestination, subentryCount, signers } = details
 
       //Update current account info
       var updateCurrentAccount
@@ -146,7 +147,9 @@ export function fetchAccountDetails () {
         sequence: nextSequence,
         type,
         inflationDestination,
-        pagingToken: token
+        pagingToken: token,
+        subentryCount,
+        signers
       })
       dispatch(setAccounts(accounts))
 
@@ -200,6 +203,7 @@ export function fetchStellarAssetsForDisplay () {
       Object.keys(accounts).map((key, index) => {
         if (accounts[key].type === stellarAssetDesc.asset_name) {
           const stellarAccount = accounts[Object.keys(accounts)[index]]
+          const minimumBalance = 1 + (stellarAccount.subentryCount * MINIMUM_BALANCE_INCREMENT) + (stellarAccount.signers.length * MINIMUM_BALANCE_INCREMENT)
           stellarAccount.balances.map((acc, index) => {
             const assetCodeLookUpValue = acc.asset_code === undefined ? '' : acc.asset_code.toLowerCase()
             const checkIfDisplayNameExists = response[assetCodeLookUpValue] === undefined ? acc.asset_code : response[assetCodeLookUpValue].asset_name
@@ -207,6 +211,7 @@ export function fetchStellarAssetsForDisplay () {
             const displayAccount = {
               asset_type: acc.asset_type,
               balance: acc.balance,
+              minimumBalance,
               asset_code: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_code : acc.asset_code,
               asset_name: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_name : checkIfDisplayNameExists,
               asset_issuer: acc.asset_type === stellarAssetDesc.asset_type ? '' : acc.asset_issuer,
