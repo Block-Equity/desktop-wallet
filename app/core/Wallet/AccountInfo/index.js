@@ -39,8 +39,9 @@ class AccountInfo extends Component {
 
   render() {
     const { currentAccount } = this.props
-    const balance = currentAccount.balance
-    const availableBalance = balance - (currentAccount.minimumBalance ? currentAccount.minimumBalance.minimumBalanceAmount : 0)
+    const availableBalance = currentAccount.asset_code === 'XLM' ?
+      (currentAccount.balance - (currentAccount.minimumBalance ? currentAccount.minimumBalance.minimumBalanceAmount : 0))
+       : currentAccount.balance
     const assetDesc = currentAccount.asset_code === 'XLM' ?
       (<div>{`Available ${currentAccount.asset_name} (${currentAccount.asset_code})`}
         <a onClick={ this.toggleMinBalanceDialog }>
