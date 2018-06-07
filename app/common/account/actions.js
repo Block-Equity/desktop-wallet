@@ -52,6 +52,7 @@ export function initializeDB () {
           pKey: currentAccount.pKey,
           sKey: currentAccount.sKey,
           balance: '0',
+          minimumBalance: '0',
           sequence: '0',
           asset_type: ''
         }
@@ -123,6 +124,8 @@ export function fetchAccountDetails () {
       var updateCurrentAccount
       var amount
 
+      const minimumBalance = calculateStellarMinimumBalance({ balances, sequence: nextSequence, type, inflationDestination, subentryCount, signers })
+
       balances.map(n => {
         if (currentAccount.asset_type === 'native') {
           amount = n.balance
@@ -133,6 +136,7 @@ export function fetchAccountDetails () {
       })
       updateCurrentAccount = {
         ...currentAccount,
+        minimumBalance,
         sequence: nextSequence,
         balance: amount,
         inflationDestination
