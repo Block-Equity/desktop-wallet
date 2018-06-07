@@ -12,6 +12,7 @@ import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
 import Button from 'material-ui/Button'
 import { Card, Col, Popover, PopoverHeader, PopoverBody, Alert } from 'reactstrap'
+import MinimumBalanceDialog from '../MinimumBalanceDialog'
 
 const alertStyle = {
   width: '100%',
@@ -28,10 +29,12 @@ class AccountInfo extends Component {
     super()
     this.state = {
       inProgress: false,
-      infoOpen: false
+      infoOpen: false,
+      minBalanceDialogOpen: false
     }
     this.handleClick = this.handleClick.bind(this)
     this.toggleInfo = this.toggleInfo.bind(this)
+    this.toggleMinBalanceDialog = this.toggleMinBalanceDialog.bind(this)
   }
 
   render() {
@@ -40,7 +43,7 @@ class AccountInfo extends Component {
     const availableBalance = balance - (currentAccount.minimumBalance ? currentAccount.minimumBalance.minimumBalanceAmount : 0)
     const assetDesc = currentAccount.asset_code === 'XLM' ?
       (<div>{`Available ${currentAccount.asset_name} (${currentAccount.asset_code})`}
-        <a onClick={this.toggleInfo} id="Popover1">
+        <a onClick={ this.toggleMinBalanceDialog }>
           <i className='fa fa-arrow-circle-right' style={{marginLeft: '0.25rem', color: '#c2c2c2'}}/>
         </a>
       </div>) : `${currentAccount.asset_name} (${currentAccount.asset_code})`
@@ -58,6 +61,7 @@ class AccountInfo extends Component {
             { currentAccount.asset_code === 'XLM' ? this.renderMarketValue(availableBalance) : this.renderSpacerView() }
           </div>
       </Card>
+      <MinimumBalanceDialog minimumBalance={currentAccount.minimumBalance} toggle={this.toggleMinBalanceDialog} showModal={this.state.minBalanceDialogOpen}/>
     </Col>
     )
   }
@@ -184,6 +188,12 @@ class AccountInfo extends Component {
   toggleInfo() {
     this.setState({
       infoOpen: !this.state.infoOpen
+    })
+  }
+
+  toggleMinBalanceDialog() {
+    this.setState({
+      minBalanceDialogOpen: !this.state.minBalanceDialogOpen
     })
   }
 }
