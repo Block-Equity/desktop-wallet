@@ -148,8 +148,7 @@ class Main extends Component {
             'aria-describedby': 'message-id',
             style: { fontFamily: font,
               fontWeight:'400',
-              fontSize:'0.9rem',
-              paddingLeft: '13rem'
+              fontSize:'0.9rem'
             },
           }}
           message={<span id="message-id">{this.state.snackBarMessage}</span>}

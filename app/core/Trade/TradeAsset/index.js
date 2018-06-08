@@ -138,8 +138,8 @@ class TradeAsset extends Component {
             <DropdownMenu>
               <DropdownItem header>Select Asset</DropdownItem>
               { this.state.buyAssetList.length > 0 && this.renderBuyAssetList() }
-              <DropdownItem divider />
-              { this.renderAddAssetOption() }
+              {/*<DropdownItem divider /> //Uncomment this to add back Add Asset modal
+              { this.renderAddAssetOption() }*/}
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
@@ -190,25 +190,34 @@ class TradeAsset extends Component {
     const { stellarMarketInfo } = this.props
     const selectedOfferAsset = assets[this.state.sellAssetSelected]
 
+    const balance = selectedOfferAsset.asset_code === 'XLM' ? (selectedOfferAsset.balance - selectedOfferAsset.minimumBalance.minimumBalanceAmount) : selectedOfferAsset.balance
     const fiatConversionRate = selectedOfferAsset.asset_code === 'PTS' ? (0.00005*this.props.stellarMarketInfo.quotes.CAD.price) : this.props.stellarMarketInfo.quotes.CAD.price
-    const fiatValueDisplayBalance = numeral(selectedOfferAsset.balance*fiatConversionRate).format('0,0.00')
+    const fiatValueDisplayBalance = numeral(balance*fiatConversionRate).format('0,0.00')
+    const fiatValueUSDDisplayBalance = numeral(balance*this.props.stellarMarketInfo.quotes.USD.price).format('0,0.00')
     const offerAmount = this.state.offerAssetAmount.length === 0 ? '' : this.state.offerAssetAmount
     const fiatValueDisplayEnteredAmt = numeral(offerAmount * fiatConversionRate).format('0,0.00')
 
     return (
       <div className={ styles.amountOptionContainer }>
-        {
-          this.state.offerAssetAmount.length === 0 && <h6 className={ styles.amountOptionTitle }>
-            { numeral(selectedOfferAsset.balance).format('0,0.00')} {selectedOfferAsset.asset_code}
+        { /* //Figure out Fiat conversions first - TODO
+          this.state.offerAssetAmount.length === 0 && selectedOfferAsset.asset_code === 'XLM' ? <h6 className={ styles.amountOptionTitle }>
+            { numeral(balance).format('0,0.00')} {selectedOfferAsset.asset_code}
             <i className="fa fa-circle" style={{color:'#A1A1A1', marginRight: '0.5rem', marginLeft: '0.5rem', marginTop: '-0.1rem', fontSize: '0.4rem'}}></i>
             Approx. CAD ${fiatValueDisplayBalance}
-          </h6>
+            <i className="fa fa-circle" style={{color:'#A1A1A1', marginRight: '0.5rem', marginLeft: '0.5rem', marginTop: '-0.1rem', fontSize: '0.4rem'}}></i>
+            USD ${fiatValueUSDDisplayBalance}
+            </h6> :
+            <h6 className={ styles.amountOptionTitle }>{ numeral(balance).format('0,0.00')} {selectedOfferAsset.asset_code} </h6>
+        */
         }
 
+        <h6 className={ styles.amountOptionTitle }>Available Balance: <b>{ numeral(balance).format('0,0.00')} {selectedOfferAsset.asset_code}</b> </h6>
+
         {
-          this.state.offerAssetAmount.length > 0 && <h6 className={ styles.amountOptionTitle }>
+          /*this.state.offerAssetAmount.length > 0 && <h6 className={ styles.amountOptionTitle }>
             Approx. CAD ${fiatValueDisplayEnteredAmt}
           </h6>
+          */
         }
 
         <ButtonGroup size='sm'>

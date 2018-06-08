@@ -123,15 +123,12 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
       })
       .then(result => {
         resolve({
-          exists:true,
+          exists: true,
           payload: result
         })
       })
       .catch(error => {
         reject(error)
-        // If the result is unknown (no response body, timeout etc.) we simply resubmit
-        // already built transaction:
-        // server.submitTransaction(transaction);
       })
   })
 }
@@ -140,14 +137,14 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var transaction
   return new Promise((resolve, reject) => {
-    server.loadAccount(destination)
-    // If the account is not found, then create a transaction for creating an account
+    server.loadAccount(publicKey)
     .catch(error => {
       console.log(error.name)
-      reject({error: true, errorMessage: error.name})
+      reject({
+        error: true,
+        errorMessage: error.name
+      })
     })
-    // If there was no error, load up-to-date information on your account.
-    .then(() => server.loadAccount(publicKey))
     .then(sourceAccount => {
       sourceAccount.incrementSequenceNumber()
       transaction = new StellarSdk.TransactionBuilder(sourceAccount)

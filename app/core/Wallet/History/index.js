@@ -75,7 +75,7 @@ class History extends Component {
           }
         }
       } else {
-        if (n.type === 'trade') {
+        if (n.type === TRANSACTION_TYPE.Trade) {
           if (n.bought_asset_code === currentAccount.asset_code || n.sold_asset_code === currentAccount.asset_code) {
             const obj = this.getDisplayObject(n, currentAccount)
             displayData.push(obj)

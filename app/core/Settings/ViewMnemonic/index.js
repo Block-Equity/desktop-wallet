@@ -31,7 +31,7 @@ class ViewMnemonic extends Component {
   render() {
     return (
       <div id={styles.formContainer}>
-        <h6 style={{width: '28rem'}}>
+        <h6 style={{width: '28rem', marginLeft: '1rem'}}>
           { this.state.title }
         </h6>
         { this.renderContent() }
@@ -41,7 +41,7 @@ class ViewMnemonic extends Component {
   }
 
   renderContent () {
-    const mnemonicView = ( <MnemonicView phrase={ this.state.phrase } /> )
+    const mnemonicView = ( <MnemonicView style={{marginLeft: '1rem', marginRight: '1rem'}} phrase={ this.state.phrase } /> )
 
     const btnTitle = {
       default: 'View Mnemonic Phrase',

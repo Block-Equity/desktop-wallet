@@ -29,7 +29,7 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
 
     try {
       // 1. Start the payment process
-      const { exists } = await sendPayment({
+      const { exists, error } = await sendPayment({
         publicKey,
         decryptSK,
         sequence,
@@ -40,7 +40,15 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
         assetType
       })
 
+      if (error) {
+        dispatch(paymentSendFailure('Payment Failed'))
+      }
+
       if (!exists) {
+        console.log('Account Does not exist')
+        if (amount < 1) {
+          dispatch(paymentSendFailure('Please enter at least 1 XLM worth of funds and try again.'))
+        }
         const { error, errorMessage } = await createDestinationAccount({decryptSK, publicKey, destination, amount, sequence})
         if (error) {
           return dispatch(paymentSendFailure(errorMessage))
