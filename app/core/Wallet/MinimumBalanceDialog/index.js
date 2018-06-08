@@ -64,7 +64,7 @@ class MinimumBalanceDialog extends Component {
     const { account } = this.props
     const { minimumBalance } = account
     return (
-      <Table size="sm" bordered style={{fontSize: '0.85rem'}}>
+      <Table size='sm' bordered style={{fontSize: '0.85rem'}}>
         <thead>
           <tr>
             <th style={{width: '14rem'}}>Type</th>
