@@ -75,7 +75,6 @@ class PinModal extends Component {
     const target = event.target
     var value = target.value
     const name = target.name
-    console.log(`Entered PIN Value: ${value}`)
     value = value.replace(/[^0-9]/g,'')
     this.setState({
       [name]: value
