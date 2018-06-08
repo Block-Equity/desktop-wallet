@@ -122,7 +122,7 @@ class AccountList extends Component {
             { (!isEmpty(this.props.blockEQTokens)) && this.renderSubHeader(listSections.supported_assets.displayName)}
             { this.renderSupportedAssets() }
             <ListGroup>
-              { this.renderAddAsset() }
+              { /*this.renderAddAsset() //TODO: Finalize functionality*/ }
             </ListGroup>
           </MenuList>
         </div>
