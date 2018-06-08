@@ -88,7 +88,7 @@ class Main extends Component {
     return (
       <div className={styles.mainPageContainer}>
         <div className={styles.mainPageContentContainer}>
-          { !isEmpty(this.props.currentAccount) && <AccountInfo currentAccount={this.props.currentAccount} /> }
+          { !isEmpty(this.props.currentAccount) && <AccountInfo /> }
           <div style={{width: '40rem'}}>
             <Tabs selectedItem={this.selectedItem} setItem={this.state.selectedMenuItem}/>
           </div>
@@ -148,8 +148,7 @@ class Main extends Component {
             'aria-describedby': 'message-id',
             style: { fontFamily: font,
               fontWeight:'400',
-              fontSize:'0.9rem',
-              paddingLeft: '13rem'
+              fontSize:'0.9rem'
             },
           }}
           message={<span id="message-id">{this.state.snackBarMessage}</span>}

@@ -42,11 +42,12 @@ const tableAmountRowStyle = {
 }
 
 const TRANSACTION_TYPE = {
-  Payment: 'payment',
-  CreateAccount: 'create_account',
-  ChangeTrust: 'change_trust',
-  SetOptions: 'set_options',
-  ManageOffer: 'manage_offer'
+  AccountCreated: 'account_created',
+  AccountCredited: 'account_credited',
+  AccountDebited: 'account_debited',
+  Trade: 'trade',
+  TrustlineCreated: 'trustline_created',
+  TrustlineRemoved: 'trustline_removed'
 }
 
 class History extends Component {
@@ -55,34 +56,35 @@ class History extends Component {
     const { currentAccount } = this.props
     const type = currentAccount.asset_type
     const code = currentAccount.asset_code
-    var displayDataAllAssets = []
     var displayData = []
 
     this.props.paymentTransactions.map(n => {
-      if (n.type === TRANSACTION_TYPE.CreateAccount || n.type === TRANSACTION_TYPE.Payment || n.type === TRANSACTION_TYPE.ManageOffer) {
-        var obj
-        if (n.type === TRANSACTION_TYPE.CreateAccount ) {
-          obj = {
-            ...n,
-            asset_type: 'native'
-          }
-          displayDataAllAssets.push(obj)
-        } else {
-          displayDataAllAssets.push(n)
-        }
-      }
-    })
-
-    displayDataAllAssets.map(n => {
       if (currentAccount.asset_type === 'native') {
-        if (n.asset_type === 'native' || n.buying_asset_type === 'native' || n.selling_asset_type === 'native') {
+        if (n.type === TRANSACTION_TYPE.Trade) {
+          if (n.bought_asset_type === 'native' || n.sold_asset_type === 'native') {
+            const obj = this.getDisplayObject(n, currentAccount)
+            displayData.push(obj)
+          }
+        } else if (n.type === TRANSACTION_TYPE.AccountCreated) {
           const obj = this.getDisplayObject(n, currentAccount)
           displayData.push(obj)
+        } else {
+          if (n.asset_type === 'native') {
+            const obj = this.getDisplayObject(n, currentAccount)
+            displayData.push(obj)
+          }
         }
       } else {
-        if (n.asset_code === currentAccount.asset_code || n.buying_asset_code === currentAccount.asset_code || n.selling_asset_code === currentAccount.asset_code) {
-          const obj = this.getDisplayObject(n, currentAccount)
-          displayData.push(obj)
+        if (n.type === TRANSACTION_TYPE.Trade) {
+          if (n.bought_asset_code === currentAccount.asset_code || n.sold_asset_code === currentAccount.asset_code) {
+            const obj = this.getDisplayObject(n, currentAccount)
+            displayData.push(obj)
+          }
+        } else {
+          if (n.asset_code === currentAccount.asset_code) {
+            const obj = this.getDisplayObject(n, currentAccount)
+            displayData.push(obj)
+          }
         }
       }
     })
@@ -109,22 +111,55 @@ class History extends Component {
 
   getDisplayObject(n, currentAccount) {
     const id = n.id
-    const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow();
+    const formattedNowTime = moment(n.created_at, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
     const formattedDate = moment(n.created_at).format('lll')
     const displayDate = `${formattedNowTime}${formattedDate}`
     var displayAddress, displayAmount, displayTypeLabel
-    if (n.type === TRANSACTION_TYPE.Payment) {
-      displayAddress = n.from === currentAccount.pKey ? n.to : n.from
-      displayAmount = n.from === currentAccount.pKey ? numeral(`-${n.amount}`).format('(0,0.00)') : numeral(n.amount).format('0,0.00')
-      displayTypeLabel = n.from === currentAccount.pKey ? `Payment sent ` : `Payment received `
-    } else if (n.type === TRANSACTION_TYPE.CreateAccount) {
-      displayAddress = n.source_account === currentAccount.pKey ? n.account : n.source_account
-      displayAmount = n.source_account === currentAccount.pKey ? numeral(`-${n.starting_balance}`).format('(0,0.00)') : numeral(n.starting_balance).format('0,0.00')
-      displayTypeLabel = n.source_account === currentAccount.pKey ? `Account created ` : `Account created by `
-    } else if (n.type === TRANSACTION_TYPE.ManageOffer) {
-      displayAddress = n.selling_asset_type === 'native' ? `Sold XLM for ${n.buying_asset_code}` : `Bought XLM from ${n.selling_asset_code}`
-      displayAmount = n.selling_asset_type === 'native' ? numeral(`-${n.amount*n.price}`).format('(0,0.00)') : numeral(n.amount*n.price).format('0,0.00')
-      displayTypeLabel = 'Trade offers'
+    switch (n.type) {
+      case TRANSACTION_TYPE.AccountCredited:
+        //displayAddress = n.from === currentAccount.pKey ? n.to : n.from //Todo: Fetch from Operation API
+        displayAmount = numeral(n.amount).format('0,0.00')
+        displayTypeLabel = `Payment received`
+      break;
+      case TRANSACTION_TYPE.AccountDebited:
+        displayAmount = `${numeral(`-${n.amount}`).format('(0,0.00)')}`
+        displayTypeLabel = `Payment sent`
+      break;
+      case TRANSACTION_TYPE.AccountCreated:
+        //displayAddress = n.source_account === currentAccount.pKey ? n.account : n.source_account //Todo: Fetch from Operation API
+        displayAmount = numeral(n.starting_balance).format('0,0.00')
+        displayTypeLabel = `Account created`
+      break;
+      case TRANSACTION_TYPE.TrustlineCreated:
+        displayTypeLabel = `Trustline created`
+      break;
+      case TRANSACTION_TYPE.TrustlineRemoved:
+        displayTypeLabel = `Trustline removed`
+      break;
+      case TRANSACTION_TYPE.Trade:
+        if (currentAccount.asset_type === 'native') {
+          if (n.sold_asset_type === 'native') {
+            displayAddress = `Sold XLM for ${n.bought_asset_code}`
+            displayAmount = numeral(`-${n.sold_amount}`).format('(0,0.00)')
+          } else if (n.bought_asset_type === 'native') {
+            displayAddress = `Bought XLM from ${n.sold_asset_code}`
+            displayAmount = numeral(`${n.bought_amount}`).format('(0,0.00)')
+          }
+        } else {
+          if (n.sold_asset_code === currentAccount.asset_code) {
+            const boughtAssetCode = n.bought_asset_type === 'native' ? 'XLM' : n.bought_asset_code
+            displayAddress = `Sold ${n.sold_asset_code} for ${boughtAssetCode}`
+            displayAmount = numeral(`-${n.sold_amount}`).format('(0,0.00)')
+          } else if (n.bought_asset_code === currentAccount.asset_code) {
+            const soldAssetCode = n.sold_asset_type === 'native' ? 'XLM' : n.sold_asset_code
+            displayAddress = `Bought ${n.bought_asset_code} from ${soldAssetCode}`
+            displayAmount = numeral(`${n.bought_amount}`).format('(0,0.00)')
+          }
+        }
+        displayTypeLabel = 'Trade offers'
+      break;
+      default:
+        break;
     }
     const displayObj = {
       id,

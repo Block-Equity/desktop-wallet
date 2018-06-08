@@ -1,17 +1,16 @@
 import * as Types from './types'
 import { getOrderBook, manageOffer, getOpenOrders, deleteOffer, getTradeHistory } from '../../services/networking/horizon'
 import { getCurrentAccount } from '../account/selectors'
+import { getCurrentApp } from '../app/selectors'
 import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
-
-import axios from 'axios'
 import numeral from 'numeral'
 
-const POLL_FREQUENCY = 10000
+const POLL_FREQUENCY = 15000
 var pollOrderBook
 
 export function fetchStellarOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer) {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     dispatch(fetchStellarOrderBookRequest())
     try {
       const orderBookRequest = async () => {
@@ -25,8 +24,16 @@ export function fetchStellarOrderBook(sellingAsset, sellingAssetIssuer, buyingAs
 
         return dispatch(fetchStellarOrderBookSuccess({ payload, marketPrice, marketAmount }))
       }
+
       clearInterval(pollOrderBook) //This clears any previous polls as selection criterias could be changing by the user
-      pollOrderBook = setInterval( () => { orderBookRequest() }, POLL_FREQUENCY)
+      pollOrderBook = setInterval( () => {
+        const currentApp = getCurrentApp(getState())
+        if (currentApp === 1) { //No need to poll unless on trading
+          orderBookRequest()
+        } else {
+          clearInterval(pollOrderBook)
+        }
+      }, POLL_FREQUENCY)
       orderBookRequest()
     } catch (e) {
       return dispatch(fetchStellarOrderBookFailure(e))
@@ -176,31 +183,22 @@ export function fetchTradeHistory() {
     try {
       let currentAccount = getCurrentAccount(getState())
       const { pKey } = currentAccount
-      const { payload, error, errorMessage } = await getTradeHistory(pKey)
-      const recordsWithDate = await parseTradeRecords(payload)
+      const { records, error, errorMessage } = await getTradeHistory(pKey)
+
+      const customSort = (a, b) => {
+        return new Date(b.ledger_close_time).getTime() - new Date(a.ledger_close_time).getTime()
+      }
+      //Sorted by most recent trades first
+      const sortedRecords = await records.sort(customSort)
 
       if (error) {
-        return dispatch(fetchTradeHistoryFailure(errorMessage))
+        return dispatch(fetchTradeHistoryFailure(error))
       }
-      return dispatch(fetchTradeHistorySuccess(recordsWithDate))
+      return dispatch(fetchTradeHistorySuccess(sortedRecords))
     } catch (e) {
       return dispatch(fetchTradeHistoryFailure(e))
     }
   }
-}
-
-export async function parseTradeRecords(records) {
-  var recordsWithDate = []
-  await records.map((record, index) => {
-      if (record.type === 'trade') {
-        const url = record._links.operation.href
-        axios.get(url).then( response => {
-          var date = response.data.created_at
-          recordsWithDate.push({ ...record, date})
-        })
-      }
-  })
-  return recordsWithDate
 }
 
 export function fetchTradeHistoryRequest () {

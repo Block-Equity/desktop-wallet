@@ -4,6 +4,7 @@ import * as Types from './types'
 export const INITIAL_STATE = {
   isSending: false,
   paymentFailed: false,
+  paymentFailedMessage: '',
   payments: {},
   isPaymentTransactionsFetching: false,
   paymentTransactionsFailed: false,
@@ -55,6 +56,7 @@ function paymentSendFailure (state, error) {
   return {
     ...state,
     paymentFailed: true,
+    paymentFailedMessage: error,
     isSending: false,
     error
   }

@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import { joinInflationPoolOperation, fetchAccountDetails } from '../../../common/account/actions'
-import { getStellarMarketCADPrice } from '../../../common/market/selectors'
+import { getStellarMarketCADPrice, getStellarMarketUSDPrice } from '../../../common/market/selectors'
+import { getCurrentAccount } from '../../../common/account/selectors'
 
 import isEmpty from 'lodash/isEmpty'
 import numeral from 'numeral'
@@ -11,6 +12,7 @@ import styles from './style.css'
 import { CircularProgress } from 'material-ui/Progress'
 import Button from 'material-ui/Button'
 import { Card, Col, Popover, PopoverHeader, PopoverBody, Alert } from 'reactstrap'
+import MinimumBalanceDialog from '../MinimumBalanceDialog'
 
 const alertStyle = {
   width: '100%',
@@ -27,31 +29,42 @@ class AccountInfo extends Component {
     super()
     this.state = {
       inProgress: false,
-      infoOpen: false
+      infoOpen: false,
+      minBalanceDialogOpen: false
     }
     this.handleClick = this.handleClick.bind(this)
     this.toggleInfo = this.toggleInfo.bind(this)
+    this.toggleMinBalanceDialog = this.toggleMinBalanceDialog.bind(this)
   }
 
   render() {
     const { currentAccount } = this.props
-    const balance = currentAccount.balance
-    const assetDesc = `${currentAccount.asset_name} (${currentAccount.asset_code})`
+    const minBalance = currentAccount.balance - (currentAccount.minimumBalance ? currentAccount.minimumBalance.minimumBalanceAmount : 0)
+    const availableBalance = currentAccount.asset_code === 'XLM' ? (minBalance > 0 ? minBalance : 0): currentAccount.balance
+
+    const assetDesc = currentAccount.asset_code === 'XLM' ?
+      (<div>{`Available ${currentAccount.asset_name} (${currentAccount.asset_code})`}
+        <a onClick={ this.toggleMinBalanceDialog }>
+          <i className='fa fa-arrow-circle-right' style={{marginLeft: '0.25rem', color: '#c2c2c2'}}/>
+        </a>
+      </div>) : `${currentAccount.asset_name} (${currentAccount.asset_code})`
+
+
     return (
       <Col sm='7'>
-        <Card body
-            style={{ backgroundColor: '#F9F9F9', borderColor: '#ECEEEF', marginBottom: '1rem', marginTop: '0.75rem', padding: '0rem'}}>
+        <Card body style={{ backgroundColor: '#F9F9F9', borderColor: '#ECEEEF', marginBottom: '1rem', marginTop: '0.75rem', padding: '0rem'}}>
           <div className={styles.container}>
             { this.renderConditionForInflationPoolView() }
             <div className={styles.balanceTitle}>
               { assetDesc }
             </div>
             <div className={styles.balanceLabel}>
-              <b> {numeral(balance).format('0,0.00')} </b>
+              <b> {numeral(availableBalance).format('0,0.00')} </b>
             </div>
-            { this.renderMarketValue() }
+            { currentAccount.asset_code === 'XLM' ? this.renderMarketValue(availableBalance) : this.renderSpacerView() }
           </div>
       </Card>
+      <MinimumBalanceDialog account={currentAccount} toggle={this.toggleMinBalanceDialog} showModal={this.state.minBalanceDialogOpen}/>
     </Col>
     )
   }
@@ -138,13 +151,22 @@ class AccountInfo extends Component {
     )
   }
 
-  renderMarketValue() {
-    const { currentAccount, stellarCADValue } = this.props
-    const balance = currentAccount.balance * stellarCADValue
+  renderMarketValue(balance) {
+    const { currentAccount, stellarCADValue, stellarUSDValue } = this.props
+    const balanceCAD = balance * stellarCADValue
+    const balanceUSD = balance * stellarUSDValue
     return (
       <div className={styles.marketValueLabel}>
-        { `CAD $${numeral(balance).format('0,0.00')}` }
+        { `Approx. USD $${numeral(balanceUSD).format('0,0.00')}` }
+        <i className="fa fa-circle" style={{color:'#A1A1A1', marginRight: '0.35rem', marginLeft: '0.35rem', fontSize: '0.4rem'}}></i>
+        { `CAD $${numeral(balanceCAD).format('0,0.00')}` }
       </div>
+    )
+  }
+
+  renderSpacerView() {
+    return (
+      <div style={{height: '1.5rem'}}/>
     )
   }
 
@@ -171,11 +193,19 @@ class AccountInfo extends Component {
       infoOpen: !this.state.infoOpen
     })
   }
+
+  toggleMinBalanceDialog() {
+    this.setState({
+      minBalanceDialogOpen: !this.state.minBalanceDialogOpen
+    })
+  }
 }
 
 const mapStateToProps = (state) => {
   return {
-    stellarCADValue: getStellarMarketCADPrice(state)
+    currentAccount: getCurrentAccount(state),
+    stellarCADValue: getStellarMarketCADPrice(state),
+    stellarUSDValue: getStellarMarketUSDPrice(state)
   }
 }
 

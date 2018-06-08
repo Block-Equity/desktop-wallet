@@ -122,7 +122,7 @@ class AccountList extends Component {
             { (!isEmpty(this.props.blockEQTokens)) && this.renderSubHeader(listSections.supported_assets.displayName)}
             { this.renderSupportedAssets() }
             <ListGroup>
-              { this.renderAddAsset() }
+              { /*this.renderAddAsset() //TODO: Finalize functionality*/ }
             </ListGroup>
           </MenuList>
         </div>
@@ -208,9 +208,12 @@ class AccountList extends Component {
       </label>
     )
 
+    const minBalance = asset.balance - (asset.minimumBalance ? asset.minimumBalance.minimumBalanceAmount : 0)
+    const balance = asset.asset_code === 'XLM' ? (minBalance > 0 ? minBalance : 0): asset.balance
+
     const balanceView = (
       <label style={{fontSize: '0.65rem', marginBottom: '0rem'}}>
-        {`${numeral(asset.balance).format('0,0.00')} (${ asset.asset_code })`}
+        {`${numeral(balance).format('0,0.00')} (${ asset.asset_code })`}
       </label>
     )
 
@@ -289,7 +292,6 @@ class AccountList extends Component {
     await this.props.fetchStellarAssetsForDisplay()
     await this.props.fetchBlockEQTokensForDisplay()
   }
-
 }
 
 const mapStateToProps = (state) => {

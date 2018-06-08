@@ -1,4 +1,4 @@
-import { sendPayment, getPaymentOperationList, createDestinationAccount, BASE_URL_HORIZON_PUBLIC_NET } from '../../services/networking/horizon'
+import { sendPayment, getPaymentOperationList, getEffectsOnAccount, createDestinationAccount, BASE_URL_HORIZON_PUBLIC_NET } from '../../services/networking/horizon'
 import { fetchAccountDetails, setCurrentAccount, fetchStellarAssetsForDisplay } from '../account/actions'
 import { getCurrentAccount, getAccountByPublicKey, getUserAccountFailedStatus } from '../account/selectors'
 import { getStellarPaymentPagingToken } from '../payment/selectors'
@@ -29,7 +29,7 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
 
     try {
       // 1. Start the payment process
-      const { exists } = await sendPayment({
+      const { exists, error } = await sendPayment({
         publicKey,
         decryptSK,
         sequence,
@@ -40,7 +40,15 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
         assetType
       })
 
+      if (error) {
+        dispatch(paymentSendFailure('Payment Failed'))
+      }
+
       if (!exists) {
+        console.log('Account Does not exist')
+        if (amount < 1) {
+          dispatch(paymentSendFailure('Please enter at least 1 XLM worth of funds and try again.'))
+        }
         const { error, errorMessage } = await createDestinationAccount({decryptSK, publicKey, destination, amount, sequence})
         if (error) {
           return dispatch(paymentSendFailure(errorMessage))
@@ -72,8 +80,11 @@ export function fetchPaymentOperationList() {
     dispatch(paymentOperationListRequest())
 
     try {
-      let paymentList = await getPaymentOperationList(publicKey)
-      return dispatch(paymentOperationListSuccess(paymentList))
+      const { payload, error, errorMessage } = await getEffectsOnAccount(publicKey)
+      if (error) {
+        return dispatch(paymentOperationListFailure(errorMessage))
+      }
+      return dispatch(paymentOperationListSuccess(payload))
     } catch (e) {
       return dispatch(paymentOperationListFailure(e))
     }
@@ -95,8 +106,6 @@ export function streamPayments() {
 
       es.onmessage = message => {
         var payload = message.data ? JSON.parse(message.data) : message
-        console.log(`Incoming Payment Paging Token: ${JSON.stringify(payload.paging_token)}`)
-
         dispatch(streamPaymentIncoming(true))
         dispatch(updatePaymentPagingToken(payload.paging_token))
 

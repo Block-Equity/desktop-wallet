@@ -20,6 +20,7 @@ import * as mnemonic from '../../services/security/mnemonic'
 import * as Types from './types'
 
 export const stellarAssetImageURL = 'https://firebasestorage.googleapis.com/v0/b/blockeq-wallet.appspot.com/o/icon-stellar.png?alt=media&token=38b70165-5255-4113-a15e-3c72bd4fab9f'
+export const MINIMUM_BALANCE_INCREMENT = 0.5
 
 export function initializeDB () {
   return async (dispatch, getState) => {
@@ -51,6 +52,7 @@ export function initializeDB () {
           pKey: currentAccount.pKey,
           sKey: currentAccount.sKey,
           balance: '0',
+          minimumBalance: '0',
           sequence: '0',
           asset_type: ''
         }
@@ -116,11 +118,13 @@ export function fetchAccountDetails () {
 
     try {
       let details = await horizon.getAccountDetail(publicKey)
-      const { balances, sequence: nextSequence, type, inflationDestination } = details
+      const { balances, sequence: nextSequence, type, inflationDestination, subentryCount, signers } = details
 
       //Update current account info
       var updateCurrentAccount
       var amount
+
+      const minimumBalance = calculateStellarMinimumBalance({ balances, sequence: nextSequence, type, inflationDestination, subentryCount, signers })
 
       balances.map(n => {
         if (currentAccount.asset_type === 'native') {
@@ -132,6 +136,7 @@ export function fetchAccountDetails () {
       })
       updateCurrentAccount = {
         ...currentAccount,
+        minimumBalance,
         sequence: nextSequence,
         balance: amount,
         inflationDestination
@@ -146,7 +151,9 @@ export function fetchAccountDetails () {
         sequence: nextSequence,
         type,
         inflationDestination,
-        pagingToken: token
+        pagingToken: token,
+        subentryCount,
+        signers
       })
       dispatch(setAccounts(accounts))
 
@@ -200,6 +207,7 @@ export function fetchStellarAssetsForDisplay () {
       Object.keys(accounts).map((key, index) => {
         if (accounts[key].type === stellarAssetDesc.asset_name) {
           const stellarAccount = accounts[Object.keys(accounts)[index]]
+          const minimumBalance = calculateStellarMinimumBalance(stellarAccount)
           stellarAccount.balances.map((acc, index) => {
             const assetCodeLookUpValue = acc.asset_code === undefined ? '' : acc.asset_code.toLowerCase()
             const checkIfDisplayNameExists = response[assetCodeLookUpValue] === undefined ? acc.asset_code : response[assetCodeLookUpValue].asset_name
@@ -207,6 +215,7 @@ export function fetchStellarAssetsForDisplay () {
             const displayAccount = {
               asset_type: acc.asset_type,
               balance: acc.balance,
+              minimumBalance,
               asset_code: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_code : acc.asset_code,
               asset_name: acc.asset_type === stellarAssetDesc.asset_type ? stellarAssetDesc.asset_name : checkIfDisplayNameExists,
               asset_issuer: acc.asset_type === stellarAssetDesc.asset_type ? '' : acc.asset_issuer,
@@ -231,6 +240,37 @@ export function fetchStellarAssetsForDisplay () {
       return dispatch(stellarAccountsDisplayFailure(e))
     }
   }
+}
+
+export function calculateStellarMinimumBalance(stellarAccount) {
+  const baseReserve = 1
+
+  const trustlines = {
+    count: stellarAccount.balances.length - 1,
+    amount: (stellarAccount.balances.length - 1) * MINIMUM_BALANCE_INCREMENT
+  }
+
+  const offers = {
+    count: stellarAccount.subentryCount - trustlines.count,
+    amount: (stellarAccount.subentryCount - trustlines.count) * MINIMUM_BALANCE_INCREMENT
+  }
+
+  const signers = {
+    count: stellarAccount.signers ? stellarAccount.signers.length : 0,
+    amount: (stellarAccount.signers ? stellarAccount.signers.length : 0) * MINIMUM_BALANCE_INCREMENT
+  }
+
+  const minimumBalanceAmount = baseReserve + trustlines.amount + offers.amount + signers.amount
+
+  const minimumBalance = {
+    baseReserve,
+    trustlines,
+    offers,
+    signers,
+    minimumBalanceAmount
+  }
+
+  return minimumBalance
 }
 
 export function fetchBlockEQTokensForDisplay () {

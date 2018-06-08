@@ -49,11 +49,11 @@ class OpenOrders extends Component {
 
   renderTableHeaders() {
     return (
-      <thead>
-        <tr style={{fontSize: '0.7rem'}}>
+      <thead className={styles.tableHeader}>
+        <tr>
           <th>Selling Amount</th>
           <th>Price</th>
-          <th>Value</th>
+          <th>Received</th>
           <th></th>
         </tr>
       </thead>

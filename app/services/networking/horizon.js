@@ -34,6 +34,8 @@ export const getAccountDetail = async (publicKey) => {
     balances: account.balances,
     sequence: account.sequence,
     type: 'Stellar',
+    subentryCount: account.subentry_count,
+    signers: account.signers,
     inflationDestination: account.inflation_destination
   }
 }
@@ -47,6 +49,22 @@ export const getPaymentOperationList = async (publicKey) => {
       .call()
       .then(({ records }) => resolve(records))
       .catch(error => reject(error))
+  })
+}
+
+export const getEffectsOnAccount = (publicKey) => {
+  return new Promise((resolve, reject) => {
+    server.effects()
+    .forAccount(publicKey)
+    .order('desc')
+    .limit(200)
+    .call()
+    .then( ({ records }) => {
+      resolve({ payload: records, error: false })
+    })
+    .catch( error =>
+      reject({ errorMessage: error, error: true })
+    )
   })
 }
 
@@ -105,15 +123,12 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
       })
       .then(result => {
         resolve({
-          exists:true,
+          exists: true,
           payload: result
         })
       })
       .catch(error => {
         reject(error)
-        // If the result is unknown (no response body, timeout etc.) we simply resubmit
-        // already built transaction:
-        // server.submitTransaction(transaction);
       })
   })
 }
@@ -122,14 +137,14 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var transaction
   return new Promise((resolve, reject) => {
-    server.loadAccount(destination)
-    // If the account is not found, then create a transaction for creating an account
+    server.loadAccount(publicKey)
     .catch(error => {
       console.log(error.name)
-      reject({error: true, errorMessage: error.name})
+      reject({
+        error: true,
+        errorMessage: error.name
+      })
     })
-    // If there was no error, load up-to-date information on your account.
-    .then(() => server.loadAccount(publicKey))
     .then(sourceAccount => {
       sourceAccount.incrementSequenceNumber()
       transaction = new StellarSdk.TransactionBuilder(sourceAccount)
@@ -322,18 +337,15 @@ export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
 }
 
 export const getTradeHistory = (pk) => {
+  const url = `${BASE_URL}/accounts/${pk}/trades?order=desc&limit=200&`
   return new Promise((resolve, reject) => {
-    server.effects()
-    .forAccount(pk)
-    .order('desc')
-    .limit(200)
-    .call()
-    .then( ({ records }) => {
-      resolve({ payload: records, error: false })
+    axios.get(url)
+    .then( response => {
+      var records = response.data._embedded.records
+      resolve({ records, error: false })
     })
-    .catch( error =>
+    .catch( error => {
       reject({ errorMessage: error, error: true })
-    )
+    })
   })
-
 }

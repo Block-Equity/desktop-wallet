@@ -16,16 +16,8 @@ const DISPLAY_FORMAT = '0,0.0000'
 
 class History extends Component {
 
-  constructor (props) {
-    super()
-    this.state = {
-
-    }
-
-  }
-
   async componentDidMount() {
-    //this.props.fetchTradeHistory()
+    this.props.fetchTradeHistory()
   }
 
   render() {
@@ -46,12 +38,12 @@ class History extends Component {
 
   renderTableHeaders() {
     return (
-      <thead>
-        <tr style={{fontSize: '0.7rem'}}>
+      <thead className={styles.tableHeader}>
+        <tr>
           <th>Date</th>
           <th>Selling</th>
           <th>Price</th>
-          <th>Value</th>
+          <th>Received</th>
         </tr>
       </thead>
     )
@@ -61,16 +53,16 @@ class History extends Component {
     if (this.props.history.length > 0) {
       const rowStyle = {verticalAlign: 'middle'}
       return this.props.history.map((trade, index) => {
-        const sellAssetType = trade.sold_asset_type === 'native' ? 'XLM' : trade.sold_asset_code
-        const buyAssetType = trade.bought_asset_type === 'native' ? 'XLM' : trade.bought_asset_code
+        const sellAssetType = trade.base_asset_type === 'native' ? 'XLM' : trade.base_asset_code
+        const buyAssetType = trade.counter_asset_type === 'native' ? 'XLM' : trade.counter_asset_code
         return (
           <tr
             key = { index }
             style={{fontSize: '0.7rem'}}>
-              <td style={rowStyle}>{ moment(trade.date, 'YYYY-MM-DDTHH:mm:ssZ').format('lll') }</td>
-              <td style={rowStyle}>{ numeral(trade.sold_amount).format(DISPLAY_FORMAT, Math.floor) } { sellAssetType }</td>
-              <td style={rowStyle}>{ numeral(trade.bought_amount/trade.sold_amount).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
-              <td style={rowStyle}>{ numeral(trade.bought_amount).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
+              <td style={rowStyle}>{ moment(trade.ledger_close_time, 'YYYY-MM-DDTHH:mm:ssZ').format('lll') }</td>
+              <td style={rowStyle}>{ numeral(trade.base_amount).format(DISPLAY_FORMAT, Math.floor) } { sellAssetType }</td>
+              <td style={rowStyle}>{ numeral(trade.price.d/trade.price.n).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
+              <td style={rowStyle}>{ numeral(trade.counter_amount).format(DISPLAY_FORMAT, Math.floor) } { buyAssetType }</td>
           </tr>
         )
       })
