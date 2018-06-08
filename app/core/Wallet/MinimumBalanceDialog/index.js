@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { Modal, ModalHeader, ModalBody, Table } from 'reactstrap'
+import { Modal, ModalHeader, ModalBody, Table, Card, Col } from 'reactstrap'
 
 class MinimumBalanceDialog extends Component {
   constructor (props) {
@@ -11,18 +11,60 @@ class MinimumBalanceDialog extends Component {
   render() {
     return (
       <Modal isOpen={this.props.showModal} className={this.props.className} centered={true}>
-        <ModalHeader style={{boxShadow: 'none'}} toggle={this.toggleModal}>Minimum Balance</ModalHeader>
+        <ModalHeader style={{boxShadow: 'none'}} toggle={this.toggleModal}>Balance Summary for XLM</ModalHeader>
         <ModalBody>
-          { this.props.minimumBalance && this.renderCalculationTable() }
+          { this.props.account.minimumBalance && this.renderSummary() }
+          { this.props.account.minimumBalance && this.renderCalculationTable() }
         </ModalBody>
       </Modal>
     )
   }
 
-  renderCalculationTable() {
-    const { minimumBalance } = this.props
+  renderSummary() {
+    const { account } = this.props
+    const { minimumBalance } = account
+    const availableBalanceCalc = account.balance - account.minimumBalance.minimumBalanceAmount
+    const availableBalanceDisplay = availableBalanceCalc > 0 ? availableBalanceCalc : 0
+
+    const summaryContainerCardStyle = { backgroundColor: '#F0F6FA', borderColor: '#ECEEEF', marginBottom: '1rem', marginTop: '0.75rem', padding: '0rem' }
+    const summaryContainerStyle = { display: 'flex', flexDirection: 'column', alignItems: 'center', fontSize: '0.75rem' }
+    const summaryContainerHeaderStyle = { fontSize: '0.75rem', marginTop: '0.5rem'}
+    const summaryContainerLabelStyle = { marginTop: '-0.25rem', marginBottom: '0.35rem', fontWeight: '700'}
     return (
-      <Table size="sm" bordered>
+      <div style={{ display: 'flex', flexDirection: 'row', marginBottom: '0.75rem'}}>
+        <Col sm='4'>
+          <Card body style={ summaryContainerCardStyle }>
+            <div style={summaryContainerStyle}>
+              <h6 style={summaryContainerHeaderStyle}>{`Total Balance`}</h6>
+              <label style={summaryContainerLabelStyle}>{`${account.balance}`}</label>
+            </div>
+          </Card>
+        </Col>
+        <Col sm='4'>
+          <Card body style={ summaryContainerCardStyle }>
+            <div style={summaryContainerStyle}>
+              <h6 style={summaryContainerHeaderStyle}>{`Minimum Balance`}</h6>
+              <label style={summaryContainerLabelStyle}>{`${minimumBalance.minimumBalanceAmount}`}</label>
+            </div>
+          </Card>
+        </Col>
+        <Col sm='4'>
+          <Card body style={ summaryContainerCardStyle }>
+            <div style={summaryContainerStyle}>
+              <h6 style={summaryContainerHeaderStyle}>{`Available Balance`}</h6>
+              <label style={summaryContainerLabelStyle}>{`${availableBalanceDisplay}`}</label>
+            </div>
+          </Card>
+        </Col>
+      </div>
+    )
+  }
+
+  renderCalculationTable() {
+    const { account } = this.props
+    const { minimumBalance } = account
+    return (
+      <Table size="sm" bordered style={{fontSize: '0.85rem'}}>
         <thead>
           <tr>
             <th style={{width: '14rem'}}>Type</th>
@@ -33,7 +75,7 @@ class MinimumBalanceDialog extends Component {
         <tbody>
           <tr>
             <td>Base Reserve</td>
-            <td style={{textAlign: 'center'}}>1</td>
+            <td style={{textAlign: 'center'}}>2</td>
             <td style={{textAlign: 'center'}}>1</td>
           </tr>
           <tr>
@@ -52,7 +94,7 @@ class MinimumBalanceDialog extends Component {
             <td style={{textAlign: 'center'}}>{ minimumBalance.signers.amount }</td>
           </tr>
           <tr>
-            <td><b>Total</b></td>
+            <td><b>Total Minimum Balance</b></td>
             <td></td>
             <td style={{textAlign: 'center'}}><b>{ minimumBalance.minimumBalanceAmount }</b></td>
           </tr>

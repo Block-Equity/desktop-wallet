@@ -39,15 +39,17 @@ class AccountInfo extends Component {
 
   render() {
     const { currentAccount } = this.props
-    const availableBalance = currentAccount.asset_code === 'XLM' ?
-      (currentAccount.balance - (currentAccount.minimumBalance ? currentAccount.minimumBalance.minimumBalanceAmount : 0))
-       : currentAccount.balance
+    const minBalance = currentAccount.balance - (currentAccount.minimumBalance ? currentAccount.minimumBalance.minimumBalanceAmount : 0)
+    const availableBalance = currentAccount.asset_code === 'XLM' ? (minBalance > 0 ? minBalance : 0): currentAccount.balance
+
     const assetDesc = currentAccount.asset_code === 'XLM' ?
       (<div>{`Available ${currentAccount.asset_name} (${currentAccount.asset_code})`}
         <a onClick={ this.toggleMinBalanceDialog }>
           <i className='fa fa-arrow-circle-right' style={{marginLeft: '0.25rem', color: '#c2c2c2'}}/>
         </a>
       </div>) : `${currentAccount.asset_name} (${currentAccount.asset_code})`
+
+
     return (
       <Col sm='7'>
         <Card body style={{ backgroundColor: '#F9F9F9', borderColor: '#ECEEEF', marginBottom: '1rem', marginTop: '0.75rem', padding: '0rem'}}>
@@ -62,7 +64,7 @@ class AccountInfo extends Component {
             { currentAccount.asset_code === 'XLM' ? this.renderMarketValue(availableBalance) : this.renderSpacerView() }
           </div>
       </Card>
-      <MinimumBalanceDialog minimumBalance={currentAccount.minimumBalance} toggle={this.toggleMinBalanceDialog} showModal={this.state.minBalanceDialogOpen}/>
+      <MinimumBalanceDialog account={currentAccount} toggle={this.toggleMinBalanceDialog} showModal={this.state.minBalanceDialogOpen}/>
     </Col>
     )
   }

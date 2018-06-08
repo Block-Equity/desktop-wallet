@@ -208,9 +208,8 @@ class AccountList extends Component {
       </label>
     )
 
-    const balance = asset.asset_code === 'XLM' ?
-      (asset.balance - (asset.minimumBalance ? asset.minimumBalance.minimumBalanceAmount : 0))
-       : asset.balance
+    const minBalance = asset.balance - (asset.minimumBalance ? asset.minimumBalance.minimumBalanceAmount : 0)
+    const balance = asset.asset_code === 'XLM' ? (minBalance > 0 ? minBalance : 0): asset.balance
 
     const balanceView = (
       <label style={{fontSize: '0.65rem', marginBottom: '0rem'}}>
@@ -293,7 +292,6 @@ class AccountList extends Component {
     await this.props.fetchStellarAssetsForDisplay()
     await this.props.fetchBlockEQTokensForDisplay()
   }
-
 }
 
 const mapStateToProps = (state) => {
