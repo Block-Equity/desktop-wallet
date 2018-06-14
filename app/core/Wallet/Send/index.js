@@ -89,7 +89,7 @@ class Send extends Component {
     const target = event.target
     var value = target.value
     const name = target.name
-    if (name==='sendAmount' || name==='sendMemoID') {
+    if (name==='sendAmount') {
       value = value.replace(/[^0.001-9]/g, '')
     }
     this.setState({

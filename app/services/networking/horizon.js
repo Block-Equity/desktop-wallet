@@ -82,7 +82,7 @@ export const getTransactionList = async (publicKey) => {
   })
 }
 
-export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount, memoID, issuerPK, assetType }) => {
+export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount, memoValue, issuerPK, assetType }) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   let transaction
 
@@ -113,7 +113,7 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
           }))
           // A memo allows you to add your own metadata to a transaction. It's
           // optional and does not affect how Stellar treats the transaction.
-          .addMemo(memoID.length === 0 ? StellarSdk.Memo.text('No memo defined') : StellarSdk.Memo.id(memoID))
+          .addMemo(memoValue.length === 0 ? StellarSdk.Memo.text('No memo defined') : StellarSdk.Memo.id(memoValue))
           .build()
 
         // Sign the transaction to prove you are actually the person sending it.
