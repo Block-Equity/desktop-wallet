@@ -85,8 +85,9 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
 
   var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
 
-  const isMemoId = isNan(memoValue)
-  console.log(`Is memo id: ${isMemoId}`)
+  const isMemoText = isNan(memoValue)
+  console.log(`Is memo id: ${isMemoText} for ${memoValue}`)
+  const memoParam = isMemoText ? StellarSdk.Memo.text(memoValue) : StellarSdk.Memo.id(memoValue)
 
   return new Promise((resolve, reject) => {
     server.loadAccount(destinationId)
@@ -113,7 +114,7 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
           }))
           // A memo allows you to add your own metadata to a transaction. It's
           // optional and does not affect how Stellar treats the transaction.
-          .addMemo(memoValue.length === 0 ? StellarSdk.Memo.text('No memo defined') : StellarSdk.Memo.id(memoValue))
+          .addMemo(memoValue.length === 0 ? StellarSdk.Memo.text('No memo defined') : memoParam)
           .build()
 
         // Sign the transaction to prove you are actually the person sending it.

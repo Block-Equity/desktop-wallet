@@ -55,12 +55,12 @@ export function sendPaymentToAddress ({ destination, amount, memoValue }) {
         }
       }
 
+      dispatch(fetchAccountDetails())
+
       dispatch(paymentSendSuccess({
         destination,
         amount
       }))
-
-      dispatch(fetchAccountDetails())
 
     } catch (e) {
       console.log(`Send payment error: ${e}`)

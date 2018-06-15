@@ -118,7 +118,7 @@ class Main extends Component {
     await this.props.sendPaymentToAddress({
       destination: info.destination,
       amount: formattedAmount,
-      memoID: info.memoId
+      memoValue: info.memoValue
     })
     const msg = this.props.paymentFailed ? 'Payment Failed' : 'Payment Successful'
     console.log(`Send Payment Message: ${msg}`)
