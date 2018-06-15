@@ -28,7 +28,6 @@ export function sendPaymentToAddress ({ destination, amount, memoValue }) {
     dispatch(paymentSendRequest())
 
     try {
-      // 1. Start the payment process
       const { exists, error } = await sendPayment({
         publicKey,
         decryptSK,

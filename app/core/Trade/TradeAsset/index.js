@@ -229,10 +229,10 @@ class TradeAsset extends Component {
 
   renderSegmentForPercentAmount() {
     const preDeterminedPercentageAmounts = [0.10, 0.25, 0.50, 0.75, 1]
-    const buttonStyle = { boxShadow: 'none', fontSize: '0.65rem' }
+    const buttonStyle = { boxShadow: 'none', fontSize: '0.65rem', color: '#999999', borderColor: '#999999' }
     return preDeterminedPercentageAmounts.map((percent, index) => {
       return (
-        <Button key={index} outline style={buttonStyle} onClick={ this.handleAmountSelection(percent)}>{`${percent*100}%`}</Button>
+        <Button color='light' key={index} outline className={ styles.preselectedAmountButton } onClick={ this.handleAmountSelection(percent)}>{`${percent*100}%`}</Button>
       )
     })
   }
