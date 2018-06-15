@@ -66,12 +66,12 @@ class Send extends Component {
           </div>
           <div className='form-group'>
             <label className={styles.sendAssetFormLabel} htmlFor='sendMemoID'>
-              Memo ID (optional)
-              <Tooltip id="tooltip-right-start" title="Memo id is required by certain exchanges to transfer funds." placement="right-start">
+              Memo ID or Text (optional)
+              <Tooltip id="tooltip-right-start" title="Memo id or Text is required by certain exchanges to transfer funds." placement="right-start">
                  <i className="fa fa-info-circle" style={{marginLeft: '0.25rem'}}> </i>
               </Tooltip>
             </label>
-            <input type='text' className={formStyle} placeholder='Memo ID'
+            <input type='text' className={formStyle} placeholder='Memo ID or Text'
               id='sendMemoID' name='sendMemoID' value={this.state.sendMemoID} onChange={this.handleChange} />
           </div>
           <div className='form-group'>
