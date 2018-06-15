@@ -1,9 +1,6 @@
 import StellarSdk, { Config } from 'stellar-sdk'
-//import config from '../../../config' //TODO: Issues with getting production config variable in production build
-import { StellarWallet } from '../security/wallet'
-import { generate as generateMnemonic } from '../security/mnemonic'
 import axios from 'axios'
-var EventSource = require('eventsource')
+import isNan from 'lodash/isNaN'
 
 Config.setAllowHttp(true)
 StellarSdk.Network.usePublicNetwork()
@@ -82,11 +79,13 @@ export const getTransactionList = async (publicKey) => {
   })
 }
 
-export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount, memoID, issuerPK, assetType }) => {
+export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amount, memoValue, issuerPK, assetType }) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   let transaction
-
   var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
+  const isMemoText = isNan(memoValue)
+  console.log(`${memoValue} isMemoText: ${isMemoText}`)
+  const memoParam = isMemoText ? StellarSdk.Memo.text(memoValue) : StellarSdk.Memo.id(memoValue)
 
   return new Promise((resolve, reject) => {
     server.loadAccount(destinationId)
@@ -113,7 +112,7 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
           }))
           // A memo allows you to add your own metadata to a transaction. It's
           // optional and does not affect how Stellar treats the transaction.
-          .addMemo(memoID.length === 0 ? StellarSdk.Memo.text('No memo defined') : StellarSdk.Memo.id(memoID))
+          .addMemo(memoValue.length === 0 ? StellarSdk.Memo.none() : memoParam)
           .build()
 
         // Sign the transaction to prove you are actually the person sending it.
