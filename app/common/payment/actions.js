@@ -10,7 +10,7 @@ import numeral from 'numeral'
 export const EVENT_SOURCE_CLOSED_STATE = 2
 export var es
 
-export function sendPaymentToAddress ({ destination, amount, memoID }) {
+export function sendPaymentToAddress ({ destination, amount, memoValue }) {
   return async (dispatch, getState) => {
     let currentAccount = getCurrentAccount(getState())
 
@@ -35,7 +35,7 @@ export function sendPaymentToAddress ({ destination, amount, memoID }) {
         sequence,
         destinationId: destination,
         amount,
-        memoID,
+        memoValue,
         issuerPK,
         assetType
       })

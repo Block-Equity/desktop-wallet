@@ -1,9 +1,6 @@
 import StellarSdk, { Config } from 'stellar-sdk'
-//import config from '../../../config' //TODO: Issues with getting production config variable in production build
-import { StellarWallet } from '../security/wallet'
-import { generate as generateMnemonic } from '../security/mnemonic'
 import axios from 'axios'
-var EventSource = require('eventsource')
+import isNan from 'lodash/isNaN'
 
 Config.setAllowHttp(true)
 StellarSdk.Network.usePublicNetwork()
@@ -87,6 +84,9 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
   let transaction
 
   var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
+
+  const isMemoId = isNan(memoValue)
+  console.log(`Is memo id: ${isMemoId}`)
 
   return new Promise((resolve, reject) => {
     server.loadAccount(destinationId)

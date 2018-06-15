@@ -118,7 +118,7 @@ class Send extends Component {
       const info = {
         destination: this.state.sendAddress,
         amount: this.state.sendAmount,
-        memoId: this.state.sendMemoID
+        memoValue: this.state.sendMemoID
       }
       this.setState({
         info,
