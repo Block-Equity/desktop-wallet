@@ -86,12 +86,9 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
   const isMemoID = () => {
     return /\d/.test(memoValue)
   }
-  console.log(`isMemoID: ${isMemoID()}`)
   var memoParam
   if (memoValue.length > 0) {
-    console.log(`Memo value exists`)
     memoParam = isMemoID() ? StellarSdk.Memo.id(memoValue.toString()) : StellarSdk.Memo.text(memoValue.toString())
-    console.log(`Memo Value: ${memoParam}`)
   }
 
   return new Promise((resolve, reject) => {

@@ -232,7 +232,7 @@ class TradeAsset extends Component {
     const buttonStyle = { boxShadow: 'none', fontSize: '0.65rem' }
     return preDeterminedPercentageAmounts.map((percent, index) => {
       return (
-        <Button key={index} outline style={buttonStyle} onClick={ this.handleAmountSelection(percent)}>{`${percent*100}%`}</Button>
+        <Button className={styles.preselectedAmountButton} key={index} outline style={buttonStyle} onClick={ this.handleAmountSelection(percent)}>{`${percent*100}%`}</Button>
       )
     })
   }
