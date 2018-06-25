@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import numeral from 'numeral'
 
 import { Modal, ModalHeader, ModalBody, Table, Card, Col } from 'reactstrap'
 
@@ -36,7 +37,7 @@ class MinimumBalanceDialog extends Component {
           <Card body style={ summaryContainerCardStyle }>
             <div style={summaryContainerStyle}>
               <h6 style={summaryContainerHeaderStyle}>{`Total Balance`}</h6>
-              <label style={summaryContainerLabelStyle}>{`${account.balance}`}</label>
+              <label style={summaryContainerLabelStyle}>{`${numeral(account.balance).format('0,0.00')}`}</label>
             </div>
           </Card>
         </Col>
@@ -44,7 +45,7 @@ class MinimumBalanceDialog extends Component {
           <Card body style={ summaryContainerCardStyle }>
             <div style={summaryContainerStyle}>
               <h6 style={summaryContainerHeaderStyle}>{`Minimum Balance`}</h6>
-              <label style={summaryContainerLabelStyle}>{`${minimumBalance.minimumBalanceAmount}`}</label>
+              <label style={summaryContainerLabelStyle}>{`${numeral(minimumBalance.minimumBalanceAmount).format('0,0.00')}`}</label>
             </div>
           </Card>
         </Col>
@@ -52,7 +53,7 @@ class MinimumBalanceDialog extends Component {
           <Card body style={ summaryContainerCardStyle }>
             <div style={summaryContainerStyle}>
               <h6 style={summaryContainerHeaderStyle}>{`Available Balance`}</h6>
-              <label style={summaryContainerLabelStyle}>{`${availableBalanceDisplay}`}</label>
+              <label style={summaryContainerLabelStyle}>{`${numeral(availableBalanceDisplay).format('0,0.00')}`}</label>
             </div>
           </Card>
         </Col>

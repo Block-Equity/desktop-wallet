@@ -13,16 +13,11 @@ import {
   InputGroup,
   InputGroupButtonDropdown,
   Input,
-  InputGroupText,
-  InputGroupAddon,
-  Dropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
   Button,
-  ButtonGroup,
-  Collapse,
-  Table
+  ButtonGroup
 } from 'reactstrap'
 
 import ArrowRight from 'material-ui-icons/ArrowForward'
