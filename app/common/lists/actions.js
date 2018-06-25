@@ -3,12 +3,12 @@ import * as Types from './types'
 
 export function fetchExchangeList () {
   return async (dispatch, getState) => {
-    dispatch(supportedAssetsRequest())
+    dispatch(exchangeListRequest())
     try {
       const { list, response } = await getExchangeDirectory()
-      return dispatch(supportedAssetsSuccess(list, response))
+      return dispatch(exchangeListSuccess(list, response))
     } catch (e) {
-      return dispatch(supportedAssetsFailure(e))
+      return dispatch(exchangeListFailure(e))
     }
   }
 }

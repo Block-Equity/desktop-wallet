@@ -22,12 +22,18 @@ class Send extends Component {
       showPINModal: false,
       currentAddress: props.currentAccount.pKey,
       alertOpen: false,
-      alertMessage: ''
+      alertMessage: '',
+      exchangeName: '',
+      exchangeSelected: undefined
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handlePinSubmission = this.handlePinSubmission.bind(this)
     this.togglePINModal = this.togglePINModal.bind(this)
+  }
+
+  componentDidMount() {
+    //console.log(`Exchange List: ${JSON.stringify(this.props.exchangeList)}`)
   }
 
   render() {
@@ -56,11 +62,13 @@ class Send extends Component {
       processing: 'Sending'
     }
 
+    const addressLabelTitle = this.state.exchangeName.length === 0 ? 'Send to address' : `Send to address (${this.state.exchangeName})`
+
     return (
       <div id={styles.sendAssetFormContainer}>
         <form id='sendAssetForm' onSubmit={this.handleSubmit}>
           <div className='form-group'>
-            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>Send to address </label>
+            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>{ addressLabelTitle } </label>
             <input type='text' className={formStyle} placeholder='Send Address'
               id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
           </div>
@@ -91,6 +99,20 @@ class Send extends Component {
     const name = target.name
     if (name==='sendAmount') {
       value = value.replace(/[^0.001-9]/g, '')
+    }
+    if (name==='sendAddress') {
+      if (this.props.exchangeList.hasOwnProperty(value)) {
+        const exchange = this.props.exchangeList[value]
+        this.setState({
+          exchangeName: exchange.exchangeName,
+          exchangeSelected: exchange
+        })
+      } else {
+        this.setState({
+          exchangeName: '',
+          exchangeSelected: undefined
+        })
+      }
     }
     this.setState({
       [name]: value
