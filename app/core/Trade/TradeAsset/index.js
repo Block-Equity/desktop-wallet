@@ -28,8 +28,6 @@ import {
 import ArrowRight from 'material-ui-icons/ArrowForward'
 import Snackbar from 'material-ui/Snackbar'
 import SnackbarButton from 'material-ui/Button'
-import Menu from 'material-ui/Menu'
-import MenuItem from 'material-ui/Menu/MenuItem'
 import ActionButton from '../../Shared/ActionButton'
 
 import AddAsset from '../../Shared/AddAsset'
@@ -61,6 +59,7 @@ class TradeAsset extends Component {
     this.toggleOfferDropDown = this.toggleOfferDropDown.bind(this)
     this.toggleReceiveDropDown = this.toggleReceiveDropDown.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
+    this.handleAddAssetSubmission = this.handleAddAssetSubmission.bind(this)
     this.handleTradeSubmission = this.handleTradeSubmission.bind(this)
     this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
     this.handleMarketLimitSelection = this.handleMarketLimitSelection.bind(this)
@@ -138,8 +137,8 @@ class TradeAsset extends Component {
             <DropdownMenu>
               <DropdownItem header>Select Asset</DropdownItem>
               { this.state.buyAssetList.length > 0 && this.renderBuyAssetList() }
-              {/*<DropdownItem divider /> //Uncomment this to add back Add Asset modal
-              { this.renderAddAssetOption() }*/}
+              <DropdownItem divider />
+              { this.renderAddAssetOption() }
             </DropdownMenu>
           </InputGroupButtonDropdown>
         </InputGroup>
@@ -302,9 +301,9 @@ class TradeAsset extends Component {
   }
 
   initialSellAssetList() {
-    const selectedSellAsset = this.props.assets[0]
+    console.log(`Updated Assets: ${JSON.stringify(this.props.assets)}`)
     var tempArray = []
-    this.props.assets.map((asset, index) => {
+    this.props.assets.map((asset) => {
       tempArray.push(asset)
     })
 
@@ -381,10 +380,12 @@ class TradeAsset extends Component {
     })
   }
 
-  handleAddAssetSubmission (success) {
-    if (success) {
-      this.toggleAddAssetModal()
-    }
+  async handleAddAssetSubmission () {
+    this.setState({
+      showAddAssetModal: false
+    })
+    await this.initialSellAssetList()
+    await this.initialBuyAssetList()
   }
 
   handleTradeSubmission = async () => {
