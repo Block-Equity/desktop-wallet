@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import styles from './style.css'
-import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
+import { FormText } from 'reactstrap'
 
 import PinModal from '../../Shared/PinModal'
 import ActionButton from '../../Shared/ActionButton'
@@ -74,9 +74,10 @@ class Send extends Component {
       <div id={styles.sendAssetFormContainer}>
         <form id='sendAssetForm' onSubmit={this.handleSubmit}>
           <div className='form-group'>
-            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>{ addressLabelTitle } </label>
+            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>Send to address </label>
             <input type='text' className={formStyle} placeholder='Send Address'
               id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
+            {this.state.exchangeSelected && <FormText color='info' style={{fontSize: '0.65rem', marginTop: '0.5rem'}}><i className="fa fa-exclamation-triangle" style={{marginRight: '0.15rem', marginLeft: '0.15rem'}}/> Address identified for <b><u>{this.state.exchangeSelected.exchangeName}</u></b></FormText>}
           </div>
           <div className='form-group'>
             <label className={styles.sendAssetFormLabel} htmlFor='sendMemoID'>
