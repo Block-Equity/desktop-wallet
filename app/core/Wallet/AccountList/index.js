@@ -177,7 +177,7 @@ class AccountList extends Component {
 
   renderSubHeader (value) {
     return (
-      <ListSubheader style={{fontFamily: font, outline: 'none', fontSize: '0.6rem', fontWeight: '700', letterSpacing: '0.04rem' }} component="div">
+      <ListSubheader style={{fontFamily: font, outline: 'none', marginTop: '-0.3rem', marginBottom: '-0.32rem', fontSize: '0.6rem', fontWeight: '700', letterSpacing: '0.04rem' }} component="div">
         {value}
       </ListSubheader>
     )
