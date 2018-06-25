@@ -68,6 +68,7 @@ class Send extends Component {
 
     const addressLabelTitle = this.state.exchangeSelected ? `Send to address (${this.state.exchangeSelected.exchangeName})` : 'Send to address'
     const sendMemoTypeTitle = this.state.exchangeSelected ? `${memoTypeLabel[this.state.exchangeSelected.memoType]}` : 'Memo ID or Text (optional)'
+    const sendMemoTypePlaceholderTitle = this.state.exchangeSelected ? `${memoTypeLabel[this.state.exchangeSelected.memoType]}` : 'Memo ID or Text'
 
     return (
       <div id={styles.sendAssetFormContainer}>
@@ -84,7 +85,7 @@ class Send extends Component {
                  <i className="fa fa-info-circle" style={{marginLeft: '0.25rem'}}> </i>
               </Tooltip>
             </label>
-            <input type='text' className={formStyle} placeholder='Memo ID or Text'
+            <input type='text' className={formStyle} placeholder={sendMemoTypePlaceholderTitle}
               id='sendMemoID' name='sendMemoID' value={this.state.sendMemoID} onChange={this.handleChange} required={this.state.exchangeSelected}/>
           </div>
           <div className='form-group'>
