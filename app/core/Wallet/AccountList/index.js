@@ -1,43 +1,31 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import styles from './style.css'
-import PropTypes from 'prop-types'
 
 import isEmpty from 'lodash/isEmpty'
-import has from 'lodash/has'
 import numeral from 'numeral'
 
-import Paper from 'material-ui/Paper'
-import { withStyles, MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 import { CircularProgress } from 'material-ui/Progress'
 import {
   Modal,
   ModalHeader,
   ModalBody,
   ListGroup,
-  ListGroupItem,
-  Button
+  ListGroupItem
 }
 from 'reactstrap'
 
 import Slide from 'material-ui/transitions/Slide'
 
 import {
-  ListItemIcon,
-  ListItemText,
   ListSubheader
 } from 'material-ui/List'
 
 import {
-  MenuList,
-  MenuItem
+  MenuList
 } from 'material-ui/Menu'
 
-import Divider from 'material-ui/Divider'
-
 import AddAsset from '../../Shared/AddAsset'
-
-import { getSupportedAssets } from '../../../services/networking/lists'
 
 import {
   fetchAccountDetails,
@@ -88,6 +76,7 @@ class AccountList extends Component {
     })
     this.handleBlockEQTokenAddition = this.handleBlockEQTokenAddition.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
+    this.handleAddAssetSubmission = this.handleAddAssetSubmission.bind(this)
   }
 
   componentDidMount () {
@@ -122,7 +111,7 @@ class AccountList extends Component {
             { (!isEmpty(this.props.blockEQTokens)) && this.renderSubHeader(listSections.supported_assets.displayName)}
             { this.renderSupportedAssets() }
             <ListGroup>
-              { /*this.renderAddAsset() //TODO: Finalize functionality*/ }
+              { this.renderAddAsset() }
             </ListGroup>
           </MenuList>
         </div>
@@ -260,7 +249,6 @@ class AccountList extends Component {
 
   handleBlockEQTokenAddition = (asset, index) => event => {
     event.preventDefault()
-    console.log('Clicked!')
     this.setState({
       changeTrustInProcess: true,
       changeTrustIndex: asset
@@ -268,17 +256,16 @@ class AccountList extends Component {
     this.changeTrust (asset)
   }
 
-  toggleAddAssetModal (event) {
+  toggleAddAssetModal () {
     this.setState({
       showAddAssetModal: !this.state.showAddAssetModal
     })
   }
 
-  handleAddAssetSubmission (success) {
-    if (success) {
-      this.toggleAddAssetModal()
-      //this.props.receiveSendPaymentInfo(this.state.info)
-    }
+  handleAddAssetSubmission () {
+    this.setState({
+      showAddAssetModal: false
+    })
   }
 
   async changeTrust (asset) {
