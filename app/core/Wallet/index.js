@@ -4,9 +4,7 @@ import { connect } from 'react-redux'
 import {
   createAccount,
   fetchAccountDetails,
-  setCurrentAccount,
-  fetchStellarAssetsForDisplay,
-  fetchBlockEQTokensForDisplay
+  setCurrentAccount
 } from '../../common/account/actions'
 
 import {
@@ -25,30 +23,20 @@ import {
   getPaymentTransactions
 } from '../../common/payment/selectors'
 
+import { getExchangeDirectory } from '../../common/lists/selectors'
+
 import AccountInfo from './AccountInfo'
 import History from './History'
 import Tabs from './Tabs'
 import Receive from './Receive'
 import Send from './Send'
-import Alert from '../Shared/Alert'
-import * as alertTypes from '../Shared/Alert/types'
 
 import isEmpty from 'lodash/isEmpty'
-import get from 'lodash/get'
 import numeral from 'numeral'
 
-import walletIcon from './images/icnWallet.png'
-import logoIcon from '../Launch/logo-white.png'
-
 import styles from './style.css'
-
-import { withStyles } from 'material-ui/styles'
 import Button from 'material-ui/Button'
 import Snackbar from 'material-ui/Snackbar'
-import Drawer from 'material-ui/Drawer'
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
-import ListSubheader from 'material-ui/List/ListSubheader'
-import Divider from 'material-ui/Divider'
 
 const navigation = { history: 0, send: 1, receive: 2 }
 const INITIAL_NAVIGATION_INDEX = navigation.history
@@ -180,7 +168,11 @@ class Main extends Component {
       break
       case navigation.send:
         return (
-          <Send receiveSendPaymentInfo={ this.receiveSendPaymentInfo } paymentSending={ this.props.paymentSending } currentAccount={ this.props.currentAccount } />
+          <Send
+            receiveSendPaymentInfo={ this.receiveSendPaymentInfo }
+            paymentSending={ this.props.paymentSending }
+            currentAccount={ this.props.currentAccount }
+            exchangeList={ this.props.exchangeList } />
         )
       break
       case navigation.receive:
@@ -200,7 +192,8 @@ const mapStateToProps = (state, ownProps) => {
     paymentTransactions: getPaymentTransactions(state),
     paymentSending: state.payment.isSending,
     paymentFailed: state.payment.paymentFailed,
-    userAccountDetailFailed: state.account.fetchingFailed
+    userAccountDetailFailed: state.account.fetchingFailed,
+    exchangeList: getExchangeDirectory(state)
   }
 }
 

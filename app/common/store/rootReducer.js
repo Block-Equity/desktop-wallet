@@ -7,6 +7,7 @@ import payment from '../payment/reducers'
 import app from '../app/reducers'
 import market from '../market/reducers'
 import trade from '../trade/reducers'
+import lists from '../lists/reducers'
 
 export default combineReducers({
   auth,
@@ -15,5 +16,6 @@ export default combineReducers({
   app,
   market,
   trade,
+  lists,
   router: routerReducer
 })

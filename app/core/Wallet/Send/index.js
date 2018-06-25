@@ -10,6 +10,11 @@ import Tooltip from 'material-ui/Tooltip'
 import PinModal from '../../Shared/PinModal'
 import ActionButton from '../../Shared/ActionButton'
 
+const memoTypeLabel = {
+  memoText: 'Memo Text',
+  memoId: 'Memo ID'
+}
+
 class Send extends Component {
 
   constructor (props) {
@@ -22,12 +27,17 @@ class Send extends Component {
       showPINModal: false,
       currentAddress: props.currentAccount.pKey,
       alertOpen: false,
-      alertMessage: ''
+      alertMessage: '',
+      exchangeSelected: undefined
     }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handlePinSubmission = this.handlePinSubmission.bind(this)
     this.togglePINModal = this.togglePINModal.bind(this)
+  }
+
+  componentDidMount() {
+    //console.log(`Exchange List: ${JSON.stringify(this.props.exchangeList)}`)
   }
 
   render() {
@@ -56,23 +66,26 @@ class Send extends Component {
       processing: 'Sending'
     }
 
+    const addressLabelTitle = this.state.exchangeSelected ? `Send to address (${this.state.exchangeSelected.exchangeName})` : 'Send to address'
+    const sendMemoTypeTitle = this.state.exchangeSelected ? `${memoTypeLabel[this.state.exchangeSelected.memoType]}` : 'Memo ID or Text (optional)'
+
     return (
       <div id={styles.sendAssetFormContainer}>
         <form id='sendAssetForm' onSubmit={this.handleSubmit}>
           <div className='form-group'>
-            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>Send to address </label>
+            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>{ addressLabelTitle } </label>
             <input type='text' className={formStyle} placeholder='Send Address'
               id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
           </div>
           <div className='form-group'>
             <label className={styles.sendAssetFormLabel} htmlFor='sendMemoID'>
-              Memo ID (optional)
-              <Tooltip id="tooltip-right-start" title="Memo id is required by certain exchanges to transfer funds." placement="right-start">
+              {sendMemoTypeTitle}
+              <Tooltip id="tooltip-right-start" title="Memo id or Text is required by certain exchanges to transfer funds." placement="right-start">
                  <i className="fa fa-info-circle" style={{marginLeft: '0.25rem'}}> </i>
               </Tooltip>
             </label>
-            <input type='text' className={formStyle} placeholder='Memo ID'
-              id='sendMemoID' name='sendMemoID' value={this.state.sendMemoID} onChange={this.handleChange} />
+            <input type='text' className={formStyle} placeholder='Memo ID or Text'
+              id='sendMemoID' name='sendMemoID' value={this.state.sendMemoID} onChange={this.handleChange} required={this.state.exchangeSelected}/>
           </div>
           <div className='form-group'>
             <label className={styles.sendAssetFormLabel} htmlFor='sendAmount'>{`Amount in ${currentAccount.asset_code}`} </label>
@@ -91,6 +104,18 @@ class Send extends Component {
     const name = target.name
     if (name==='sendAmount') {
       value = value.replace(/[^0.001-9]/g, '')
+    }
+    if (name==='sendAddress') {
+      if (this.props.exchangeList.hasOwnProperty(value)) {
+        const exchange = this.props.exchangeList[value]
+        this.setState({
+          exchangeSelected: exchange
+        })
+      } else {
+        this.setState({
+          exchangeSelected: undefined
+        })
+      }
     }
     this.setState({
       [name]: value

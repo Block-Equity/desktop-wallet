@@ -1,15 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
-import isEmpty from 'lodash/isEmpty'
 import { unlock } from '../../common/auth/actions'
 import { initializeDB } from '../../common/account/actions'
 import { getCurrentApp } from '../../common/app/selectors'
 import { fetchStellarMarketInfo } from '../../common/market/actions'
+import { fetchExchangeList } from '../../common/lists/actions'
 
 //Style
 import styles from './style.css'
-import NavBar from '../Shared/NavBar'
 import Settings from '../Settings'
 import AppList from '../AppList'
 import Wallet from '../Wallet'
@@ -40,6 +39,7 @@ class AppView extends Component {
       await this.props.unlock()
       await this.props.initializeDB()
       await this.props.fetchStellarMarketInfo()
+      this.props.fetchExchangeList()
       this.setState({
         dbInit: true
       })
@@ -145,5 +145,6 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps, {
   unlock,
   initializeDB,
-  fetchStellarMarketInfo
+  fetchStellarMarketInfo,
+  fetchExchangeList
 })(AppView)

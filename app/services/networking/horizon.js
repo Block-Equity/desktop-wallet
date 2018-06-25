@@ -83,9 +83,13 @@ export const sendPayment = ({ publicKey, decryptSK, sequence, destinationId, amo
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   let transaction
   var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
-  const isMemoText = isNan(memoValue)
-  console.log(`${memoValue} isMemoText: ${isMemoText}`)
-  const memoParam = isMemoText ? StellarSdk.Memo.text(memoValue) : StellarSdk.Memo.id(memoValue)
+  const isMemoText = () => {
+    return /[a-z]/i.test(memoValue)
+  }
+  var memoParam
+  if (memoValue.length > 0) {
+    memoParam = isMemoText() ? StellarSdk.Memo.text(memoValue.toString()) : StellarSdk.Memo.id(memoValue.toString())
+  }
 
   return new Promise((resolve, reject) => {
     server.loadAccount(destinationId)

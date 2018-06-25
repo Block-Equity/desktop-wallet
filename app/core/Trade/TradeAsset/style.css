@@ -60,6 +60,18 @@
   font-size: 0.68rem;
 }
 
+.preselectedAmountButton {
+  box-shadow: none !important;
+  font-size: 0.65rem !important;
+  color: #999999 !important;
+  border-color: #DADDDF !important;
+}
+
+.preselectedAmountButton:hover {
+  background: #E2EAEF !important;
+  color: #333333 !important;
+}
+
 .marketLimitOptionContainer {
   display: flex;
   flex-direction: column;
