@@ -3,12 +3,10 @@ import {
   getCurrentAccount,
   getAccounts,
   getSupportedStellarAssets,
-  getStellarAssetsForDisplay,
-  getBlockEQTokensForDisplay
+  getStellarAssetsForDisplay
 } from './selectors'
 import { getStellarPaymentPagingToken } from '../payment/selectors'
 import {
-  streamPayments,
   fetchPaymentOperationList,
   updatePaymentPagingToken
 } from '../payment/actions'
@@ -16,7 +14,6 @@ import * as horizon from '../../services/networking/horizon'
 import { getUserPIN } from '../../db'
 import { getSupportedAssets } from '../../services/networking/lists'
 import * as encryption from '../../services/security/encryption'
-import * as mnemonic from '../../services/security/mnemonic'
 import * as Types from './types'
 
 export const stellarAssetImageURL = 'https://firebasestorage.googleapis.com/v0/b/blockeq-wallet.appspot.com/o/icon-stellar.png?alt=media&token=38b70165-5255-4113-a15e-3c72bd4fab9f'
