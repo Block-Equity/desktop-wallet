@@ -208,8 +208,8 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType, removeT
           })
         })
         .catch( err => {
-          console.log('An error has occured:');
-          console.log(err);
+          console.log('An error has occured:')
+          console.log(err)
           reject({error: true, errorMessage: err})
         })
     })
@@ -233,7 +233,7 @@ export const joinInflationDestination = ( sk, pk ) => {
       .then( transactionResult => {
         resolve({ payload: transactionResult, error: false })
       }).catch( err => {
-        console.log(err);
+        console.log(err)
         reject({ errorMessage: err, error: true })
       })
     })
@@ -299,7 +299,7 @@ export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
         console.log(`Manage offer success: ${JSON.stringify(result)}`)
         resolve({ payload: 'Success', error: false })
       }).catch( err => {
-        console.log(err);
+        console.log(err)
         reject({ errorMessage: err, error: true })
       })
     })
@@ -332,7 +332,7 @@ export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
       .then( result => {
         resolve({ payload: 'Success', error: false })
       }).catch( err => {
-        console.log(err);
+        console.log(err)
         reject({ errorMessage: err, error: true })
       })
     })
