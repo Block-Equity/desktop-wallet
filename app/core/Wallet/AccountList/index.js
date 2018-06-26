@@ -269,7 +269,7 @@ class AccountList extends Component {
   }
 
   async changeTrust (asset) {
-    await this.props.changeTrustOperation(asset)
+    await this.props.changeTrustOperation(asset, false)
     await this.refreshAccounts()
     this.setState({ changeTrustInProcess: false })
   }

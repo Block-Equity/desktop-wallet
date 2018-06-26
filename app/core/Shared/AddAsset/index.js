@@ -61,7 +61,9 @@ class AddAsset extends Component {
               <Input type='text' name='issuerAddress' id='issuerAddress'
                   value={this.state.issuerAddress} onChange={this.handleChange}
                   placeholder='Enter issuer address' style={{boxShadow: 'none'}} required />
-              <FormText color='danger' style={{fontSize: '0.75rem', marginTop: '0.75rem'}}><i className="fa fa-exclamation-triangle" style={{marginRight: '0.15rem', marginLeft: '0.15rem'}}/> Please research asset before trading or sending</FormText>
+              <FormText color='danger' style={{fontSize: '0.75rem', marginTop: '0.75rem'}}><i className="fa fa-exclamation-triangle" style={{marginRight: '0.15rem', marginLeft: '0.15rem'}}/>
+                Please be careful when manually adding Stellar Tokens. We do not recommend adding unverified assets. Add assets at your own risk and be cautious of scams.
+              </FormText>
             </FormGroup>
             {' '}
           </Form>
@@ -108,7 +110,7 @@ class AddAsset extends Component {
   }
 
   async changeTrust (asset) {
-    await this.props.changeTrustOperation(asset)
+    await this.props.changeTrustOperation(asset, false)
     await this.props.fetchAccountDetails()
     await this.props.fetchStellarAssetsForDisplay()
     await this.props.fetchBlockEQTokensForDisplay()

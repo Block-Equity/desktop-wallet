@@ -178,9 +178,13 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
   })
 }
 
-export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
+export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType, removeTrust }) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
+  var payload = { asset: blockEQToken }
+  if (removeTrust) {
+    payload = {...payload, limit: 0 }
+  }
   return new Promise((resolve, reject) => {
     server.loadAccount(publicKey)
     .catch(error => {
@@ -193,13 +197,9 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
     // If there was no error, load up-to-date information on your account.
     .then(sourceAccount => {
       var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
-        .addOperation(StellarSdk.Operation.changeTrust({
-          asset: blockEQToken
-        }))
+        .addOperation(StellarSdk.Operation.changeTrust(payload))
         .build()
-
         transaction.sign(sourceKeys)
-
         server.submitTransaction(transaction)
         .then( transactionResult => {
           resolve({
