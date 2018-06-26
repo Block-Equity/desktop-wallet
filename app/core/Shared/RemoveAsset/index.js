@@ -62,12 +62,11 @@ class RemoveAsset extends Component {
   }
 
   handleSubmit () {
-    const { currentAsset } = this.props
     this.setState({
       processing: true
     })
     this.timer = setTimeout( async () => {
-      await this.changeTrust(currentAsset)
+      await this.changeTrust(this.props.currentAsset)
       this.setState({
         processing: false
       })

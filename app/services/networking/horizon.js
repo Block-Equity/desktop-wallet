@@ -183,7 +183,7 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType, removeT
   var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
   var payload = { asset: blockEQToken }
   if (removeTrust) {
-    payload = {...payload, limit: 0 }
+    payload = {...payload, limit: '0.0000000' }
   }
   return new Promise((resolve, reject) => {
     server.loadAccount(publicKey)
