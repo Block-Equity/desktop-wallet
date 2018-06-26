@@ -187,13 +187,13 @@ class AccountList extends Component {
 
     const imageView = (
       <div className={styles.assetContainerImage}>
-        <img alt='' src={ asset.asset_image } height='21px' width='21px'/>
+        <img alt='' src={ asset.asset_image } height='26px' width='26px'/>
       </div>
     )
 
     const labelView = (
-      <label style={{fontSize: '0.75rem', marginBottom: '0rem'}}>
-        { asset.asset_name }
+      <label style={{fontSize: '0.7rem', marginBottom: '0rem'}}>
+        <b>{ asset.asset_name }</b>
       </label>
     )
 
@@ -201,7 +201,7 @@ class AccountList extends Component {
     const balance = asset.asset_code === 'XLM' ? (minBalance > 0 ? minBalance : 0): asset.balance
 
     const balanceView = (
-      <label style={{fontSize: '0.65rem', marginBottom: '0rem'}}>
+      <label style={{fontSize: '0.6rem', marginBottom: '0rem'}}>
         {`${numeral(balance).format('0,0.00')} (${ asset.asset_code })`}
       </label>
     )

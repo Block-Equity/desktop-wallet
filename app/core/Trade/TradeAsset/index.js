@@ -5,7 +5,7 @@ import numeral from 'numeral'
 import { getStellarAssetsForDisplay } from '../../../common/account/selectors'
 import { getStellarMarketInfo } from '../../../common/market/selectors'
 import { makeTradeOffer } from '../../../common/trade/actions'
-import { getBestOffer } from '../../../common/trade/selectors'
+import { getBestOffer, getTradeStatus, getTradeErrorMessage } from '../../../common/trade/selectors'
 
 import styles from './style.css'
 
@@ -277,7 +277,7 @@ class TradeAsset extends Component {
     const { assets } = this.props
     const selectedOfferAsset = assets[this.state.sellAssetSelected]
     const value = percentage * selectedOfferAsset.balance
-    const formattedValue = numeral(percentage * selectedOfferAsset.balance).format('0,0.00')
+    const formattedValue = numeral(percentage * selectedOfferAsset.balance).format('0,0.0000000')
     this.setState({
       offerAssetAmount: formattedValue,
       receiveAssetAmount: this.calculateReceiveAmount(this.props.bestOffer.marketPrice, value)
@@ -389,21 +389,35 @@ class TradeAsset extends Component {
     const tradePrice = this.state.isMarketOrder ? this.props.bestOffer.marketPrice : numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
     console.log(`Limit Price calculation: ${this.state.receiveAssetAmount/this.state.offerAssetAmount}`)
     console.log(`Limit Price calculation for submission: ${numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)}`)
+    console.log(`Trade Price: ${this.props.bestOffer.marketPrice} || Offer Asset Amount: ${this.state.offerAssetAmount}`)
     this.setState({ tradeProcessing: true })
     await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
       this.state.offerAssetAmount, tradePrice )
-    await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
-    this.setState({
-      tradeProcessing: false,
-      offerAssetAmount: '',
-      receiveAssetAmount: '',
-      alertOpen: true,
-      alertMessage: 'Trade submitted successfully'
-    })
+    const tradeErrorStatus = this.props.tradeStatus
+    if (tradeErrorStatus) {
+      const tradeErrorMessage = this.props.tradeErrorMessage
+      console.log(`Trade Error Message in View: ${tradeErrorMessage}`)
+      this.setState({
+        tradeProcessing: false,
+        offerAssetAmount: '',
+        receiveAssetAmount: '',
+        alertOpen: true,
+        alertMessage: 'Trade transaction failed'
+      })
+    } else {
+      await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
+      this.setState({
+        tradeProcessing: false,
+        offerAssetAmount: '',
+        receiveAssetAmount: '',
+        alertOpen: true,
+        alertMessage: 'Trade submitted successfully'
+      })
+    }
   }
 
   calculateReceiveAmount(price, amount) {
-    return numeral(amount * price).format('0.0000')
+    return numeral(amount * price).format('0.0000000')
   }
 
   renderAlertView() {
@@ -454,7 +468,9 @@ const mapStateToProps = (state) => {
   return {
     assets: getStellarAssetsForDisplay(state),
     stellarMarketInfo: getStellarMarketInfo(state),
-    bestOffer: getBestOffer(state)
+    bestOffer: getBestOffer(state),
+    tradeStatus: getTradeStatus(state),
+    tradeErrorMessage: getTradeErrorMessage(state)
   }
 }
 

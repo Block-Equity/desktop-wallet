@@ -6,7 +6,7 @@ import { getUserPIN } from '../../db'
 import * as encryption from '../../services/security/encryption'
 import numeral from 'numeral'
 
-const POLL_FREQUENCY = 15000
+const POLL_FREQUENCY = 5000
 var pollOrderBook
 
 export function fetchStellarOrderBook(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer) {
@@ -72,8 +72,12 @@ export function makeTradeOffer(sellingAsset, sellingAssetIssuer, buyingAsset, bu
     const { pin } = await getUserPIN()
     const decryptSK = await encryption.decryptText(secretKey, pin)
     try {
-      const trade = await manageOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, amount, price, decryptSK, publicKey)
-      dispatch(makeTradeOfferSuccess(trade))
+      const { payload, errorMessage, error } = await manageOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, amount, price, decryptSK, publicKey)
+      if (error) {
+        dispatch(makeTradeOfferFailure(errorMessage))
+      } else {
+        dispatch(makeTradeOfferSuccess(payload))
+      }
     } catch (e) {
       dispatch(makeTradeOfferFailure(e))
     }
@@ -95,7 +99,7 @@ export function makeTradeOfferSuccess(trade) {
 
 export function makeTradeOfferFailure(error) {
   return {
-    type: Types.TRADE_STELLAR_SUCCESS,
+    type: Types.TRADE_STELLAR_FAILURE,
     payload: error,
     error: true
   }
