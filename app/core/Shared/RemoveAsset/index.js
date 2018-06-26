@@ -24,8 +24,7 @@ class RemoveAsset extends Component {
     super()
     this.state = {
       showModal: props.showModal,
-      processing: false,
-      currentAsset: this.props.currentAsset
+      processing: false
     }
 
     this.toggleModal = this.toggleModal.bind(this)
@@ -38,11 +37,13 @@ class RemoveAsset extends Component {
       processing: 'Removing asset...'
     }
 
+    const { currentAsset } = this.props
+
     return (
       <Modal isOpen={this.props.showModal} className={this.props.className} centered={true}>
-        <ModalHeader style={{boxShadow: 'none'}} toggle={this.toggleModal}>Add Asset</ModalHeader>
+        <ModalHeader style={{boxShadow: 'none'}} toggle={this.toggleModal}>Remove Asset</ModalHeader>
         <ModalBody>
-          {`Are you sure you want to remove ${this.state.currentAsset.asset_name} (${this.state.currentAsset.asset_code})?`}
+          {`Are you sure you want to remove ${currentAsset.asset_name} (${currentAsset.asset_code}) ?`}
         </ModalBody>
         <ModalFooter>
           <ActionButton
@@ -60,16 +61,13 @@ class RemoveAsset extends Component {
     this.props.toggle(!this.props.showModal)
   }
 
-  handleSubmit (event) {
-    const asset = {
-      asset_code: this.state.assetCode,
-      asset_issuer: this.state.issuerAddress
-    }
+  handleSubmit () {
+    const { currentAsset } = this.props
     this.setState({
       processing: true
     })
     this.timer = setTimeout( async () => {
-      await this.changeTrust(asset)
+      await this.changeTrust(currentAsset)
       this.setState({
         processing: false
       })
