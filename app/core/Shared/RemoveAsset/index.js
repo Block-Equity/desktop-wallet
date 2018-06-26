@@ -5,10 +5,15 @@ import ActionButton from '../ActionButton'
 
 import {
   fetchAccountDetails,
+  setCurrentAccount,
   fetchStellarAssetsForDisplay,
   fetchBlockEQTokensForDisplay,
   changeTrustOperation
 } from '../../../common/account/actions'
+
+import {
+  getStellarAssetsForDisplay
+} from '../../../common/account/selectors'
 
 import {
   Modal,
@@ -62,11 +67,13 @@ class RemoveAsset extends Component {
   }
 
   handleSubmit () {
+    const updatedCurrentAsset = this.props.assets[0]
     this.setState({
       processing: true
     })
     this.timer = setTimeout( async () => {
       await this.changeTrust(this.props.currentAsset)
+      await this.props.setCurrentAccount(updatedCurrentAsset)
       this.setState({
         processing: false
       })
@@ -84,8 +91,15 @@ class RemoveAsset extends Component {
 
 }
 
-export default connect(null, {
+const mapStateToProps = (state) => {
+  return {
+    assets: getStellarAssetsForDisplay(state)
+  }
+}
+
+export default connect(mapStateToProps, {
   fetchAccountDetails,
+  setCurrentAccount,
   fetchStellarAssetsForDisplay,
   fetchBlockEQTokensForDisplay,
   changeTrustOperation
