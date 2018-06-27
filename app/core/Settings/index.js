@@ -1,24 +1,6 @@
 import React, { Component } from 'react'
 import styles from './style.css'
-
-import { withStyles } from 'material-ui/styles'
-import Drawer from 'material-ui/Drawer'
-import { MenuList, MenuItem } from 'material-ui/Menu';
-import Paper from 'material-ui/Paper';
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
-import ListSubheader from 'material-ui/List/ListSubheader'
-import Divider from 'material-ui/Divider'
 import { ListGroup, ListGroupItem } from 'reactstrap'
-
-//Settings Content
-import Button from 'material-ui/Button'
-import Dialog from 'material-ui/Dialog'
-import AppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
-import IconButton from 'material-ui/IconButton'
-import Typography from 'material-ui/Typography'
-import CloseIcon from 'material-ui-icons/Close'
-import Slide from 'material-ui/transitions/Slide'
 
 //Custom components
 import ResetPIN from './ResetPIN'

@@ -299,7 +299,7 @@ export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
         console.log(`Manage offer success: ${JSON.stringify(result)}`)
         resolve({ payload: 'Success', error: false })
       }).catch( err => {
-        console.log(err)
+        console.log(`Manage offer error msg: ${JSON.stringify(err)}`)
         reject({ errorMessage: err, error: true })
       })
     })

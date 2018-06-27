@@ -21,10 +21,7 @@ import {
 } from 'reactstrap'
 
 import ArrowRight from 'material-ui-icons/ArrowForward'
-import Snackbar from 'material-ui/Snackbar'
-import SnackbarButton from 'material-ui/Button'
 import ActionButton from '../../Shared/ActionButton'
-
 import AddAsset from '../../Shared/AddAsset'
 import Alert from '../../Shared/Alert'
 import MarketInfo from '../Market Info'
@@ -59,7 +56,8 @@ class TradeAsset extends Component {
     this.handleAddAssetSubmission = this.handleAddAssetSubmission.bind(this)
     this.handleTradeSubmission = this.handleTradeSubmission.bind(this)
     this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
-    this.handleMarketLimitSelection = this.handleMarketLimitSelection.bind(this)
+    this.setLimitOrderState = this.setLimitOrderState.bind(this)
+    this.setMarketOrderState = this.setMarketOrderState.bind(this)
   }
 
   async componentDidMount() {
@@ -243,8 +241,8 @@ class TradeAsset extends Component {
     return (
       <div className={ styles.marketLimitOptionContainer }>
         <ButtonGroup size='sm'>
-          <Button outline style={buttonStyle} onClick={ this.handleMarketLimitSelection } active={this.state.marketOrder}>Market</Button>
-          <Button outline style={buttonStyle} onClick={ this.handleMarketLimitSelection } active={!this.state.marketOrder}>Limit</Button>
+          <Button outline style={buttonStyle} onClick={ this.setMarketOrderState } active={this.state.marketOrder}>Market</Button>
+          <Button outline style={buttonStyle} onClick={ this.setLimitOrderState } active={!this.state.marketOrder}>Limit</Button>
         </ButtonGroup>
       </div>
     )
@@ -291,15 +289,17 @@ class TradeAsset extends Component {
     })
   }
 
-  async handleMarketLimitSelection() {
-    await this.setState({
-      marketOrder: !this.state.marketOrder
+  setLimitOrderState() {
+    this.setState({
+      marketOrder: false
     })
-    if (this.state.marketOrder) {
-        this.setState({
-          receiveAssetAmount: this.state.offerAssetAmount.length === 0 ? '' : this.calculateReceiveAmount(this.props.bestOffer.marketPrice, this.state.offerAssetAmount)
-        })
-    }
+  }
+
+  setMarketOrderState() {
+    this.setState({
+      marketOrder: true,
+      receiveAssetAmount: this.state.offerAssetAmount.length === 0 ? '' : this.calculateReceiveAmount(this.props.bestOffer.marketPrice, this.state.offerAssetAmount)
+    })
   }
 
   initialSellAssetList() {
@@ -393,38 +393,53 @@ class TradeAsset extends Component {
   handleTradeSubmission = async () => {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    const tradePrice = this.state.isMarketOrder ? this.props.bestOffer.marketPrice : numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
-    console.log(`Limit Price calculation: ${this.state.receiveAssetAmount/this.state.offerAssetAmount}`)
-    console.log(`Limit Price calculation for submission: ${numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)}`)
-    console.log(`Trade Price: ${this.props.bestOffer.marketPrice} || Offer Asset Amount: ${this.state.offerAssetAmount}`)
-    this.setState({ tradeProcessing: true })
-    await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
-      this.state.offerAssetAmount, tradePrice )
-    const tradeErrorStatus = this.props.tradeStatus
-    if (tradeErrorStatus) {
-      const tradeErrorMessage = this.props.tradeErrorMessage
-      console.log(`Trade Error Message in View: ${JSON.stringify(tradeErrorMessage)}`)
-      const errMessage =
-        tradeErrorMessage.errorMessage.data.extras.result_codes.operations[0] === 'op_cross_self' ? 'Trade transaction failed' : 'Trade transaction failed'
+    const tradePrice = this.state.marketOrder ?
+      this.props.bestOffer.marketPrice :
+      numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
+
+    //Validate if the market price is not 0
+    if (this.state.marketOrder && this.props.bestOffer.marketPrice === 0 ) {
       this.setState({
-        tradeProcessing: false,
-        offerAssetAmount: '',
-        receiveAssetAmount: '',
         alertOpen: true,
-        alertMessage: 'Trade transaction failed',
+        alertMessage: 'Trade price cannot be 0. Please override with limit order.',
         alertSuccess: false
       })
-    } else {
-      await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
-      this.setState({
-        tradeProcessing: false,
-        offerAssetAmount: '',
-        receiveAssetAmount: '',
-        alertOpen: true,
-        alertMessage: 'Trade submitted successfully',
-        alertSuccess: true
-      })
+      return
     }
+
+    //Initiate processing state to true
+    this.setState({ tradeProcessing: true })
+
+    //Make the offer
+    await this.props.makeTradeOffer (
+      sellAsset.asset_code,
+      sellAsset.asset_issuer,
+      buyAsset.asset_code,
+      buyAsset.asset_issuer,
+      this.state.offerAssetAmount,
+      tradePrice
+    )
+
+    //Check error results
+    if (!this.props.tradeErrorStatus) {
+      await this.marketInfo.getOrderBook (
+        this.state.sellAssetList[this.state.sellAssetSelected],
+        this.state.buyAssetList[this.state.buyAssetSelected]
+      )
+    }
+
+    //Set state based on results
+    this.setState({
+      tradeProcessing: false,
+      offerAssetAmount: '',
+      receiveAssetAmount: '',
+      alertOpen: true,
+      alertMessage: this.props.tradeErrorStatus ?
+        'Trade transaction failed' :
+        'Trade submitted successfully',
+      alertSuccess: !this.props.tradeErrorStatus
+    })
+
   }
 
   calculateReceiveAmount(price, amount) {
@@ -438,7 +453,7 @@ const mapStateToProps = (state) => {
     assets: getStellarAssetsForDisplay(state),
     stellarMarketInfo: getStellarMarketInfo(state),
     bestOffer: getBestOffer(state),
-    tradeStatus: getTradeStatus(state),
+    tradeErrorStatus: getTradeStatus(state),
     tradeErrorMessage: getTradeErrorMessage(state)
   }
 }

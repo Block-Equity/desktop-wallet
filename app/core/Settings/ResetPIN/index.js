@@ -2,10 +2,8 @@ import React, { Component } from 'react'
 import styles from './style.css'
 import { getUserPIN, setUserPIN, getPhrase, setPhrase } from '../../../db'
 
-import { CircularProgress } from 'material-ui/Progress'
-import Snackbar from 'material-ui/Snackbar'
-import Button from 'material-ui/Button'
 import ActionButton from '../../Shared/ActionButton'
+import Alert from '../../Shared/Alert'
 
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
@@ -19,7 +17,8 @@ class ResetPIN extends Component {
       newPINConfirm: '',
       savingPIN: false,
       alertOpen: false,
-      alertMessage: ''
+      alertMessage: '',
+      alertSuccess: true
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
@@ -53,20 +52,18 @@ class ResetPIN extends Component {
           </FormGroup>
           <ActionButton processing={ this.state.savingPIN } title={ btnTitle } isForm={ true } />
         </Form>
-        { this.renderAlertView() }
+        <Alert
+          open={this.state.alertOpen}
+          message={this.state.alertMessage}
+          success={this.state.alertSuccess}
+          close={() => { this.setState({ alertOpen: false })}}
+        />
       </div>
     )
   }
 
   handleSubmit(event) {
     event.preventDefault()
-    //Save the new PIN in DB and provide confirmation
-    const resetPINValues = {
-      oldPIN: this.state.oldPIN,
-      newPIN: this.state.newPIN,
-      newPINConfirm: this.state.newPINConfirm
-    }
-
     this.setState({
       savingPIN: true
     })
@@ -86,7 +83,6 @@ class ResetPIN extends Component {
   async saveUpdatedPIN() {
     if (this.state.newPIN === this.state.newPINConfirm) {
       const { pin } = await getUserPIN()
-      console.log(`PIN Saved in DB: ${pin}`)
       if (pin === this.state.oldPIN) {
         //Encrypt mnemonic with new PIN
         //1. Get Mnemonic with old pin
@@ -106,7 +102,6 @@ class ResetPIN extends Component {
         }, 1500)
 
       } else {
-        console.log(`PIN Doesn't match. Show some error to the user`)
         this.handleAlertOpen('The old PIN you entered is not valid.')
         this.setState({
           savingPIN: false
@@ -120,45 +115,11 @@ class ResetPIN extends Component {
     }
   }
 
-  renderAlertView() {
-    return (
-      <div>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          open={this.state.alertOpen}
-          autoHideDuration={6000}
-          onClose={this.handleAlertClose}
-          SnackbarContentProps={{
-            'aria-describedby': 'message-id',
-          }}
-          message={<span id="message-id">{this.state.alertMessage}</span>}
-          action={[
-            <Button key="close" color="secondary" size="small"
-              onClick={this.handleAlertClose}>
-              CLOSE
-            </Button>
-          ]}
-        />
-      </div>
-    )
-  }
-
   handleAlertOpen (message) {
     this.setState({
       alertOpen: true,
-      alertMessage: message
-    })
-  }
-
-  handleAlertClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    this.setState({
-      alertOpen: false
+      alertMessage: message,
+      alertSuccess: false
     })
   }
 
