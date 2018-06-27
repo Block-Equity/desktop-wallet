@@ -294,7 +294,7 @@ export function fetchBlockEQTokensForDisplay () {
   }
 }
 
-export function changeTrustOperation ( asset ) {
+export function changeTrustOperation ( asset, removeTrust ) {
   return async (dispatch, getState) => {
     try {
       const currentAccount = getCurrentAccount(getState())
@@ -306,7 +306,7 @@ export function changeTrustOperation ( asset ) {
       const { asset_issuer: issuerPK, asset_code: assetType } = asset
       console.log(`BlockEQ Asset: ${JSON.stringify(asset)}`)
 
-      const { payload, error } = await horizon.changeTrust({decryptSK, publicKey, issuerPK, assetType})
+      const { payload, error } = await horizon.changeTrust({decryptSK, publicKey, issuerPK, assetType, removeTrust})
       return(dispatch(changeTrustSuccess()))
     } catch (e) {
       return(dispatch(changeTrustFailure(e)))

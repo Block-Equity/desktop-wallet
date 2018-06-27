@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import styles from './style.css'
-import { CircularProgress } from 'material-ui/Progress'
 import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
+import { FormText } from 'reactstrap'
 
 import PinModal from '../../Shared/PinModal'
 import ActionButton from '../../Shared/ActionButton'
@@ -68,14 +68,16 @@ class Send extends Component {
 
     const addressLabelTitle = this.state.exchangeSelected ? `Send to address (${this.state.exchangeSelected.exchangeName})` : 'Send to address'
     const sendMemoTypeTitle = this.state.exchangeSelected ? `${memoTypeLabel[this.state.exchangeSelected.memoType]}` : 'Memo ID or Text (optional)'
+    const sendMemoTypePlaceholderTitle = this.state.exchangeSelected ? `${memoTypeLabel[this.state.exchangeSelected.memoType]}` : 'Memo ID or Text'
 
     return (
       <div id={styles.sendAssetFormContainer}>
         <form id='sendAssetForm' onSubmit={this.handleSubmit}>
           <div className='form-group'>
-            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>{ addressLabelTitle } </label>
+            <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>Send to address </label>
             <input type='text' className={formStyle} placeholder='Send Address'
               id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
+            {this.state.exchangeSelected && <FormText color='info' style={{fontSize: '0.65rem', marginTop: '0.5rem'}}><i className="fa fa-exclamation-triangle" style={{marginRight: '0.15rem', marginLeft: '0.15rem'}}/> Address identified for <b><u>{this.state.exchangeSelected.exchangeName}</u></b></FormText>}
           </div>
           <div className='form-group'>
             <label className={styles.sendAssetFormLabel} htmlFor='sendMemoID'>
@@ -84,7 +86,7 @@ class Send extends Component {
                  <i className="fa fa-info-circle" style={{marginLeft: '0.25rem'}}> </i>
               </Tooltip>
             </label>
-            <input type='text' className={formStyle} placeholder='Memo ID or Text'
+            <input type='text' className={formStyle} placeholder={sendMemoTypePlaceholderTitle}
               id='sendMemoID' name='sendMemoID' value={this.state.sendMemoID} onChange={this.handleChange} required={this.state.exchangeSelected}/>
           </div>
           <div className='form-group'>

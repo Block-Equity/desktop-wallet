@@ -13,3 +13,11 @@ export function getStellarOpenOrders (state) {
 export function getStellarTradeHistory (state) {
   return state.trade.history
 }
+
+export function getTradeStatus (state) {
+  return state.trade.tradeError
+}
+
+export function getTradeErrorMessage (state) {
+  return state.trade.tradeErrorMessage
+}

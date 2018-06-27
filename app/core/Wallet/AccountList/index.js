@@ -1,43 +1,31 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import styles from './style.css'
-import PropTypes from 'prop-types'
 
 import isEmpty from 'lodash/isEmpty'
-import has from 'lodash/has'
 import numeral from 'numeral'
 
-import Paper from 'material-ui/Paper'
-import { withStyles, MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 import { CircularProgress } from 'material-ui/Progress'
 import {
   Modal,
   ModalHeader,
   ModalBody,
   ListGroup,
-  ListGroupItem,
-  Button
+  ListGroupItem
 }
 from 'reactstrap'
 
 import Slide from 'material-ui/transitions/Slide'
 
 import {
-  ListItemIcon,
-  ListItemText,
   ListSubheader
 } from 'material-ui/List'
 
 import {
-  MenuList,
-  MenuItem
+  MenuList
 } from 'material-ui/Menu'
 
-import Divider from 'material-ui/Divider'
-
 import AddAsset from '../../Shared/AddAsset'
-
-import { getSupportedAssets } from '../../../services/networking/lists'
 
 import {
   fetchAccountDetails,
@@ -88,6 +76,7 @@ class AccountList extends Component {
     })
     this.handleBlockEQTokenAddition = this.handleBlockEQTokenAddition.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
+    this.handleAddAssetSubmission = this.handleAddAssetSubmission.bind(this)
   }
 
   componentDidMount () {
@@ -122,7 +111,7 @@ class AccountList extends Component {
             { (!isEmpty(this.props.blockEQTokens)) && this.renderSubHeader(listSections.supported_assets.displayName)}
             { this.renderSupportedAssets() }
             <ListGroup>
-              { /*this.renderAddAsset() //TODO: Finalize functionality*/ }
+              { this.renderAddAsset() }
             </ListGroup>
           </MenuList>
         </div>
@@ -188,7 +177,7 @@ class AccountList extends Component {
 
   renderSubHeader (value) {
     return (
-      <ListSubheader style={{fontFamily: font, outline: 'none', fontSize: '0.6rem', fontWeight: '700', letterSpacing: '0.04rem' }} component="div">
+      <ListSubheader style={{fontFamily: font, outline: 'none', marginTop: '-0.3rem', marginBottom: '-0.32rem', fontSize: '0.6rem', fontWeight: '700', letterSpacing: '0.04rem' }} component="div">
         {value}
       </ListSubheader>
     )
@@ -198,13 +187,13 @@ class AccountList extends Component {
 
     const imageView = (
       <div className={styles.assetContainerImage}>
-        <img alt='' src={ asset.asset_image } height='21px' width='21px'/>
+        <img alt='' src={ asset.asset_image } height='26px' width='26px'/>
       </div>
     )
 
     const labelView = (
-      <label style={{fontSize: '0.75rem', marginBottom: '0rem'}}>
-        { asset.asset_name }
+      <label style={{fontSize: '0.7rem', marginBottom: '0rem'}}>
+        <b>{ asset.asset_name }</b>
       </label>
     )
 
@@ -212,7 +201,7 @@ class AccountList extends Component {
     const balance = asset.asset_code === 'XLM' ? (minBalance > 0 ? minBalance : 0): asset.balance
 
     const balanceView = (
-      <label style={{fontSize: '0.65rem', marginBottom: '0rem'}}>
+      <label style={{fontSize: '0.6rem', marginBottom: '0rem'}}>
         {`${numeral(balance).format('0,0.00')} (${ asset.asset_code })`}
       </label>
     )
@@ -260,7 +249,6 @@ class AccountList extends Component {
 
   handleBlockEQTokenAddition = (asset, index) => event => {
     event.preventDefault()
-    console.log('Clicked!')
     this.setState({
       changeTrustInProcess: true,
       changeTrustIndex: asset
@@ -268,21 +256,20 @@ class AccountList extends Component {
     this.changeTrust (asset)
   }
 
-  toggleAddAssetModal (event) {
+  toggleAddAssetModal () {
     this.setState({
       showAddAssetModal: !this.state.showAddAssetModal
     })
   }
 
-  handleAddAssetSubmission (success) {
-    if (success) {
-      this.toggleAddAssetModal()
-      //this.props.receiveSendPaymentInfo(this.state.info)
-    }
+  handleAddAssetSubmission () {
+    this.setState({
+      showAddAssetModal: false
+    })
   }
 
   async changeTrust (asset) {
-    await this.props.changeTrustOperation(asset)
+    await this.props.changeTrustOperation(asset, false)
     await this.refreshAccounts()
     this.setState({ changeTrustInProcess: false })
   }

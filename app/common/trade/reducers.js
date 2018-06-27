@@ -5,7 +5,32 @@ export const INITIAL_STATE = {
   orderbook: undefined,
   openOrders: undefined,
   history: undefined,
-  bestOffer: undefined
+  bestOffer: undefined,
+  tradeError: false,
+  tradeErrorMessage: undefined,
+  tradeResults: undefined
+}
+
+export function makeTradeOfferRequest (state) {
+  return {
+    ...state
+  }
+}
+
+export function makeTradeOfferSuccess (state, payload) {
+  return {
+    ...state,
+    tradeError: false,
+    tradeResults: payload
+  }
+}
+
+export function makeTradeOfferFailure (state, payload) {
+  return {
+    ...state,
+    tradeError: true,
+    tradeErrorMessage: payload
+  }
 }
 
 export function fetchStellarOrderBookRequest (state) {
@@ -75,6 +100,12 @@ export function fetchStellarTradeHistoryFailure (state, error) {
   }
 }
 
+const stellarTradeRequestReducers = {
+  [Types.TRADE_STELLAR_REQUEST]: makeTradeOfferRequest,
+  [Types.TRADE_STELLAR_SUCCESS]: makeTradeOfferSuccess,
+  [Types.TRADE_STELLAR_FAILURE]: makeTradeOfferFailure
+}
+
 const stellarOrderBookReducers = {
   [Types.TRADE_STELLAR_ORDER_BOOK_REQUEST]: fetchStellarOrderBookRequest,
   [Types.TRADE_STELLAR_ORDER_BOOK_SUCCESS]: fetchStellarOrderBookSuccess,
@@ -95,6 +126,7 @@ const stellarTradeHistoryReducers = {
 
 export default createReducer (
   INITIAL_STATE, {
+    ...stellarTradeRequestReducers,
     ...stellarOrderBookReducers,
     ...stellarOpenOrdersReducers,
     ...stellarTradeHistoryReducers

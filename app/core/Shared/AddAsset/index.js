@@ -1,10 +1,14 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import styles from './style.css'
-import { CircularProgress } from 'material-ui/Progress'
-import Snackbar from 'material-ui/Snackbar'
-import Button from 'material-ui/Button'
-import Tooltip from 'material-ui/Tooltip'
 import ActionButton from '../ActionButton'
+
+import {
+  fetchAccountDetails,
+  fetchStellarAssetsForDisplay,
+  fetchBlockEQTokensForDisplay,
+  changeTrustOperation
+} from '../../../common/account/actions'
 
 import {
   Modal,
@@ -14,9 +18,12 @@ import {
   Form,
   FormGroup,
   Label,
-  Input
+  Input,
+  FormText
 }
 from 'reactstrap'
+
+const assetType = 'credit_alphanum4'
 
 class AddAsset extends Component {
 
@@ -54,6 +61,9 @@ class AddAsset extends Component {
               <Input type='text' name='issuerAddress' id='issuerAddress'
                   value={this.state.issuerAddress} onChange={this.handleChange}
                   placeholder='Enter issuer address' style={{boxShadow: 'none'}} required />
+              <FormText color='danger' style={{fontSize: '0.75rem', marginTop: '0.75rem'}}><i className="fa fa-exclamation-triangle" style={{marginRight: '0.15rem', marginLeft: '0.15rem'}}/>
+                Please be careful when manually adding Stellar Tokens. We do not recommend adding unverified assets. Add assets at your own risk and be cautious of scams.
+              </FormText>
             </FormGroup>
             {' '}
           </Form>
@@ -84,21 +94,35 @@ class AddAsset extends Component {
   }
 
   handleSubmit (event) {
+    const asset = {
+      asset_code: this.state.assetCode,
+      asset_issuer: this.state.issuerAddress
+    }
     this.setState({
       processing: true
     })
     this.timer = setTimeout( async () => {
-      await this.addAsset()
+      await this.changeTrust(asset)
       this.setState({
         processing: false
       })
-    }, 2500)
+    }, 1500)
   }
 
-  addAsset () {
-
+  async changeTrust (asset) {
+    await this.props.changeTrustOperation(asset, false)
+    await this.props.fetchAccountDetails()
+    await this.props.fetchStellarAssetsForDisplay()
+    await this.props.fetchBlockEQTokensForDisplay()
+    await this.setState({ changeTrustInProcess: false })
+    this.props.addAssetSuccessful()
   }
 
 }
 
-export default AddAsset
+export default connect(null, {
+  fetchAccountDetails,
+  fetchStellarAssetsForDisplay,
+  fetchBlockEQTokensForDisplay,
+  changeTrustOperation
+})(AddAsset)

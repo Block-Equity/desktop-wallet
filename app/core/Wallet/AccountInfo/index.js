@@ -13,6 +13,7 @@ import { CircularProgress } from 'material-ui/Progress'
 import Button from 'material-ui/Button'
 import { Card, Col, Popover, PopoverHeader, PopoverBody, Alert } from 'reactstrap'
 import MinimumBalanceDialog from '../MinimumBalanceDialog'
+import RemoveAsset from '../../Shared/RemoveAsset'
 
 const alertStyle = {
   width: '100%',
@@ -30,11 +31,15 @@ class AccountInfo extends Component {
     this.state = {
       inProgress: false,
       infoOpen: false,
-      minBalanceDialogOpen: false
+      minBalanceDialogOpen: false,
+      showAddAssetModal: false,
+      processingAddAsset: false
     }
     this.handleClick = this.handleClick.bind(this)
     this.toggleInfo = this.toggleInfo.bind(this)
     this.toggleMinBalanceDialog = this.toggleMinBalanceDialog.bind(this)
+    this.toggleRemoveAssetModal = this.toggleRemoveAssetModal.bind(this)
+    this.handleRemoveAssetSubmission = this.handleRemoveAssetSubmission.bind(this)
   }
 
   render() {
@@ -42,13 +47,25 @@ class AccountInfo extends Component {
     const minBalance = currentAccount.balance - (currentAccount.minimumBalance ? currentAccount.minimumBalance.minimumBalanceAmount : 0)
     const availableBalance = currentAccount.asset_code === 'XLM' ? (minBalance > 0 ? minBalance : 0): currentAccount.balance
 
-    const assetDesc = currentAccount.asset_code === 'XLM' ?
-      (<div>{`Available ${currentAccount.asset_name} (${currentAccount.asset_code})`}
-        <a onClick={ this.toggleMinBalanceDialog }>
-          <i className='fa fa-arrow-circle-right' style={{marginLeft: '0.25rem', color: '#c2c2c2'}}/>
-        </a>
-      </div>) : `${currentAccount.asset_name} (${currentAccount.asset_code})`
-
+    const assetDesc =
+        currentAccount.asset_code === 'XLM' ?
+        (
+          <div>{`Available ${currentAccount.asset_name} (${currentAccount.asset_code})`}
+            <a onClick={ this.toggleMinBalanceDialog }>
+              <i className='fa fa-arrow-circle-right' style={{marginLeft: '0.25rem', color: '#c2c2c2'}}/>
+            </a>
+          </div>
+        ) :
+        currentAccount.balance === '0.0000000' ?
+        (
+          <div>
+            {`${currentAccount.asset_name} (${currentAccount.asset_code})`}
+            <a onClick={ this.toggleRemoveAssetModal }>
+              <i className='fa fa-times-circle' style={{marginLeft: '0.25rem', color: '#c2c2c2'}}/>
+            </a>
+          </div>
+        ) :
+        `${currentAccount.asset_name} (${currentAccount.asset_code})`
 
     return (
       <Col sm='7'>
@@ -65,6 +82,10 @@ class AccountInfo extends Component {
           </div>
       </Card>
       <MinimumBalanceDialog account={currentAccount} toggle={this.toggleMinBalanceDialog} showModal={this.state.minBalanceDialogOpen}/>
+      <RemoveAsset showModal = { this.state.showRemoveAssetModal }
+        removeAssetSuccessful = { this.handleRemoveAssetSubmission }
+        toggle = { this.toggleRemoveAssetModal }
+        currentAsset = { this.props.currentAccount } />
     </Col>
     )
   }
@@ -199,6 +220,19 @@ class AccountInfo extends Component {
       minBalanceDialogOpen: !this.state.minBalanceDialogOpen
     })
   }
+
+  toggleRemoveAssetModal () {
+    this.setState({
+      showRemoveAssetModal: !this.state.showRemoveAssetModal
+    })
+  }
+
+  handleRemoveAssetSubmission () {
+    this.setState({
+      showRemoveAssetModal: false
+    })
+  }
+
 }
 
 const mapStateToProps = (state) => {

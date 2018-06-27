@@ -178,9 +178,13 @@ export const createDestinationAccount = ({ decryptSK, publicKey, destination, am
   })
 }
 
-export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
+export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType, removeTrust }) => {
   let sourceKeys = StellarSdk.Keypair.fromSecret(decryptSK)
   var blockEQToken = new StellarSdk.Asset(assetType, issuerPK)
+  var payload = { asset: blockEQToken }
+  if (removeTrust) {
+    payload = {...payload, limit: '0.0000000' }
+  }
   return new Promise((resolve, reject) => {
     server.loadAccount(publicKey)
     .catch(error => {
@@ -193,13 +197,9 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
     // If there was no error, load up-to-date information on your account.
     .then(sourceAccount => {
       var transaction = new StellarSdk.TransactionBuilder(sourceAccount)
-        .addOperation(StellarSdk.Operation.changeTrust({
-          asset: blockEQToken
-        }))
+        .addOperation(StellarSdk.Operation.changeTrust(payload))
         .build()
-
         transaction.sign(sourceKeys)
-
         server.submitTransaction(transaction)
         .then( transactionResult => {
           resolve({
@@ -208,8 +208,8 @@ export const changeTrust = ({ decryptSK, publicKey, issuerPK, assetType }) => {
           })
         })
         .catch( err => {
-          console.log('An error has occured:');
-          console.log(err);
+          console.log('An error has occured:')
+          console.log(err)
           reject({error: true, errorMessage: err})
         })
     })
@@ -233,7 +233,7 @@ export const joinInflationDestination = ( sk, pk ) => {
       .then( transactionResult => {
         resolve({ payload: transactionResult, error: false })
       }).catch( err => {
-        console.log(err);
+        console.log(err)
         reject({ errorMessage: err, error: true })
       })
     })
@@ -299,7 +299,7 @@ export const manageOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
         console.log(`Manage offer success: ${JSON.stringify(result)}`)
         resolve({ payload: 'Success', error: false })
       }).catch( err => {
-        console.log(err);
+        console.log(err)
         reject({ errorMessage: err, error: true })
       })
     })
@@ -332,7 +332,7 @@ export const deleteOffer = (sellingAsset, sellingAssetIssuer, buyingAsset, buyin
       .then( result => {
         resolve({ payload: 'Success', error: false })
       }).catch( err => {
-        console.log(err);
+        console.log(err)
         reject({ errorMessage: err, error: true })
       })
     })
