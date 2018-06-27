@@ -6,9 +6,7 @@ import { getUserPIN, clearAllUserInfo } from '../../../db'
 import { logout } from '../../../common/auth/actions'
 
 import { CircularProgress } from 'material-ui/Progress'
-import Snackbar from 'material-ui/Snackbar'
-import Button from 'material-ui/Button'
-
+import Alert from '../../Shared/Alert'
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
 class DeleteWallet extends Component {
@@ -20,6 +18,7 @@ class DeleteWallet extends Component {
       retrieve: false,
       alertOpen: false,
       alertMessage: '',
+      alertSuccess: true,
       walletDeleted: false
     }
     this.handleSubmit = this.handleSubmit.bind(this)
@@ -46,7 +45,12 @@ class DeleteWallet extends Component {
           </FormGroup>
           { this.renderSaveButtonContent() }
         </Form>
-        { this.renderAlertView() }
+        <Alert
+          open={this.state.alertOpen}
+          message={this.state.alertMessage}
+          success={this.state.alertSuccess}
+          close={() => { this.setState({ alertOpen: false })}}
+        />
       </div>
     )
   }
@@ -88,8 +92,6 @@ class DeleteWallet extends Component {
     const resetPINValues = {
       pinValue: this.state.pinValue
     }
-
-    console.log(`Reset PIN Values: ${JSON.stringify(resetPINValues)}`)
     this.setState({
       retrieve: true
     })
@@ -128,45 +130,11 @@ class DeleteWallet extends Component {
       }
   }
 
-  renderAlertView() {
-    return (
-      <div>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          open={this.state.alertOpen}
-          autoHideDuration={6000}
-          onClose={this.handleAlertClose}
-          SnackbarContentProps={{
-            'aria-describedby': 'message-id',
-          }}
-          message={<span id="message-id">{this.state.alertMessage}</span>}
-          action={[
-            <Button key="close" color="secondary" size="small"
-              onClick={this.handleAlertClose}>
-              CLOSE
-            </Button>
-          ]}
-        />
-      </div>
-    )
-  }
-
   handleAlertOpen (message) {
     this.setState({
       alertOpen: true,
-      alertMessage: message
-    })
-  }
-
-  handleAlertClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    this.setState({
-      alertOpen: false
+      alertMessage: message,
+      alertSuccess: false
     })
   }
 

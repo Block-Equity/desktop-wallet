@@ -4,12 +4,9 @@ import { getUserPIN, getPhrase } from '../../../db'
 
 import MnemonicView from '../../Shared/Mnemonic'
 import ActionButton from '../../Shared/ActionButton'
+import Alert from '../../Shared/Alert'
 
-import { CircularProgress } from 'material-ui/Progress'
-import Snackbar from 'material-ui/Snackbar'
-import Button from 'material-ui/Button'
-
-import { Form, FormGroup, Label, Input } from 'reactstrap'
+import { Form, FormGroup, Input } from 'reactstrap'
 
 class ViewMnemonic extends Component {
 
@@ -20,6 +17,7 @@ class ViewMnemonic extends Component {
       retrieve: false,
       alertOpen: false,
       alertMessage: '',
+      alertSuccess: true,
       title: 'Please enter your PIN to view your mnemonic phrase.',
       phrase: [],
       viewPhrase: false
@@ -35,7 +33,12 @@ class ViewMnemonic extends Component {
           { this.state.title }
         </h6>
         { this.renderContent() }
-        { this.renderAlertView() }
+        <Alert
+          open={this.state.alertOpen}
+          message={this.state.alertMessage}
+          success={this.state.alertSuccess}
+          close={() => { this.setState({ alertOpen: false })}}
+        />
       </div>
     )
   }
@@ -123,45 +126,11 @@ class ViewMnemonic extends Component {
     }
   }
 
-  renderAlertView() {
-    return (
-      <div>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          open={this.state.alertOpen}
-          autoHideDuration={6000}
-          onClose={this.handleAlertClose}
-          SnackbarContentProps={{
-            'aria-describedby': 'message-id',
-          }}
-          message={<span id="message-id">{this.state.alertMessage}</span>}
-          action={[
-            <Button key="close" color="secondary" size="small"
-              onClick={this.handleAlertClose}>
-              CLOSE
-            </Button>
-          ]}
-        />
-      </div>
-    )
-  }
-
   handleAlertOpen (message) {
     this.setState({
       alertOpen: true,
-      alertMessage: message
-    })
-  }
-
-  handleAlertClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    this.setState({
-      alertOpen: false
+      alertMessage: message,
+      alertSuccess: false
     })
   }
 }

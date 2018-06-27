@@ -41,6 +41,8 @@ class Alert extends Component {
             style={{
               fontFamily: font,
               fontWeight: '700',
+              boxShadow: 'none',
+              outline: 'none',
               color: this.props.success ? successTextColor : errorTextColor
             }}>
               CLOSE
