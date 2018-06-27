@@ -1,10 +1,6 @@
 import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
-
-import { setPassword } from '../../services/authentication/keychain'
-import isEmpty from 'lodash/isEmpty'
 
 //Account Creation Dependencies
 import * as accountCreation from '../../services/security/createAccount'
@@ -26,24 +22,17 @@ import {
 } from '../../services/networking/horizon'
 
 //Material Design
-import { withStyles } from 'material-ui/styles'
-import Paper from 'material-ui/Paper'
-import Typography from 'material-ui/Typography'
 import Avatar from 'material-ui/Avatar'
 import Chip from 'material-ui/Chip'
-import MaterialButton from 'material-ui/Button'
-import Snackbar from 'material-ui/Snackbar'
 import { CircularProgress } from 'material-ui/Progress'
 
 import NavBar from '../Shared/NavBar'
+import Alert from '../Shared/Alert'
 import ActionButton from '../Shared/ActionButton'
 import styles from './style.css'
 import {
-  Button, Modal, ModalHeader, ModalBody, ModalFooter,
-  Form, FormGroup, Label, Input }
+  Button, Modal, ModalHeader, ModalBody, ModalFooter, Input }
 from 'reactstrap'
-
-const AUTO_HIDE_DURATION = 8000
 
 const font = "'Lato', sans-serif"
 
@@ -100,6 +89,7 @@ class AccountCreation extends Component {
       validationTrialCount: 1,
       alertOpen: false,
       alertMessage: '',
+      alertSuccess: true,
       validationPhrase: [],
       recoveryPhrase: [],
       accountCreationComplete: false,
@@ -139,7 +129,12 @@ class AccountCreation extends Component {
         <div style={{margin: '1rem', textAlign: 'center'}}>
           { this.renderContent(this.state.currentStage) }
         </div>
-        { this.renderAlertView() }
+        <Alert
+          open={this.state.alertOpen}
+          message={this.state.alertMessage}
+          success={this.state.alertSuccess}
+          close={() => { this.setState({ alertOpen: false })}}
+        />
       </div>
     )
   }
@@ -592,53 +587,13 @@ class AccountCreation extends Component {
     }
   }
 
-  //region Alert View
-  //Alert View
-  renderAlertView() {
-    return (
-      <div>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          open={this.state.alertOpen}
-          autoHideDuration={AUTO_HIDE_DURATION}
-          onClose={this.handleSnackBarClose}
-          SnackbarContentProps={{
-            'aria-describedby': 'message-id',
-            style: { fontFamily: font,
-              fontWeight:'400',
-              fontSize:'1rem',
-              backgroundColor:'#962411',
-              color:'#FFFFFF'
-            },
-          }}
-          message={<span id="message-id">{this.state.alertMessage}</span>}
-          action={[
-            <MaterialButton key="close" color="default" size="small" onClick={this.handleSnackBarClose} style={{fontFamily: font, fontWeight:'700', color: '#FFFFFF'}}>
-              CLOSE
-            </MaterialButton>
-          ]}
-        />
-      </div>
-    )
-  }
-
-  handleSnackBarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    this.setState({ alertOpen: false });
-  }
-
   showValidationErrorMessage(message) {
     this.setState({
       alertOpen: true,
-      alertMessage: message
+      alertMessage: message,
+      alertSuccess: false
     })
   }
-  //endregion
 }
 
 const mapStateToProps = (state) => {

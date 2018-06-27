@@ -2,13 +2,12 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 
 import styles from './style.css'
-import Snackbar from 'material-ui/Snackbar'
-import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
 import { FormText } from 'reactstrap'
 
 import PinModal from '../../Shared/PinModal'
 import ActionButton from '../../Shared/ActionButton'
+import Alert from '../../Shared/Alert'
 
 const memoTypeLabel = {
   memoText: 'Memo Text',
@@ -28,6 +27,7 @@ class Send extends Component {
       currentAddress: props.currentAccount.pKey,
       alertOpen: false,
       alertMessage: '',
+      alertSuccess: true,
       exchangeSelected: undefined
     }
     this.handleChange = this.handleChange.bind(this)
@@ -47,7 +47,12 @@ class Send extends Component {
         <PinModal showPINModal={this.state.showPINModal}
                   pinSuccessful={this.handlePinSubmission}
                   toggle={this.togglePINModal} />
-        { this.renderAlertView() }
+        <Alert
+          open={this.state.alertOpen}
+          message={this.state.alertMessage}
+          success={this.state.alertSuccess}
+          close={() => { this.setState({ alertOpen: false })}}
+        />
       </div>
     )
   }
@@ -138,6 +143,7 @@ class Send extends Component {
     if (this.state.sendAddress === this.state.currentAddress) {
       this.setState({
         alertOpen: true,
+        alertSuccess: false,
         alertMessage: 'Send address cannot be your own address.',
         sendAddress: ''
       })
@@ -165,48 +171,6 @@ class Send extends Component {
       this.togglePINModal()
       this.props.receiveSendPaymentInfo(this.state.info)
     }
-  }
-
-  renderAlertView() {
-    return (
-      <div>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          open={this.state.alertOpen}
-          autoHideDuration={6000}
-          onClose={this.handleAlertClose}
-          SnackbarContentProps={{
-            'aria-describedby': 'message-id',
-          }}
-          message={<span id="message-id">{this.state.alertMessage}</span>}
-          action={[
-            <Button key="close" color="secondary" size="small"
-              onClick={this.handleAlertClose}>
-              CLOSE
-            </Button>
-          ]}
-        />
-      </div>
-    )
-  }
-
-  handleAlertOpen (message) {
-    this.setState({
-      alertOpen: true,
-      alertMessage: message
-    })
-  }
-
-  handleAlertClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return
-    }
-    this.setState({
-      alertOpen: false
-    })
   }
 
 }

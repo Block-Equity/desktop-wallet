@@ -30,17 +30,15 @@ import History from './History'
 import Tabs from './Tabs'
 import Receive from './Receive'
 import Send from './Send'
+import Alert from '../Shared/Alert'
 
 import isEmpty from 'lodash/isEmpty'
 import numeral from 'numeral'
 
 import styles from './style.css'
-import Button from 'material-ui/Button'
-import Snackbar from 'material-ui/Snackbar'
 
 const navigation = { history: 0, send: 1, receive: 2 }
 const INITIAL_NAVIGATION_INDEX = navigation.history
-const font = "'Lato', sans-serif"
 
 class Main extends Component {
 
@@ -49,8 +47,9 @@ class Main extends Component {
     this.state = {
       paymentTransactions: [],
       selectedMenuItem: INITIAL_NAVIGATION_INDEX,
-      snackBarOpen: false,
-      snackBarMessage: '',
+      alertOpen: false,
+      alertMessage: '',
+      alertSuccess: true ,
       publicKey: '',
       paymentSending: false,
       paymentFailed: false,
@@ -83,7 +82,11 @@ class Main extends Component {
           <div className={styles.mainPageComponentContainer}>
             { this.renderContent() }
           </div>
-          { this.renderSnackBar() }
+          <Alert
+            open={this.state.alertOpen}
+            message={this.state.alertMessage}
+            success={this.state.alertSuccess}
+            close={() => { this.setState({ alertOpen: false })}} />
         </div>
       </div>
     )
@@ -115,47 +118,11 @@ class Main extends Component {
       selectedMenuItem: INITIAL_NAVIGATION_INDEX,
       sendAmount: '',
       sendAddress: '',
-      snackBarMessage: msg,
+      alertMessage: msg,
+      alertSuccess: !this.props.paymentFailed,
       paymentFailed: this.props.paymentFailed,
-      snackBarOpen: true
+      alertOpen: true
     })
-  }
-
-  renderSnackBar() {
-    return (
-      <div style={{zIndex: '3'}}>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          open={this.state.snackBarOpen}
-          autoHideDuration={6000}
-          onClose={this.handleSnackBarClose}
-          SnackbarContentProps={{
-            'aria-describedby': 'message-id',
-            style: { fontFamily: font,
-              fontWeight:'400',
-              fontSize:'0.9rem'
-            },
-          }}
-          message={<span id="message-id">{this.state.snackBarMessage}</span>}
-          action={[
-            <Button key="close" color="secondary" size="small"
-              onClick={this.handleSnackBarClose}>
-              CLOSE
-            </Button>
-          ]}
-        />
-      </div>
-    )
-  }
-
-  handleSnackBarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    this.setState({ snackBarOpen: false });
   }
 
   renderContent() {
