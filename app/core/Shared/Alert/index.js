@@ -14,7 +14,7 @@ const materialStyles = theme => ({
   },
 });
 
-const AUTO_HIDE_DURATION = 6000
+const AUTO_HIDE_DURATION = 3000
 
 class Alert extends Component {
 
@@ -35,35 +35,31 @@ class Alert extends Component {
         }}
         open={this.state.open}
         autoHideDuration={AUTO_HIDE_DURATION}
-        onClose={this.alertActions(alertTypes.CLOSE)}
+        onClose={this.handleAlertClose}
         SnackbarContentProps={{
           'aria-describedby': 'message-id',
         }}
         message={<span id="message-id">{this.props.alertMessage}</span>}
-        action={ this.renderActions() }
+        action={[
+          <SnackbarButton key="close" color="secondary" size="small"
+            onClick={this.handleAlertClose}>
+            CLOSE
+          </SnackbarButton>
+        ]}
       />
     </div>
     )
   }
 
-  renderActions() {
-    var actionSet = new Set()
-    this.props.alertActions.map(action => {
-      actionSet.add(
-          <Button key={action} color="primary" size="small" onClick={this.alertActions(action)}>
-              {action} </Button>
-        )
-      console.log(`Actions list || ${actionSet}`)
+  handleAlertClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    this.setState({
+      open: false
     })
-    return Array.from(actionSet.values());
   }
 
-  alertActions(type) {
-    if (type === alertTypes.CLOSE) {
-      this.setState({ open: false });
-    }
-    this.props.alertActionType(type)
-  }
 }
 
-export default Alert;
+export default Alert
