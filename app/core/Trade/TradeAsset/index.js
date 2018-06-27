@@ -396,11 +396,11 @@ class TradeAsset extends Component {
   handleTradeSubmission = async () => {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    const tradePrice = this.state.marketOrder ? this.props.bestOffer.marketPrice : numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
-    //console.log(`Limit Price calculation: ${this.state.receiveAssetAmount/this.state.offerAssetAmount}`)
-    //console.log(`Limit Price calculation for submission: ${numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)}`)
-    //console.log(`Trade Price: ${this.props.bestOffer.marketPrice} || Offer Asset Amount: ${this.state.offerAssetAmount}`)
+    const tradePrice = this.state.marketOrder ?
+      this.props.bestOffer.marketPrice :
+      numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
 
+    //Validate if the market price is not 0
     if (this.state.marketOrder && this.props.bestOffer.marketPrice === 0 ) {
       this.setState({
         alertOpen: true,
@@ -410,36 +410,39 @@ class TradeAsset extends Component {
       return
     }
 
+    //Initiate processing state to true
     this.setState({ tradeProcessing: true })
 
-    await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
-      this.state.offerAssetAmount, tradePrice )
+    //Make the offer
+    await this.props.makeTradeOffer (
+      sellAsset.asset_code,
+      sellAsset.asset_issuer,
+      buyAsset.asset_code,
+      buyAsset.asset_issuer,
+      this.state.offerAssetAmount,
+      tradePrice
+    )
 
-    const tradeErrorStatus = this.props.tradeStatus
-    if (tradeErrorStatus) {
-      const tradeErrorMessage = this.props.tradeErrorMessage
-      console.log(`Trade Error Message in View: ${JSON.stringify(tradeErrorMessage)}`)
-      const errMessage =
-        tradeErrorMessage.errorMessage.data.extras.result_codes.operations[0] === 'op_cross_self' ? 'Trade transaction failed' : 'Trade transaction failed'
-      this.setState({
-        tradeProcessing: false,
-        offerAssetAmount: '',
-        receiveAssetAmount: '',
-        alertOpen: true,
-        alertMessage: 'Trade transaction failed',
-        alertSuccess: false
-      })
-    } else {
-      await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
-      this.setState({
-        tradeProcessing: false,
-        offerAssetAmount: '',
-        receiveAssetAmount: '',
-        alertOpen: true,
-        alertMessage: 'Trade submitted successfully',
-        alertSuccess: true
-      })
+    //Check error results
+    if (!this.props.tradeErrorStatus) {
+      await this.marketInfo.getOrderBook (
+        this.state.sellAssetList[this.state.sellAssetSelected],
+        this.state.buyAssetList[this.state.buyAssetSelected]
+      )
     }
+
+    //Set state based on results
+    this.setState({
+      tradeProcessing: false,
+      offerAssetAmount: '',
+      receiveAssetAmount: '',
+      alertOpen: true,
+      alertMessage: this.props.tradeErrorStatus ?
+        'Trade transaction failed' :
+        'Trade submitted successfully',
+      alertSuccess: !this.props.tradeErrorStatus
+    })
+
   }
 
   calculateReceiveAmount(price, amount) {
@@ -453,7 +456,7 @@ const mapStateToProps = (state) => {
     assets: getStellarAssetsForDisplay(state),
     stellarMarketInfo: getStellarMarketInfo(state),
     bestOffer: getBestOffer(state),
-    tradeStatus: getTradeStatus(state),
+    tradeErrorStatus: getTradeStatus(state),
     tradeErrorMessage: getTradeErrorMessage(state)
   }
 }
