@@ -21,10 +21,7 @@ import {
 } from 'reactstrap'
 
 import ArrowRight from 'material-ui-icons/ArrowForward'
-import Snackbar from 'material-ui/Snackbar'
-import SnackbarButton from 'material-ui/Button'
 import ActionButton from '../../Shared/ActionButton'
-
 import AddAsset from '../../Shared/AddAsset'
 import Alert from '../../Shared/Alert'
 import MarketInfo from '../Market Info'
