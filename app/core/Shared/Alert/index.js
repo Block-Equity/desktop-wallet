@@ -1,30 +1,15 @@
 import React, { Component } from 'react'
-import styles from './style.css'
-
-import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';
 import Snackbar from 'material-ui/Snackbar';
 
-import * as alertTypes from './types'
-
-const materialStyles = theme => ({
-  close: {
-    width: theme.spacing.unit * 4,
-    height: theme.spacing.unit * 4,
-  },
-});
-
-const AUTO_HIDE_DURATION = 3000
+const AUTO_HIDE_DURATION = 8000
+const font = "'Lato', sans-serif"
+const successbgColor = '#DFF0D8'
+const successTextColor = '#3C763D'
+const errorbgColor = '#F2DEDE'
+const errorTextColor = '#A94442'
 
 class Alert extends Component {
-
-  constructor (props) {
-    super()
-    this.state = {
-      open: false
-    }
-  }
-
   render() {
     return (
       <div>
@@ -33,31 +18,44 @@ class Alert extends Component {
           vertical: 'bottom',
           horizontal: 'center',
         }}
-        open={this.state.open}
+        open={this.props.open}
         autoHideDuration={AUTO_HIDE_DURATION}
         onClose={this.handleAlertClose}
         SnackbarContentProps={{
           'aria-describedby': 'message-id',
+          style: {
+            fontFamily: font,
+            fontWeight: '400',
+            fontSize: '1rem',
+            backgroundColor: this.props.success ? successbgColor : errorbgColor,
+            color: this.props.success ? successTextColor : errorTextColor,
+          },
         }}
-        message={<span id="message-id">{this.props.alertMessage}</span>}
+        message={<span id="message-id">{this.props.message}</span>}
         action={[
-          <SnackbarButton key="close" color="secondary" size="small"
-            onClick={this.handleAlertClose}>
-            CLOSE
-          </SnackbarButton>
+          <Button
+            key='close'
+            color='default'
+            size='small'
+            onClick={this.handleAlertClose}
+            style={{
+              fontFamily: font,
+              fontWeight: '700',
+              color: this.props.success ? successTextColor : errorTextColor
+            }}>
+              CLOSE
+          </Button>
         ]}
       />
     </div>
     )
   }
 
-  handleAlertClose = (event, reason) => {
+  handleAlertClose = (reason) => {
     if (reason === 'clickaway') {
       return
     }
-    this.setState({
-      open: false
-    })
+    this.props.close()
   }
 
 }

@@ -26,6 +26,7 @@ import SnackbarButton from 'material-ui/Button'
 import ActionButton from '../../Shared/ActionButton'
 
 import AddAsset from '../../Shared/AddAsset'
+import Alert from '../../Shared/Alert'
 import MarketInfo from '../Market Info'
 
 class TradeAsset extends Component {
@@ -46,7 +47,8 @@ class TradeAsset extends Component {
       showAddAssetModal: false,
       tradeProcessing: false,
       alertOpen: false,
-      alertMessage: ''
+      alertMessage: '',
+      alertSuccess: true
     }
 
     this.handleChange = this.handleChange.bind(this)
@@ -92,7 +94,13 @@ class TradeAsset extends Component {
         <AddAsset showModal={ this.state.showAddAssetModal }
                   addAssetSuccessful={ this.handleAddAssetSubmission }
                   toggle={ this.toggleAddAssetModal } />
-        { this.renderAlertView() }
+        { /*this.renderAlertView()*/ }
+        <Alert
+          open={this.state.alertOpen}
+          message={this.state.alertMessage}
+          success={this.state.alertSuccess}
+          close={() => { this.setState({ alertOpen: false })}}
+        />
       </div>
     )
   }
@@ -404,7 +412,8 @@ class TradeAsset extends Component {
         offerAssetAmount: '',
         receiveAssetAmount: '',
         alertOpen: true,
-        alertMessage: errMessage
+        alertMessage: errMessage,
+        alertSuccess: false
       })
     } else {
       await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
@@ -413,55 +422,14 @@ class TradeAsset extends Component {
         offerAssetAmount: '',
         receiveAssetAmount: '',
         alertOpen: true,
-        alertMessage: 'Trade submitted successfully'
+        alertMessage: 'Trade submitted successfully',
+        alertSuccess: true
       })
     }
   }
 
   calculateReceiveAmount(price, amount) {
     return numeral(amount * price).format('0.0000000')
-  }
-
-  renderAlertView() {
-    return (
-      <div>
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          open={this.state.alertOpen}
-          autoHideDuration={6000}
-          onClose={this.handleAlertClose}
-          SnackbarContentProps={{
-            'aria-describedby': 'message-id',
-          }}
-          message={<span id="message-id">{this.state.alertMessage}</span>}
-          action={[
-            <SnackbarButton key="close" color="secondary" size="small"
-              onClick={this.handleAlertClose}>
-              CLOSE
-            </SnackbarButton>
-          ]}
-        />
-      </div>
-    )
-  }
-
-  handleAlertOpen (message) {
-    this.setState({
-      alertOpen: true,
-      alertMessage: message
-    })
-  }
-
-  handleAlertClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return
-    }
-    this.setState({
-      alertOpen: false
-    })
   }
 
 }
