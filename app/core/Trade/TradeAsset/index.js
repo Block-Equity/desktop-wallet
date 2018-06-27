@@ -94,7 +94,6 @@ class TradeAsset extends Component {
         <AddAsset showModal={ this.state.showAddAssetModal }
                   addAssetSuccessful={ this.handleAddAssetSubmission }
                   toggle={ this.toggleAddAssetModal } />
-        { /*this.renderAlertView()*/ }
         <Alert
           open={this.state.alertOpen}
           message={this.state.alertMessage}
@@ -412,7 +411,7 @@ class TradeAsset extends Component {
         offerAssetAmount: '',
         receiveAssetAmount: '',
         alertOpen: true,
-        alertMessage: errMessage,
+        alertMessage: 'Trade transaction failed',
         alertSuccess: false
       })
     } else {
