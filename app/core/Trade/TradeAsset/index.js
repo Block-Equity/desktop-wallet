@@ -396,13 +396,15 @@ class TradeAsset extends Component {
     const tradeErrorStatus = this.props.tradeStatus
     if (tradeErrorStatus) {
       const tradeErrorMessage = this.props.tradeErrorMessage
-      console.log(`Trade Error Message in View: ${tradeErrorMessage}`)
+      console.log(`Trade Error Message in View: ${JSON.stringify(tradeErrorMessage)}`)
+      const errMessage =
+        tradeErrorMessage.errorMessage.data.extras.result_codes.operations[0] === 'op_cross_self' ? 'Trade transaction failed' : 'Trade transaction failed'
       this.setState({
         tradeProcessing: false,
         offerAssetAmount: '',
         receiveAssetAmount: '',
         alertOpen: true,
-        alertMessage: 'Trade transaction failed'
+        alertMessage: errMessage
       })
     } else {
       await this.marketInfo.getOrderBook(this.state.sellAssetList[this.state.sellAssetSelected], this.state.buyAssetList[this.state.buyAssetSelected])
