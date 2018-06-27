@@ -59,7 +59,8 @@ class TradeAsset extends Component {
     this.handleAddAssetSubmission = this.handleAddAssetSubmission.bind(this)
     this.handleTradeSubmission = this.handleTradeSubmission.bind(this)
     this.handleSellAssetSelection = this.handleSellAssetSelection.bind(this)
-    this.handleMarketLimitSelection = this.handleMarketLimitSelection.bind(this)
+    this.setLimitOrderState = this.setLimitOrderState.bind(this)
+    this.setMarketOrderState = this.setMarketOrderState.bind(this)
   }
 
   async componentDidMount() {
@@ -243,8 +244,8 @@ class TradeAsset extends Component {
     return (
       <div className={ styles.marketLimitOptionContainer }>
         <ButtonGroup size='sm'>
-          <Button outline style={buttonStyle} onClick={ this.handleMarketLimitSelection } active={this.state.marketOrder}>Market</Button>
-          <Button outline style={buttonStyle} onClick={ this.handleMarketLimitSelection } active={!this.state.marketOrder}>Limit</Button>
+          <Button outline style={buttonStyle} onClick={ this.setMarketOrderState } active={this.state.marketOrder}>Market</Button>
+          <Button outline style={buttonStyle} onClick={ this.setLimitOrderState } active={!this.state.marketOrder}>Limit</Button>
         </ButtonGroup>
       </div>
     )
@@ -291,15 +292,17 @@ class TradeAsset extends Component {
     })
   }
 
-  async handleMarketLimitSelection() {
-    await this.setState({
-      marketOrder: !this.state.marketOrder
+  setLimitOrderState() {
+    this.setState({
+      marketOrder: false
     })
-    if (this.state.marketOrder) {
-        this.setState({
-          receiveAssetAmount: this.state.offerAssetAmount.length === 0 ? '' : this.calculateReceiveAmount(this.props.bestOffer.marketPrice, this.state.offerAssetAmount)
-        })
-    }
+  }
+
+  setMarketOrderState() {
+    this.setState({
+      marketOrder: true,
+      receiveAssetAmount: this.state.offerAssetAmount.length === 0 ? '' : this.calculateReceiveAmount(this.props.bestOffer.marketPrice, this.state.offerAssetAmount)
+    })
   }
 
   initialSellAssetList() {
@@ -393,13 +396,25 @@ class TradeAsset extends Component {
   handleTradeSubmission = async () => {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
-    const tradePrice = this.state.isMarketOrder ? this.props.bestOffer.marketPrice : numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
-    console.log(`Limit Price calculation: ${this.state.receiveAssetAmount/this.state.offerAssetAmount}`)
-    console.log(`Limit Price calculation for submission: ${numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)}`)
-    console.log(`Trade Price: ${this.props.bestOffer.marketPrice} || Offer Asset Amount: ${this.state.offerAssetAmount}`)
+    const tradePrice = this.state.marketOrder ? this.props.bestOffer.marketPrice : numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
+    //console.log(`Limit Price calculation: ${this.state.receiveAssetAmount/this.state.offerAssetAmount}`)
+    //console.log(`Limit Price calculation for submission: ${numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)}`)
+    //console.log(`Trade Price: ${this.props.bestOffer.marketPrice} || Offer Asset Amount: ${this.state.offerAssetAmount}`)
+
+    if (this.state.marketOrder && this.props.bestOffer.marketPrice === 0 ) {
+      this.setState({
+        alertOpen: true,
+        alertMessage: 'Trade price cannot be 0. Please override with limit order.',
+        alertSuccess: false
+      })
+      return
+    }
+
     this.setState({ tradeProcessing: true })
+
     await this.props.makeTradeOffer(sellAsset.asset_code, sellAsset.asset_issuer, buyAsset.asset_code, buyAsset.asset_issuer,
       this.state.offerAssetAmount, tradePrice )
+
     const tradeErrorStatus = this.props.tradeStatus
     if (tradeErrorStatus) {
       const tradeErrorMessage = this.props.tradeErrorMessage
