@@ -106,7 +106,7 @@ class AddAsset extends Component {
       this.setState({
         processing: false
       })
-    }, 1500)
+    }, 500)
   }
 
   async changeTrust (asset) {
