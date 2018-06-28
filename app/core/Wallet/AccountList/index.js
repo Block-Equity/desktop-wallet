@@ -5,17 +5,16 @@ import styles from './style.css'
 import isEmpty from 'lodash/isEmpty'
 import numeral from 'numeral'
 
-import { CircularProgress } from 'material-ui/Progress'
 import {
   Modal,
   ModalHeader,
   ModalBody,
+  ModalFooter,
   ListGroup,
-  ListGroupItem
+  ListGroupItem,
+  FormText
 }
 from 'reactstrap'
-
-import Slide from 'material-ui/transitions/Slide'
 
 import {
   ListSubheader
@@ -27,6 +26,7 @@ import {
 
 import AddAsset from '../../Shared/AddAsset'
 import ActionButton from '../../Shared/ActionButton'
+import Alert from '../../Shared/Alert'
 
 import {
   fetchAccountDetails,
@@ -60,10 +60,6 @@ const listSections = {
    supported_assets: { displayName: 'SUPPORTED ASSETS' }
 }
 
-function Transition(props) {
-  return <Slide direction="up" {...props} />;
-}
-
 class AccountList extends Component {
 
   constructor (props) {
@@ -73,10 +69,14 @@ class AccountList extends Component {
       changeTrustInProcess: false,
       changeTrustAsset: undefined,
       showAddAssetModal: false,
-      showAddSupportedAssetModal: false
+      showAddSupportedAssetModal: false,
+      alertOpen: false,
+      alertMessage: '',
+      alertSuccess: false
     })
     this.handleBlockEQTokenAddition = this.handleBlockEQTokenAddition.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
+    this.toggleAddSupportedAssetModal = this.toggleAddSupportedAssetModal.bind(this)
     this.handleAddAssetSubmission = this.handleAddAssetSubmission.bind(this)
   }
 
@@ -120,6 +120,12 @@ class AccountList extends Component {
         <AddAsset showModal={ this.state.showAddAssetModal }
                   addAssetSuccessful={ this.handleAddAssetSubmission }
                   toggle={ this.toggleAddAssetModal } />
+        <Alert
+          open={this.state.alertOpen}
+          message={this.state.alertMessage}
+          success={this.state.alertSuccess}
+          close={() => { this.setState({ alertOpen: false })}}
+        />
       </div>
     )
   }
@@ -233,11 +239,18 @@ class AccountList extends Component {
     }
     return (
       <Modal isOpen={this.state.showAddSupportedAssetModal} className={this.props.className} centered={true}>
-        <ModalHeader style={{boxShadow: 'none'}}>{`Add ${this.state.}`}</ModalHeader>
+        <ModalHeader
+          style={{boxShadow: 'none'}}
+          toggle={this.toggleAddSupportedAssetModal}>
+            {this.state.changeTrustAsset ? `Add ${this.state.changeTrustAsset.asset_name} (${this.state.changeTrustAsset.asset_code})` : 'Add Asset'}
+        </ModalHeader>
         <ModalBody>
-          <div style={{display: 'flex', flexDirection: 'row'}}>
-            <CircularProgress style={{ color: '#000000', marginRight: '0.75rem', paddingTop: '0.1rem' }} thickness={ 5 } size={ 15 } />
-            Adding BlockEQ Token
+          <div style={{display: 'flex', flexDirection: 'column'}}>
+            {this.state.changeTrustAsset ? `Are you sure you want to add ${this.state.changeTrustAsset.asset_name} (${this.state.changeTrustAsset.asset_code}) ?` : ''}
+            <FormText color='info' style={{fontSize: '0.75rem', marginTop: '0.75rem'}}>
+              <i className="fa fa-exclamation-triangle" style={{marginRight: '0.15rem', marginLeft: '0.15rem'}}/>
+              {`This will allow you to receive/send and trade this asset. You can always remove this asset as long as your balance is 0.`}
+            </FormText>
           </div>
         </ModalBody>
         <ModalFooter>
@@ -262,11 +275,25 @@ class AccountList extends Component {
 
   handleBlockEQTokenAddition = (asset, index) => event => {
     event.preventDefault()
+    const stellarAsset = this.props.assets[0]
+    const availableBalance = stellarAsset.balance - stellarAsset.minimumBalance.minimumBalanceAmount
+    if (availableBalance < 0.5) {
+      this.setState({
+        alertOpen: true,
+        alertMessage: 'Unable to add asset - insufficient funds. Minimum balance should be greater than 0.50 XLM.'
+      })
+    } else {
+      this.setState({
+        showAddSupportedAssetModal: true,
+        changeTrustAsset: asset
+      })
+    }
+  }
+
+  toggleAddSupportedAssetModal () {
     this.setState({
-      showAddSupportedAssetModal: true,
-      changeTrustAsset: asset
+      showAddSupportedAssetModal: !this.state.showAddSupportedAssetModal
     })
-    //this.changeTrust (asset)
   }
 
   toggleAddAssetModal () {
@@ -281,7 +308,8 @@ class AccountList extends Component {
     })
   }
 
-  async changeTrust () {
+  changeTrust = async () => {
+    this.setState({ changeTrustInProcess: true })
     await this.props.changeTrustOperation(this.state.changeTrustAsset, false)
     await this.refreshAccounts()
     this.setState({ showAddSupportedAssetModal: false, changeTrustInProcess: false })

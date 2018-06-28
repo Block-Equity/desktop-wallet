@@ -26,7 +26,7 @@ class Alert extends Component {
           style: {
             fontFamily: font,
             fontWeight: '400',
-            fontSize: '1rem',
+            fontSize: '0.85rem',
             backgroundColor: this.props.success ? successbgColor : errorbgColor,
             color: this.props.success ? successTextColor : errorTextColor,
           },
