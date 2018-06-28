@@ -26,6 +26,7 @@ import {
 } from 'material-ui/Menu'
 
 import AddAsset from '../../Shared/AddAsset'
+import ActionButton from '../../Shared/ActionButton'
 
 import {
   fetchAccountDetails,
@@ -72,7 +73,7 @@ class AccountList extends Component {
       changeTrustInProcess: false,
       changeTrustAsset: undefined,
       showAddAssetModal: false,
-      processingAddAsset: false
+      showAddSupportedAssetModal: false
     })
     this.handleBlockEQTokenAddition = this.handleBlockEQTokenAddition.bind(this)
     this.toggleAddAssetModal = this.toggleAddAssetModal.bind(this)
@@ -226,15 +227,27 @@ class AccountList extends Component {
   }
 
   renderLoadingDialog () {
+    const btnTitle = {
+      default: 'Add Asset',
+      processing: 'Adding asset...'
+    }
     return (
-      <Modal isOpen={this.state.changeTrustInProcess} className={this.props.className} centered={true}>
-        <ModalHeader style={{boxShadow: 'none'}}>Please wait...</ModalHeader>
+      <Modal isOpen={this.state.showAddSupportedAssetModal} className={this.props.className} centered={true}>
+        <ModalHeader style={{boxShadow: 'none'}}>{`Add ${this.state.}`}</ModalHeader>
         <ModalBody>
           <div style={{display: 'flex', flexDirection: 'row'}}>
             <CircularProgress style={{ color: '#000000', marginRight: '0.75rem', paddingTop: '0.1rem' }} thickness={ 5 } size={ 15 } />
             Adding BlockEQ Token
           </div>
         </ModalBody>
+        <ModalFooter>
+          <ActionButton
+            processing={ this.state.changeTrustInProcess }
+            title={ btnTitle }
+            isForm={ false }
+            actionClicked={ this.changeTrust }
+          />
+        </ModalFooter>
       </Modal>
     )
   }
@@ -250,10 +263,10 @@ class AccountList extends Component {
   handleBlockEQTokenAddition = (asset, index) => event => {
     event.preventDefault()
     this.setState({
-      changeTrustInProcess: true,
-      changeTrustIndex: asset
+      showAddSupportedAssetModal: true,
+      changeTrustAsset: asset
     })
-    this.changeTrust (asset)
+    //this.changeTrust (asset)
   }
 
   toggleAddAssetModal () {
@@ -268,10 +281,10 @@ class AccountList extends Component {
     })
   }
 
-  async changeTrust (asset) {
-    await this.props.changeTrustOperation(asset, false)
+  async changeTrust () {
+    await this.props.changeTrustOperation(this.state.changeTrustAsset, false)
     await this.refreshAccounts()
-    this.setState({ changeTrustInProcess: false })
+    this.setState({ showAddSupportedAssetModal: false, changeTrustInProcess: false })
   }
 
   async refreshAccounts () {
