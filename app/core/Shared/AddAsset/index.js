@@ -23,8 +23,6 @@ import {
 }
 from 'reactstrap'
 
-const assetType = 'credit_alphanum4'
-
 class AddAsset extends Component {
 
   constructor (props) {
@@ -106,7 +104,7 @@ class AddAsset extends Component {
       this.setState({
         processing: false
       })
-    }, 1500)
+    }, 500)
   }
 
   async changeTrust (asset) {

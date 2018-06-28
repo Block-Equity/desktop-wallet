@@ -67,17 +67,23 @@ class RemoveAsset extends Component {
   }
 
   handleSubmit () {
-    const updatedCurrentAsset = this.props.assets[0]
-    this.setState({
-      processing: true
-    })
+    this.setState({ processing: true })
     this.timer = setTimeout( async () => {
       await this.changeTrust(this.props.currentAsset)
+
+      //Update current account to the first in the list after change trust is processed
+      const updatedCurrentAsset = this.props.assets[0]
       await this.props.setCurrentAccount(updatedCurrentAsset)
+
+      //Dismiss dialog
       this.setState({
-        processing: false
+        processing: false,
+        changeTrustInProcess: false
       })
-    }, 1500)
+
+      //Interface results back with the calling component
+      this.props.removeAssetSuccessful()
+    }, 500)
   }
 
   async changeTrust (asset) {
@@ -85,8 +91,6 @@ class RemoveAsset extends Component {
     await this.props.fetchAccountDetails()
     await this.props.fetchStellarAssetsForDisplay()
     await this.props.fetchBlockEQTokensForDisplay()
-    await this.setState({ changeTrustInProcess: false })
-    this.props.removeAssetSuccessful()
   }
 
 }
