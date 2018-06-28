@@ -70,17 +70,23 @@ class RemoveAsset extends Component {
     this.setState({ processing: true })
     this.timer = setTimeout( async () => {
       await this.changeTrust(this.props.currentAsset)
+
+      //Update current account to the first in the list after change trust is processed
       const updatedCurrentAsset = this.props.assets[0]
       await this.props.setCurrentAccount(updatedCurrentAsset)
+
+      //Dismiss dialog
       this.setState({
         processing: false,
         changeTrustInProcess: false
       })
+
+      //Interface results back with the calling component
       this.props.removeAssetSuccessful()
     }, 500)
   }
 
-  async changeTrust (asset, updatedCurrentAsset) {
+  async changeTrust (asset) {
     await this.props.changeTrustOperation(asset, true)
     await this.props.fetchAccountDetails()
     await this.props.fetchStellarAssetsForDisplay()

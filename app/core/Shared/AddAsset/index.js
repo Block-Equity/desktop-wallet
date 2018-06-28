@@ -23,8 +23,6 @@ import {
 }
 from 'reactstrap'
 
-const assetType = 'credit_alphanum4'
-
 class AddAsset extends Component {
 
   constructor (props) {

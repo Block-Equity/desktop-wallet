@@ -302,8 +302,12 @@ class AccountList extends Component {
     })
   }
 
-  handleAddAssetSubmission () {
+  handleAddAssetSubmission = async () => {
+    //Update current account to the first in the list after change trust is processed
+    const updatedCurrentAsset = this.props.assets[0]
+    await this.props.setCurrentAccount(updatedCurrentAsset)
     this.setState({
+      assetSelected: 0,
       showAddAssetModal: false
     })
   }
