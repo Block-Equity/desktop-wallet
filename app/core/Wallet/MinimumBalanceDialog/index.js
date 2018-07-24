@@ -76,8 +76,8 @@ class MinimumBalanceDialog extends Component {
         <tbody>
           <tr>
             <td>Base Reserve</td>
-            <td style={{textAlign: 'center'}}>2</td>
             <td style={{textAlign: 'center'}}>1</td>
+            <td style={{textAlign: 'center'}}>0.5</td>
           </tr>
           <tr>
             <td>Trustlines</td>
