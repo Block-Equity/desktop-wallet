@@ -1,4 +1,5 @@
 import axios from 'axios'
+const exchangeListURL = 'https://api-staging.blockeq.com/directory/exchanges'
 
 export const getSupportedAssets = () => {
   const url = 'https://blockeq-wallet.firebaseio.com/supported_assets.json'
@@ -20,7 +21,8 @@ export const getSupportedAssets = () => {
 }
 
 export const getExchangeDirectory = () => {
-  const url = 'https://blockeq-wallet.firebaseio.com/exchangeAddresses.json'
+  const url = exchangeListURL
+  console.log(`API call made`)
   return new Promise((resolve, reject) => {
     axios.get(url)
     .then( response => {

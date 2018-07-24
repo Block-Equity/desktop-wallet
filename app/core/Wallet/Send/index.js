@@ -71,9 +71,9 @@ class Send extends Component {
       processing: 'Sending'
     }
 
-    const addressLabelTitle = this.state.exchangeSelected ? `Send to address (${this.state.exchangeSelected.exchangeName})` : 'Send to address'
-    const sendMemoTypeTitle = this.state.exchangeSelected ? `${memoTypeLabel[this.state.exchangeSelected.memoType]}` : 'Memo ID or Text (optional)'
-    const sendMemoTypePlaceholderTitle = this.state.exchangeSelected ? `${memoTypeLabel[this.state.exchangeSelected.memoType]}` : 'Memo ID or Text'
+    const addressLabelTitle = this.state.exchangeSelected ? `Send to address (${this.state.exchangeSelected.name})` : 'Send to address'
+    const sendMemoTypeTitle = this.state.exchangeSelected ? `${memoTypeLabel[this.state.exchangeSelected.memo]}` : 'Memo ID or Text (optional)'
+    const sendMemoTypePlaceholderTitle = this.state.exchangeSelected ? `${memoTypeLabel[this.state.exchangeSelected.memo]}` : 'Memo ID or Text'
 
     return (
       <div id={styles.sendAssetFormContainer}>
@@ -82,7 +82,7 @@ class Send extends Component {
             <label className={styles.sendAssetFormLabel} htmlFor='sendAddress'>Send to address </label>
             <input type='text' className={formStyle} placeholder='Send Address'
               id='sendAddress' name='sendAddress' value={this.state.sendAddress} onChange={this.handleChange} required />
-            {this.state.exchangeSelected && <FormText color='info' style={{fontSize: '0.65rem', marginTop: '0.5rem'}}><i className="fa fa-exclamation-triangle" style={{marginRight: '0.15rem', marginLeft: '0.15rem'}}/> Address identified for <b><u>{this.state.exchangeSelected.exchangeName}</u></b></FormText>}
+            {this.state.exchangeSelected && <FormText color='info' style={{fontSize: '0.65rem', marginTop: '0.5rem'}}><i className="fa fa-exclamation-triangle" style={{marginRight: '0.15rem', marginLeft: '0.15rem'}}/> Address identified for <b><u>{this.state.exchangeSelected.name}</u></b></FormText>}
           </div>
           <div className='form-group'>
             <label className={styles.sendAssetFormLabel} htmlFor='sendMemoID'>
