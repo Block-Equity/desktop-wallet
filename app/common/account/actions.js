@@ -240,7 +240,7 @@ export function fetchStellarAssetsForDisplay () {
 }
 
 export function calculateStellarMinimumBalance(stellarAccount) {
-  const baseReserve = 1
+  const baseReserve = 0.5
 
   const trustlines = {
     count: stellarAccount.balances.length - 1,
