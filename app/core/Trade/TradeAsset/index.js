@@ -394,7 +394,7 @@ class TradeAsset extends Component {
     const sellAsset = this.state.sellAssetList[this.state.sellAssetSelected]
     const buyAsset = this.state.buyAssetList[this.state.buyAssetSelected]
     const tradePrice = this.state.marketOrder ?
-      this.props.bestOffer.marketPrice :
+      this.props.bestOffer.marketPrice*0.999 :
       numeral(this.state.receiveAssetAmount/this.state.offerAssetAmount).format('0.0000000', Math.floor)
 
     //Validate if the market price is not 0
