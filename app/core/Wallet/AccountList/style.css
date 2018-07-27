@@ -1,6 +1,6 @@
 .mainContainer {
   display: flex;
-  height: 100vh;
+  overflow-y: auto;
 }
 
 .assetContainer {
