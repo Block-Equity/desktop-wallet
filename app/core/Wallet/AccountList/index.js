@@ -104,7 +104,7 @@ class AccountList extends Component {
   render() {
     return (
       <div>
-        <div style={{ width: '9.5rem', marginTop: '-0.55rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.06)', height: '40.5rem', overflowY: 'scroll'}}>
+        <div style={{ width: '9.5rem', marginTop: '-0.55rem', backgroundColor: '#FFFFFF', borderRight: '1px solid rgba(0, 0, 0, 0.06)', height: '40.5rem', overflowY: 'auto'}}>
           <MenuList style={{ height: '100vh' }}>
             <ListGroup id={styles.listItem}>
               { this.renderAssets() }
