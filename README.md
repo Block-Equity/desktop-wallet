@@ -16,10 +16,9 @@ And then install dependencies with yarn.
 
 ```bash
 $ cd your-project-name
-$ yarn
+$ npm install
+$ cd app && npm install
 ```
-**Note**: If you can't use [yarn](https://github.com/yarnpkg/yarn), run `npm install`.
-
 ## Run
 
 Start the app in the `dev` environment. This starts the renderer process in [**hot-module-replacement**](https://webpack.js.org/guides/hmr-react/) mode and starts a webpack dev server that sends hot updates to the renderer process:
