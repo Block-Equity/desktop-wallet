@@ -2,7 +2,7 @@ import * as Types from './types'
 import { getOrderBook, manageOffer, getOpenOrders, deleteOffer, getTradeHistory } from '../../services/networking/horizon'
 import { getCurrentAccount } from '../account/selectors'
 import { getCurrentApp } from '../app/selectors'
-import { getUserPIN } from '../../db'
+import { getPIN } from '../../db/pin'
 import * as encryption from '../../services/security/encryption'
 import numeral from 'numeral'
 
@@ -69,7 +69,7 @@ export function makeTradeOffer(sellingAsset, sellingAssetIssuer, buyingAsset, bu
     //Fetch PIN
     let currentAccount = getCurrentAccount(getState())
     const { pKey: publicKey, sKey: secretKey } = currentAccount
-    const { pin } = await getUserPIN()
+    const pin = await getPIN()
     const decryptSK = await encryption.decryptText(secretKey, pin)
     try {
       const { payload, errorMessage, error } = await manageOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, amount, price, decryptSK, publicKey)
@@ -111,7 +111,7 @@ export function deleteTradeOffer(sellingAsset, sellingAssetIssuer, buyingAsset, 
     //Fetch PIN
     let currentAccount = getCurrentAccount(getState())
     const { pKey: publicKey, sKey: secretKey } = currentAccount
-    const { pin } = await getUserPIN()
+    const pin = await getPIN()
     const decryptSK = await encryption.decryptText(secretKey, pin)
     try {
       const trade = await deleteOffer(sellingAsset, sellingAssetIssuer, buyingAsset, buyingAssetIssuer, price, decryptSK, publicKey, offerId)

@@ -9,6 +9,8 @@ import PinModal from '../../Shared/PinModal'
 import ActionButton from '../../Shared/ActionButton'
 import Alert from '../../Shared/Alert'
 
+import { get as getPinOptions, GATE_PAYMENT } from '../../../db/pin'
+
 const memoTypeLabel = {
   memoText: 'Memo Text',
   memoId: 'Memo ID'
@@ -153,10 +155,18 @@ class Send extends Component {
         amount: this.state.sendAmount,
         memoValue: this.state.sendMemoID
       }
-      this.setState({
-        info,
-        showPINModal: true
+
+      getPinOptions().then(pinOptions => {
+        if(!pinOptions[GATE_PAYMENT]) {
+          this.props.receiveSendPaymentInfo(info)
+        } else {
+          this.setState({
+            info,
+            showPINModal: true
+          })
+        }
       })
+
     }
   }
 

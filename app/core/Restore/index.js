@@ -9,7 +9,8 @@ import * as mnemonic from '../../services/security/mnemonic'
 import * as encryption from '../../services/security/encryption'
 
 //Redux Actions/States/Reducers
-import { setUserPIN, setPhrase } from '../../db'
+import { setPhrase } from '../../db'
+import { setPIN } from '../../db/pin'
 import { unlock } from '../../common/auth/actions'
 import {
   initializeDB,
@@ -428,7 +429,7 @@ class Restore extends Component {
 
   //Add password to KeyChain
   async addPinToKeyChain() {
-    await setUserPIN(this.state.pinValue)
+    await setPIN(this.state.pinValue)
   }
 
   //Add Phrase

@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
 import styles from './style.css'
-import { getUserPIN, setUserPIN, getPhrase, setPhrase } from '../../../db'
-
-import ActionButton from '../../Shared/ActionButton'
-import Alert from '../../Shared/Alert'
+import { getPhrase, setPhrase } from '../../../../db'
+import { setPIN, getPIN } from '../../../../db/pin'
+import ActionButton from '../../../Shared/ActionButton'
+import Alert from '../../../Shared/Alert'
 
 import { Form, FormGroup, Label, Input } from 'reactstrap';
+
+import ChevronLeft from 'material-ui-icons/ChevronLeft'
 
 class ResetPIN extends Component {
 
@@ -29,7 +31,12 @@ class ResetPIN extends Component {
       default: 'Save new PIN',
       processing: 'Saving new PIN'
     }
+
     return (
+      <div>
+      <div className={styles.navBar}>
+        <h6 className={styles.backNav} onClick={this.props.history.goBack}>Back</h6>
+      </div>
       <div id={styles.formContainer}>
         <h6 style={{width: '28rem'}}>
           PIN will used to encrypt your secret keys. Please make sure you choose a PIN that is difficult to guess for others.
@@ -59,6 +66,7 @@ class ResetPIN extends Component {
           close={() => { this.setState({ alertOpen: false })}}
         />
       </div>
+      </div>
     )
   }
 
@@ -82,7 +90,7 @@ class ResetPIN extends Component {
 
   async saveUpdatedPIN() {
     if (this.state.newPIN === this.state.newPINConfirm) {
-      const { pin } = await getUserPIN()
+      const pin = await getPIN()
       if (pin === this.state.oldPIN) {
         //Encrypt mnemonic with new PIN
         //1. Get Mnemonic with old pin
@@ -90,7 +98,7 @@ class ResetPIN extends Component {
         //2. Resave mnemonic with new pin
         await setPhrase(phrase, this.state.newPIN)
         //3. Save new PIN to the DB
-        await setUserPIN(this.state.newPIN)
+        await setPIN(this.state.newPIN)
         this.timer = setTimeout(() => {
           this.handleAlertOpen('New PIN saved!')
           this.setState({

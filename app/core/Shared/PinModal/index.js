@@ -5,7 +5,7 @@ import Snackbar from 'material-ui/Snackbar'
 import Button from 'material-ui/Button'
 import Tooltip from 'material-ui/Tooltip'
 import ActionButton from '../ActionButton'
-import { getUserPIN } from '../../../db'
+import { getPIN } from '../../../db'
 
 import {
   Modal,
@@ -91,7 +91,7 @@ class PinModal extends Component {
   }
 
   async checkPIN() {
-    const { pin } = await getUserPIN()
+    const pin = await getPIN()
     console.log(`PIN Saved in DB: ${pin}`)
     if (pin === this.state.pinValue) {
       this.timer = setTimeout(() => {

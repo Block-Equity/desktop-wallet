@@ -54,8 +54,10 @@ class History extends Component {
 
   renderTableBody() {
     const { currentAccount } = this.props
+    
     const type = currentAccount.asset_type
     const code = currentAccount.asset_code
+    
     var displayData = []
 
     this.props.paymentTransactions.map(n => {
