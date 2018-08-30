@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import styles from './style.css'
-import logoIcon from './logo-white.png'
+import logoIcon from './logo.png'
 import backIcon from './arrow-back-white.png'
 
 import AppBar from 'material-ui/AppBar'
@@ -11,7 +11,7 @@ import SettingIcon from 'material-ui-icons/Settings'
 import RefreshIcon from 'material-ui-icons/Refresh'
 
 const BACK_IMAGE_SIZE = 16
-const LOGO_IMAGE_SIZE = { height: 16, width: 30 }
+const LOGO_IMAGE_SIZE = { height: 25, width: 18.58 }
 
 export default class NavBar extends Component {
 
@@ -28,7 +28,7 @@ export default class NavBar extends Component {
   render () {
     const appBarStyle = {
       height: this.props.isMainView ? '3.4rem' : '5.5rem',
-      backgroundImage: 'linear-gradient(to bottom right, #07237A 0%, #0153B6 100%)',
+      backgroundColor: '#232B37',
       boxShadow: 'none'
     }
 
@@ -38,7 +38,7 @@ export default class NavBar extends Component {
           <IconButton color='inherit' onClick={this.onClose} style={{outline: 'none', marginBottom: '1rem'}} aria-label='Close'>
             <CloseIcon />
           </IconButton>
-          <div style={{width: '100%', alignItems: 'center', display: 'flex', flexDirection: 'column'}}>
+          <div style={{width: '100%', alignItems: 'center', display: 'flex', flexDirection: 'column', marginRight: '2.75rem'}}>
             <img src={ logoIcon } width={ LOGO_IMAGE_SIZE.width } height={ LOGO_IMAGE_SIZE.height }
                 style={{ marginBottom: '0.6rem' }} alt=''/>
           </div>

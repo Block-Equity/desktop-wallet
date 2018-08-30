@@ -69,7 +69,7 @@ class Launch extends Component {
     return (
       <Container data-id='container'>
         <ContentContainer>
-            <img src={mainLogo} width='170' height='93' style={{ marginTop: '10rem' }} alt='' />
+            <img src={mainLogo} width='180' height='37.84' style={{ marginTop: '10rem' }} alt='' />
             { this.renderConditionalContent() }
           </ContentContainer>
       </Container>

@@ -15,7 +15,7 @@ import Wallet from '../Wallet'
 import Trade from '../Trade'
 import AccountList from '../Wallet/AccountList'
 
-import statusBarLogo from '../Launch/logo-brand-color.png'
+import statusBarLogo from '../Shared/NavBar/logo.png'
 import IconButton from 'material-ui/IconButton'
 import SettingIcon from 'material-ui-icons/Settings'
 
@@ -65,7 +65,7 @@ class AppView extends Component {
   renderStatusBar() {
     return (
       <div className={styles.statusBarContainer} style={{zIndex: '3'}}>
-        <img src={ statusBarLogo } alt='' width='34' height='17'/>
+        {/*<img src={ statusBarLogo } alt='' width='12' height='16'/>*/}
       </div>
     )
   }
@@ -74,7 +74,7 @@ class AppView extends Component {
     return (
       <div className={styles.statusBarContainerSettings} style={{zIndex: '3'}}>
         <div style={{width: '34px', height: '17px'}}/>
-        <img src={ statusBarLogo } alt='' width='34' height='17'/>
+        <img src={ statusBarLogo } alt='' width='11.89' height='16'/>
         <div>
           <IconButton color='inherit' onClick={this.openSettings} style={{outline: 'none', fontSize: '16px'}} aria-label='Close'>
             <SettingIcon />

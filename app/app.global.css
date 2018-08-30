@@ -6,6 +6,16 @@
 @import "~bootstrap/dist/css/bootstrap.css";
 @import url('https://fonts.googleapis.com/css?family=Lato:100,300,400,400i,700,900');
 
+:root {
+  /* Brand Colors */
+  --brand-dark: #232B37;
+  --brand-blue-one: #0043FF;
+  --brand-blue-two: #006AFF;
+  --brand-blue-three: #008FFF;
+  --brand-blue-four: #04B2FF;
+  --brand-blue-five: #2ED6FF;
+}
+
 body {
   position: relative;
   color: black;
