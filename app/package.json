@@ -15,6 +15,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "stellar-sdk": "^0.8.1"
+    "stellar-sdk": "^0.8.2"
   }
 }

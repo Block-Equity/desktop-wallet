@@ -205,6 +205,7 @@
     "eventsource": "^1.0.5",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
+    "jquery": "^3.3.1",
     "material-ui": "^1.0.0-beta.35",
     "material-ui-icons": "^1.0.0-beta.36",
     "moment": "^2.20.1",
