@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 export const Container = styled.div`
   height: 100vh;
-  background-image: linear-gradient(to top, #0153B6 0%, #07237A 100%);
+  background-color: var(--brand-dark);
   -webkit-app-region: drag;
 `
 export const ContentContainer = styled.div`
