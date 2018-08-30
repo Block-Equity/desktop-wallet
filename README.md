@@ -1,7 +1,5 @@
 # Block Equity Desktop Wallet Application
 
-[![Build Status](https://travis-ci.org/Block-Equity/desktop-wallet.svg?branch=master)](https://travis-ci.org/Block-Equity/desktop-wallet)
-
 ## Install
 
 * **Note: requires a node version >= 7 and an npm version >= 4.**
@@ -50,6 +48,11 @@ First, refer to [Multi Platform Build](https://www.electron.build/multi-platform
 Then,
 ```bash
 $ npm run package-all
+```
+
+If you run into errors, try cleaning up using the following:
+```bash
+xattr -cr *
 ```
 
 To package apps with options:
