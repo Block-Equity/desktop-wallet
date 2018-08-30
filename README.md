@@ -61,6 +61,19 @@ To package apps with options:
 $ npm run package -- --[option]
 ```
 
+To generate icons for production build, install this package:
+https://github.com/jaretburkett/electron-icon-maker
+
+Install, globally or local:
+```bash
+npm install -g electron-icon-maker
+```
+
+Then (paths are your own, ofcourse):
+```bash
+electron-icon-maker --input=/Users/meghadhall/Desktop/icon.png --output=/Users/meghadhall/Desktop/desktopappicons
+```
+
 To run End-to-End Test
 
 ```bash
