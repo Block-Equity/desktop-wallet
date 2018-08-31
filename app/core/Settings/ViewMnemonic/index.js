@@ -1,10 +1,15 @@
 import React, { Component } from 'react'
 import styles from './style.css'
-import { getUserPIN, getPhrase } from '../../../db'
-
+import { getPhrase } from '../../../db'
+import { getPIN } from '../../../db/pin'
 import MnemonicView from '../../Shared/Mnemonic'
 import ActionButton from '../../Shared/ActionButton'
 import Alert from '../../Shared/Alert'
+import { 
+  get as getPinOptions, 
+  GATE_VIEW_MNEMONIC, 
+  SEQUENCE 
+} from '../../../db/pin'
 
 import { Form, FormGroup, Input } from 'reactstrap'
 
@@ -20,10 +25,28 @@ class ViewMnemonic extends Component {
       alertSuccess: true,
       title: 'Please enter your PIN to view your mnemonic phrase.',
       phrase: [],
-      viewPhrase: false
+      viewPhrase: false,
+      expectPIN: true
     }
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
+  }
+
+  async componentDidMount() {
+    const pinOptions = await getPinOptions()
+    
+    if(!pinOptions[GATE_VIEW_MNEMONIC]) {
+      const phrase = await getPhrase(pinOptions[SEQUENCE])
+      const mnemonicArray = phrase.phrase.split(' ')
+      
+      this.setState({
+        title: 'For additional security, enable PIN entry to view mnemonic',
+        phrase: mnemonicArray,
+        viewPhrase: true,
+        retrieve: false,
+        pinValue: ''
+      })
+    }
   }
 
   render() {
@@ -60,7 +83,6 @@ class ViewMnemonic extends Component {
         <ActionButton processing={ this.state.retrieve } title={ btnTitle } isForm={ true } />
       </Form>
     )
-
     if (this.state.viewPhrase) {
       return mnemonicView
     } else {
@@ -93,7 +115,7 @@ class ViewMnemonic extends Component {
   }
 
   async checkPIN() {
-    const { pin } = await getUserPIN()
+    const pin = await getPIN()
     console.log(`PIN Saved in DB: ${pin}`)
     if (pin === this.state.pinValue) {
       //TODO: Retrieve Menmonic Phrase

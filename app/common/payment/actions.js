@@ -3,7 +3,7 @@ import { fetchAccountDetails, setCurrentAccount, fetchStellarAssetsForDisplay } 
 import { getCurrentAccount, getAccountByPublicKey, getUserAccountFailedStatus } from '../account/selectors'
 import { getStellarPaymentPagingToken } from '../payment/selectors'
 import * as Types from './types'
-import { getUserPIN } from '../../db'
+import { getPIN } from '../../db/pin'
 import * as encryption from '../../services/security/encryption'
 import numeral from 'numeral'
 
@@ -22,7 +22,7 @@ export function sendPaymentToAddress ({ destination, amount, memoValue }) {
       asset_code: assetType
     } = currentAccount
 
-    const { pin } = await getUserPIN()
+    const pin = await getPIN()
     const decryptSK = await encryption.decryptText(secretKey, pin)
 
     dispatch(paymentSendRequest())

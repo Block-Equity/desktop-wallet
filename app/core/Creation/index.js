@@ -6,7 +6,8 @@ import { Redirect } from 'react-router'
 import * as accountCreation from '../../services/security/createAccount'
 import * as encryption from '../../services/security/encryption'
 import { unlock } from '../../common/auth/actions'
-import { setUserPIN, setPhrase } from '../../db'
+import { setPhrase } from '../../db'
+import { setPIN } from '../../db/pin'
 import {
   initializeDB,
   addWalletToDB,
@@ -496,7 +497,7 @@ class AccountCreation extends Component {
 
   //2. Add password to KeyChain
   addPinToKeyChain() {
-    setUserPIN(this.state.pinValue)
+    setPIN(this.state.pinValue)
   }
 
   //Add Phrase

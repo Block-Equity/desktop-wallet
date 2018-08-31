@@ -11,7 +11,7 @@ import {
   updatePaymentPagingToken
 } from '../payment/actions'
 import * as horizon from '../../services/networking/horizon'
-import { getUserPIN } from '../../db'
+import { getPIN } from '../../db/pin'
 import { getSupportedAssets } from '../../services/networking/lists'
 import * as encryption from '../../services/security/encryption'
 import * as Types from './types'
@@ -300,7 +300,7 @@ export function changeTrustOperation ( asset, removeTrust ) {
       const currentAccount = getCurrentAccount(getState())
       const { pKey: publicKey, sKey: secretKey } = currentAccount
 
-      const { pin } = await getUserPIN()
+      const pin = await getPIN()
       const decryptSK = await encryption.decryptText(secretKey, pin)
 
       const { asset_issuer: issuerPK, asset_code: assetType } = asset
@@ -320,7 +320,7 @@ export function joinInflationPoolOperation () {
       const currentAccount = getCurrentAccount(getState())
       const { pKey: publicKey, sKey: secretKey } = currentAccount
 
-      const { pin } = await getUserPIN()
+      const pin = await getPIN()
       const decryptSK = await encryption.decryptText(secretKey, pin)
 
       const { payload, error } = await horizon.joinInflationDestination(decryptSK, publicKey)

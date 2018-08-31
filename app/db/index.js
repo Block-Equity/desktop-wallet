@@ -1,6 +1,7 @@
-import NeDB from 'nedb'
 import * as encryption from '../services/security/encryption'
 import * as locking from '../services/authentication/locking'
+
+import db from './db'
 
 import {
   DATABASE_PATH,
@@ -8,11 +9,8 @@ import {
   APP_VERSION
 } from './constants'
 
-let db = null
-
 export const databaseExists = async () => {
   await locking.unlock({ password: DATABASE_PATH})
-  db = new NeDB({ filename: DATABASE_PATH, autoload: true })
 
   return new Promise((resolve, reject) => {
     db.findOne({ type: DOCUMENT_TYPE_USER_INFO }, (err, doc) => {
@@ -37,7 +35,6 @@ export const databaseExists = async () => {
 }
 
 export const initialize = async () => {
-  db = new NeDB({ filename: DATABASE_PATH, autoload: true })
 
   return new Promise((resolve, reject) => {
     db.findOne({ type: DOCUMENT_TYPE_USER_INFO }, (err, doc) => {

@@ -3,13 +3,13 @@ import styles from './style.css'
 import { ListGroup, ListGroupItem } from 'reactstrap'
 
 //Custom components
-import ResetPIN from './ResetPIN'
+import PINOptions from './PINOptions'
 import ViewMnemonic from './ViewMnemonic'
 import DeleteWallet from './DeleteWallet'
 
 //Constants
 const userSettingsOptions = [
-  { id: 0, resetPIN: { id: 0,  title: 'Reset PIN' }, title: 'Reset PIN' },
+  { id: 0, resetPIN: { id: 0,  title: 'PIN Options' }, title: 'PIN Options' },
   { id: 1, viewMnemonic: { id: 1, title: 'View Phrase'}, title: 'View Phrase' },
   { id: 2, deleteWallet: { id: 2, title: 'Delete Wallet'}, title: 'Delete Wallet' }
 ]
@@ -74,7 +74,7 @@ class Settings extends Component {
     switch (this.state.selectedItem.id) {
       case 0:
         return (
-          <ResetPIN />
+          <PINOptions />
         )
       break
       case 1:

@@ -26,6 +26,17 @@ input[type=number]::-webkit-outer-spin-button {
     margin: 0;
 }
 
+.navBar {
+  height: 1rem;
+}
+
+.backNav {
+  font-size: 0.8rem;
+  float: right;
+  cursor: pointer;
+  color: #495057;
+}
+
 .formLabel {
   color: #777777;
   font-size: 0.8rem;

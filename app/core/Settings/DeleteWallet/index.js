@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 import styles from './style.css'
-import { getUserPIN, clearAllUserInfo } from '../../../db'
+import { clearAllUserInfo } from '../../../db'
+import { getPIN } from '../../../db/pin'
 import { logout } from '../../../common/auth/actions'
 
 import { CircularProgress } from 'material-ui/Progress'
@@ -109,7 +110,7 @@ class DeleteWallet extends Component {
   }
 
   async checkPIN() {
-      const { pin } = await getUserPIN()
+      const pin  = await getPIN()
       console.log(`PIN Saved in DB: ${pin}`)
       if (pin === this.state.pinValue) {
         //TODO: Delete Wallet
